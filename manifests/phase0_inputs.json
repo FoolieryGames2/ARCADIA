@@ -10,9 +10,9 @@
   "host": {
     "python": "3.12",
     "requirements_lock_path": "requirements.lock",
-    "requirements_lock_sha256": "7344f126126d0cb7d3f482601a55522b20a035f5e187ae129e76f976a7e8ee7a",
+    "requirements_lock_sha256": "3591eff7ec34298526b8655bd666244aa252a5056969d3190460277256bfa7dd",
     "runtime_config_path": "configs/runtime.toml",
-    "runtime_config_sha256": "f9dbc271e602073611350739a0c955863840f44cd0f7a2cc66b8f367add9332a",
+    "runtime_config_sha256": "0f97d59179a98ffc4dfdff4ba53e0a32ded1fef56098c9f7b03697dac69d979b",
     "sqlite_fts5_required": true
   },
   "base_model": {

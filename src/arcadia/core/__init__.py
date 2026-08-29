@@ -1,0 +1,1 @@
+"""Deterministic host-authority primitives."""

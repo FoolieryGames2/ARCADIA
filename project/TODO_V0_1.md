@@ -32,6 +32,7 @@ When this ledger and the canonical documents disagree, the canonical documents w
 | E-0005 | Canonical document consolidation validation report | PASS — docs only |
 | E-0006 | `manifests/phase0_inputs.json` plus `scripts/verify_phase0.py` | PASS |
 | E-0007 | `evidence/phase0/PHASE0_GATE_REPORT.md`: native build, 43/43 tests, GPU smoke | PASS — Gate 0 only |
+| E-0008 | `evidence/phase_a/ITEM1_CONFIG_IDS.md`: strict Config V1 and scoped host IDs | PASS — Phase A item 1 |
 
 Add evidence here before changing a phase or qualification standing.
 
@@ -62,8 +63,8 @@ Add evidence here before changing a phase or qualification standing.
 
 ### Core
 
-- [ ] `core/config.py`
-- [ ] `core/ids.py`
+- [x] `core/config.py` — strict immutable Config V1. Evidence: E-0008.
+- [x] `core/ids.py` — host UUIDs and scoped readable aliases. Evidence: E-0008.
 - [ ] `core/canonical_json.py`
 - [ ] `core/hashing.py`
 - [ ] `core/artifact_envelope.py`
@@ -84,8 +85,8 @@ Add evidence here before changing a phase or qualification standing.
 
 ### Gate A evidence
 
-- [ ] UUIDs remain host authority.
-- [ ] Human-readable aliases are scoped and non-authoritative.
+- [x] UUIDs remain host authority. Evidence: E-0008.
+- [x] Human-readable aliases are scoped and non-authoritative. Evidence: E-0008.
 - [ ] Canonical JSON V1 is deterministic.
 - [ ] Strict decoder rejects duplicate keys, non-finite values, and trailing content.
 - [ ] JSON Schema 2020-12 validation is enforced.

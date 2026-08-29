@@ -50,3 +50,17 @@ Append decisions. Keep prior entries intact; supersede them explicitly.
 - Status: accepted
 - Decision: Set `LLAMA_BUILD_APP=OFF` while retaining shared libraries, tests, examples, and non-server tools.
 - Reason: At the pinned commit, the optional unified upstream app links `llama-server-impl` even when `LLAMA_BUILD_SERVER=OFF`. Disabling only that app preserves ARCADIA's required server-disabled boundary; ARCADIA's own CLI remains the planned interface.
+
+## D-0008 — Config V1 and scoped alias representation
+
+- Date: 2026-08-29
+- Status: accepted
+- Decision: Treat the Phase 0 `runtime.toml` as the seed of Config V1 and complete its frozen v0.1 shape before any recipe consumes it. Represent every authoritative identity as a canonical host UUID; represent readable IDs as `(scope UUID, declared alias kind, ordinal)` with namespace-specific display width.
+- Reason: The system documents require one versioned configuration source, host-owned UUID authority, and scoped non-authoritative aliases. Completing the unused placeholder schema now avoids hidden recipe settings, while the structured alias identity prevents equal-looking `R001` values from colliding across turns and keeps `E001` evidence distinct from durable `E000001` semantic entities.
+
+## D-0009 — Stable line endings for hashed text inputs
+
+- Date: 2026-08-29
+- Status: accepted
+- Decision: Pin `requirements.lock` and `configs/runtime.toml` to UTF-8 LF through `.gitattributes` before hashing them in the Phase 0 manifest.
+- Reason: Windows `core.autocrlf=true` changed the working-tree byte hash of `requirements.lock` during a branch switch without changing its logical content. Hash authority requires a stable byte representation across checkouts.
