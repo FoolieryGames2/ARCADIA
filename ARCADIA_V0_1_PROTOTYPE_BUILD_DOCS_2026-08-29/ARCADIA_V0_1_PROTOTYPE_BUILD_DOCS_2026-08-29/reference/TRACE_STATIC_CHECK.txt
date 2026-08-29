@@ -1,0 +1,11 @@
+file: /mnt/data/ARCADIA_V0_1_PROTOTYPE_BUILD_DOCS_2026-08-29/reference/ARCADIA_V0_1_FULL_PIPELINE_AAE_REFERENCE_5_SLICES.md
+envelope tags: open=88 close=88
+envelopes: templates=1 actual_slice_calls=87
+JSON fences parsed strictly: 110
+slice 1: calls=13 distinct_adapters=10 cold_LRU_loads=10 LRU_evictions=5 HOT_hits=3 model_view_chars=34840
+slice 2: calls=14 distinct_adapters=10 cold_LRU_loads=10 LRU_evictions=5 HOT_hits=4 model_view_chars=35773
+slice 3: calls=27 distinct_adapters=15 cold_LRU_loads=18 LRU_evictions=13 HOT_hits=9 model_view_chars=75925
+slice 4: calls=13 distinct_adapters=10 cold_LRU_loads=10 LRU_evictions=5 HOT_hits=3 model_view_chars=31373
+slice 5: calls=20 distinct_adapters=13 cold_LRU_loads=14 LRU_evictions=9 HOT_hits=6 model_view_chars=52853
+specialist modes represented: 20
+PASS

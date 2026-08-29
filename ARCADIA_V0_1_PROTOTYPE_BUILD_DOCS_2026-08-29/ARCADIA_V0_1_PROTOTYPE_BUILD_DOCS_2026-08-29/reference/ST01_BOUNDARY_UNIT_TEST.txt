@@ -1,0 +1,17 @@
+test_duplicate_key_rejected (test_arcadia_aae_boundary.BoundaryTests.test_duplicate_key_rejected) ... ok
+test_duplicate_markers_fail_closed (test_arcadia_aae_boundary.BoundaryTests.test_duplicate_markers_fail_closed) ... ok
+test_final_rendered_aae_is_reparsed_and_schema_checked (test_arcadia_aae_boundary.BoundaryTests.test_final_rendered_aae_is_reparsed_and_schema_checked) ... ok
+test_handwritten_single_backslash_path_is_rejected (test_arcadia_aae_boundary.BoundaryTests.test_handwritten_single_backslash_path_is_rejected) ... ok
+test_nonfinite_rejected_on_parse (test_arcadia_aae_boundary.BoundaryTests.test_nonfinite_rejected_on_parse) ... ok
+test_nonfinite_rejected_on_serialize (test_arcadia_aae_boundary.BoundaryTests.test_nonfinite_rejected_on_serialize) ... ok
+test_schema_must_reject_unknown_fields (test_arcadia_aae_boundary.BoundaryTests.test_schema_must_reject_unknown_fields) ... ok
+test_trailing_content_rejected (test_arcadia_aae_boundary.BoundaryTests.test_trailing_content_rejected) ... ok
+test_unknown_field_rejected (test_arcadia_aae_boundary.BoundaryTests.test_unknown_field_rejected) ... ok
+test_value_outside_bounds_rejected (test_arcadia_aae_boundary.BoundaryTests.test_value_outside_bounds_rejected) ... ok
+test_windows_path_is_escaped_by_serializer (test_arcadia_aae_boundary.BoundaryTests.test_windows_path_is_escaped_by_serializer) ... ok
+test_wrong_type_rejected (test_arcadia_aae_boundary.BoundaryTests.test_wrong_type_rejected) ... ok
+
+----------------------------------------------------------------------
+Ran 12 tests in 0.008s
+
+OK
