@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import os
 import shutil
 import sqlite3
 import subprocess
@@ -106,7 +107,22 @@ def check_cuda(manifest: dict[str, Any]) -> Result:
     expected = manifest["native_toolchain"]["cuda_toolkit_version"]
     nvcc = shutil.which("nvcc")
     if nvcc is None:
-        return Result("cuda_toolkit", False, f"nvcc missing; expected {expected}")
+        configured_root = manifest["native_toolchain"].get("cuda_install_root")
+        if configured_root:
+            nvcc_path = Path(configured_root) / "bin" / "nvcc.exe"
+        else:
+            program_files = Path(os.environ.get("ProgramFiles", r"C:\Program Files"))
+            nvcc_path = (
+                program_files
+                / "NVIDIA GPU Computing Toolkit"
+                / "CUDA"
+                / "v13.3"
+                / "bin"
+                / "nvcc.exe"
+            )
+        if not nvcc_path.is_file():
+            return Result("cuda_toolkit", False, f"nvcc missing; expected {expected}")
+        nvcc = str(nvcc_path)
     completed = subprocess.run(
         [nvcc, "--version"], check=False, capture_output=True, text=True
     )
@@ -116,14 +132,24 @@ def check_cuda(manifest: dict[str, Any]) -> Result:
 
 
 def check_library(manifest: dict[str, Any]) -> Result:
-    expected = manifest["llama_cpp"]["library_sha256"]
-    if expected is None:
-        return Result("llama_library", False, "library_sha256 is not frozen")
-    candidates = tuple((ROOT / "build" / "llama.cpp").rglob("llama.dll"))
-    if len(candidates) != 1:
-        return Result("llama_library", False, f"expected one llama.dll, found {len(candidates)}")
-    actual = sha256(candidates[0])
-    return Result("llama_library", actual == expected, actual)
+    artifacts = manifest["llama_cpp"].get("runtime_artifacts", [])
+    if not artifacts:
+        return Result("llama_runtime", False, "runtime_artifacts are not frozen")
+    failures: list[str] = []
+    for artifact in artifacts:
+        path = ROOT / artifact["path"]
+        if not path.is_file():
+            failures.append(f"missing:{artifact['path']}")
+            continue
+        if path.stat().st_size != artifact["size_bytes"]:
+            failures.append(f"size:{artifact['path']}")
+            continue
+        if sha256(path) != artifact["sha256"]:
+            failures.append(f"hash:{artifact['path']}")
+    detail = f"{len(artifacts) - len(failures)}/{len(artifacts)} artifacts verified"
+    if failures:
+        detail += f"; failed: {', '.join(failures[:3])}"
+    return Result("llama_runtime", not failures, detail)
 
 
 def verify() -> tuple[Result, ...]:

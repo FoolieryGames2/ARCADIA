@@ -18,22 +18,26 @@ Build a truth-preserving agent runtime whose learned specialists are compartment
 - The canonical spine contains Recipes 0–8 with no collapsed stage.
 - The core learned roster contains 15 physical adapters; Tool / Execution is host-only.
 - Existing checkpoint ZIPs preserve both the canonical docs and Obsidian vault forms.
+- Phase 0 immutable input manifest reproduces the authority, dependency, model,
+  llama.cpp source, CUDA toolchain, and native runtime hashes.
+- Pinned llama.cpp CUDA build passes 43/43 upstream tests.
+- Pinned Qwen2.5 3B Q4_K_M smoke run offloads 37/37 layers to the RTX 2060 and exits cleanly.
 
 ## Not yet verified
 
-- Pinned SQLite/FTS5 assumptions
-- Pinned base GGUF identity
-- Pinned llama.cpp commit, build options, and library hash
-- Real GGUF/LoRA runtime behavior or qualification
+- `SpecialistInvoker` real-runtime enforcement
+- LoRA load/apply/isolation behavior
+- Safe HOT adapter ceiling and A/B/A lifecycle behavior
+- Logical specialist qualification beyond T0
 
-## Active gate: Phase 0 — freeze build inputs
+## Active gate: Phase A — deterministic host foundation
 
 Detailed execution tracking lives in `project/TODO_V0_1.md`. Items are marked complete only with reproducible evidence.
 
-1. Convert the verified SQLite/FTS5 host baseline into an explicit startup contract.
-2. Select the initial base GGUF.
-3. Select and pin llama.cpp only before the real runtime spike.
-4. Expand the single versioned runtime configuration as Phase A contracts are implemented.
+Gate 0 is closed by `evidence/phase0/PHASE0_GATE_REPORT.md`. The next work follows
+the frozen Phase A module order: configuration, IDs, Canonical JSON V1, hashing,
+artifact envelopes, ledgers, strict validation, budgets, trace index, trust
+registry, and authority-separated SQLite repositories.
 
 ## Next implementation gate
 

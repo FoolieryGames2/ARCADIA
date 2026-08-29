@@ -4,7 +4,7 @@ Updated: 2026-08-29
 
 Authority: `02_ARCADIA_V0_1_EXACT_BUILD_ORDER.md` and the v0.1 system documents
 
-Current standing: **Phase 0 in progress / runtime authority T0**
+Current standing: **Gate 0 passed / Phase A next / runtime authority T0**
 
 This is the live implementation ledger, not a replacement for the frozen build authority.
 When this ledger and the canonical documents disagree, the canonical documents win.
@@ -30,6 +30,8 @@ When this ledger and the canonical documents disagree, the canonical documents w
 | E-0003 | `arcadia doctor`: CPython 3.12 + SQLite FTS5 + host packages | PASS |
 | E-0004 | Current unit, Ruff, and strict MyPy gates | PASS |
 | E-0005 | Canonical document consolidation validation report | PASS — docs only |
+| E-0006 | `manifests/phase0_inputs.json` plus `scripts/verify_phase0.py` | PASS |
+| E-0007 | `evidence/phase0/PHASE0_GATE_REPORT.md`: native build, 43/43 tests, GPU smoke | PASS — Gate 0 only |
 
 Add evidence here before changing a phase or qualification standing.
 
@@ -40,19 +42,19 @@ Add evidence here before changing a phase or qualification standing.
 - [x] Commit and publish the v0.1 documentation/workspace checkpoint. Evidence: E-0001.
 - [x] Pin CPython and deterministic host dependencies. Evidence: `.python-version`, `pyproject.toml`, `requirements.lock`, E-0002.
 - [x] Require and verify SQLite FTS5 in the project environment. Evidence: `configs/runtime.toml`, E-0003.
-- [ ] Select the initial base GGUF and record URL, license, size, quantization, and SHA-256.
-- [ ] Pin the exact llama.cpp repository commit.
-- [ ] Pin llama.cpp build options, compiler/toolkit identities, and resulting library hash.
+- [x] Select the initial base GGUF and record URL, license, size, quantization, and SHA-256. Evidence: E-0006.
+- [x] Pin the exact llama.cpp repository commit. Evidence: E-0006.
+- [x] Pin llama.cpp build options, compiler/toolkit identities, and resulting library hash. Evidence: E-0006, E-0007.
 - [x] Create one versioned runtime configuration source. Evidence: `configs/runtime.toml`.
-- [ ] Record a reproducible Phase 0 source manifest.
-- [ ] Close Gate 0: no unresolved contradiction blocks the narrow runtime spike.
+- [x] Record a reproducible Phase 0 source manifest. Evidence: E-0006.
+- [x] Close Gate 0: no unresolved contradiction blocks the narrow runtime spike. Evidence: E-0007.
 
 ### Immediate Phase 0 decisions
 
-- [ ] Choose the initial model family appropriate for the RTX 2060 6 GB qualification spike.
-- [ ] Decide CPU-only versus CUDA first-spike strategy.
-- [ ] Install/pin native build prerequisites only after that strategy is recorded.
-- [ ] Define the model/adaptor artifact download and hash-verification procedure.
+- [x] Choose Qwen2.5-3B-Instruct Q4_K_M for the RTX 2060 6 GB qualification spike. Evidence: E-0006.
+- [x] Select the pinned CUDA source-build strategy. Evidence: E-0006, E-0007.
+- [x] Install and pin the native build prerequisites. Evidence: E-0007.
+- [x] Define model artifact download and hash verification. Adapter import remains Phase K work. Evidence: E-0006.
 
 ---
 
@@ -285,8 +287,8 @@ Only after Gate L closes may v0.1 be called **implemented**. This does not imply
 
 ## Current next actions
 
-1. Finish Phase 0 model/runtime decisions and immutable pin manifest.
-2. Implement Phase A canonical JSON and strict decoder first.
+1. Implement Phase A configuration and identifier contracts.
+2. Implement Canonical JSON V1, hashing, and strict decoding.
 3. Add adversarial deterministic tests before extending the interface.
 4. Keep the interface limited to typed commands, events, repository load/save, tool visibility, and runtime standing until the host contracts exist.
 

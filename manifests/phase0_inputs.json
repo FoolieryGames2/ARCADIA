@@ -37,28 +37,66 @@
       "GGML_NATIVE": true,
       "BUILD_SHARED_LIBS": true,
       "LLAMA_BUILD_SERVER": false,
+      "LLAMA_BUILD_APP": false,
       "LLAMA_BUILD_TESTS": true,
       "LLAMA_BUILD_EXAMPLES": true
     },
-    "library_sha256": null
+    "max_parallel_build_workers": 2,
+    "library_sha256": "fbccdf049fa24c94e1ecf4d8ec7865f2adf1339e6eb82c40de02e472baae84bf",
+    "runtime_artifacts": [
+      {
+        "path": "build/llama.cpp/bin/Release/ggml-base.dll",
+        "size_bytes": 658432,
+        "sha256": "8a7944b594d010c568798aece1e2ececbbefac37f0447416aec517d2ad5301aa"
+      },
+      {
+        "path": "build/llama.cpp/bin/Release/ggml-cpu.dll",
+        "size_bytes": 905216,
+        "sha256": "b440bc3cab252abd315d57374710468df2e452cb18dc6879a1a420aff29145b8"
+      },
+      {
+        "path": "build/llama.cpp/bin/Release/ggml-cuda.dll",
+        "size_bytes": 52427776,
+        "sha256": "5d6926c2c40c887d5789f18c1ee5aaa1cae87ad2b39962a4c76cc1d7057d8c3e"
+      },
+      {
+        "path": "build/llama.cpp/bin/Release/ggml.dll",
+        "size_bytes": 67072,
+        "sha256": "c9c3b027b01ac5e499562a90460d2520f8626be80b6cca1b820c065394e0febd"
+      },
+      {
+        "path": "build/llama.cpp/bin/Release/llama-common.dll",
+        "size_bytes": 8198144,
+        "sha256": "306b9856631440c77cdb4ff51cfa498d4e805b2a530c557b5378a8338c3d9955"
+      },
+      {
+        "path": "build/llama.cpp/bin/Release/llama-simple.exe",
+        "size_bytes": 24064,
+        "sha256": "5d052f4388c4359e4b358b6d15d64b00382d09844ca496619edeec0dd857122c"
+      },
+      {
+        "path": "build/llama.cpp/bin/Release/llama.dll",
+        "size_bytes": 2564096,
+        "sha256": "fbccdf049fa24c94e1ecf4d8ec7865f2adf1339e6eb82c40de02e472baae84bf"
+      }
+    ]
   },
   "native_toolchain": {
     "visual_studio_product": "Microsoft.VisualStudio.Product.BuildTools",
     "visual_studio_version": "17.14.39",
     "msvc_compiler_version": "19.44.35228",
     "cmake_version": "4.3.2",
-    "cuda_toolkit_version": "13.3.1",
-    "cuda_installed": false,
+    "cuda_toolkit_version": "13.3.73",
+    "cuda_install_root": "C:/Program Files/NVIDIA GPU Computing Toolkit/CUDA/v13.3",
+    "cuda_runtime_subdirectory": "bin/x64",
+    "cuda_installed": true,
     "gpu": "NVIDIA GeForce RTX 2060",
     "gpu_compute_capability": "7.5",
     "gpu_memory_mib": 6144,
     "driver_version": "610.62"
   },
   "gate_0": {
-    "standing": "BLOCKED",
-    "blockers": [
-      "CUDA Toolkit 13.3.1 installation was canceled before completion.",
-      "Pinned llama.cpp CUDA library has not been built or hashed."
-    ]
+    "standing": "PASS",
+    "blockers": []
   }
 }
