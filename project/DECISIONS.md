@@ -78,3 +78,10 @@ Append decisions. Keep prior entries intact; supersede them explicitly.
 - Status: accepted
 - Decision: Represent host artifact digests canonically as `sha256:` followed by exactly 64 lowercase hexadecimal characters. Hash raw payloads as their exact bytes; hash text as strict UTF-8 without normalization; hash structured values only after Canonical JSON V1 encoding. Verification requires a typed digest and uses constant-time comparison.
 - Reason: The frozen documents select Canonical JSON plus SHA-256 and use algorithm-tagged hash references throughout the pipeline. A single strict representation prevents algorithm ambiguity, case/whitespace aliases, accidental hashing of pretty-printed JSON, and silent loss of raw-versus-normalized provenance.
+
+## D-0012 — Artifact Envelope V1 integrity boundary
+
+- Date: 2026-08-29
+- Status: accepted
+- Decision: Define the common technical Artifact Envelope V1 with host artifact/project/turn UUIDs; locked Recipe 0–8 identity; artifact type and optional turn-scoped alias; positive revision; project, contract, schema, recipe, registry, and runtime identity versions; fixed UTC creation time; ordered immutable upstream basis references containing artifact UUID/revision/hash; an immutable Canonical JSON V1 payload; its content hash; and a whole-envelope hash. The whole-envelope hash covers every field except itself. Repository existence and recipe-specific payload semantics remain later validation/storage responsibilities.
+- Reason: The frozen documents require every durable artifact to be versioned, hashable, traceable, and linked to upstream basis refs while preserving host ownership of identity and validation. Separating payload and envelope hashes detects both semantic-content and provenance/metadata tampering without collapsing recipe schemas into the shared layer.

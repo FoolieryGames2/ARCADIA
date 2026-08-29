@@ -35,6 +35,7 @@ When this ledger and the canonical documents disagree, the canonical documents w
 | E-0008 | `evidence/phase_a/ITEM1_CONFIG_IDS.md`: strict Config V1 and scoped host IDs | PASS — Phase A item 1 |
 | E-0009 | `evidence/phase_a/ITEM2_CANONICAL_JSON.md`: Canonical JSON V1 and strict decoding | PASS — Phase A item 2 |
 | E-0010 | `evidence/phase_a/ITEM3_HASHING.md`: typed SHA-256 identity and exact/canonical hashing | PASS — Phase A item 3 |
+| E-0011 | `evidence/phase_a/ITEM4_ARTIFACT_ENVELOPE.md`: immutable versioned artifact envelope | PASS — Phase A item 4 |
 
 Add evidence here before changing a phase or qualification standing.
 
@@ -69,7 +70,7 @@ Add evidence here before changing a phase or qualification standing.
 - [x] `core/ids.py` — host UUIDs and scoped readable aliases. Evidence: E-0008.
 - [x] `core/canonical_json.py` — Canonical JSON V1 and strict decoder. Evidence: E-0009.
 - [x] `core/hashing.py` — typed SHA-256 identity, exact-byte hashing, and verification. Evidence: E-0010.
-- [ ] `core/artifact_envelope.py`
+- [x] `core/artifact_envelope.py` — immutable versioned payload/provenance envelope. Evidence: E-0011.
 - [ ] `core/ledger.py`
 - [ ] `core/validation.py`
 - [ ] `core/repair_policy.py`
