@@ -64,3 +64,10 @@ Append decisions. Keep prior entries intact; supersede them explicitly.
 - Status: accepted
 - Decision: Pin `requirements.lock` and `configs/runtime.toml` to UTF-8 LF through `.gitattributes` before hashing them in the Phase 0 manifest.
 - Reason: Windows `core.autocrlf=true` changed the working-tree byte hash of `requirements.lock` during a branch switch without changing its logical content. Hash authority requires a stable byte representation across checkouts.
+
+## D-0010 — Canonical JSON V1 byte profile
+
+- Date: 2026-08-29
+- Status: accepted
+- Decision: Encode Canonical JSON V1 as UTF-8 with Unicode preserved, lexicographically sorted object keys, compact separators, no byte-order mark, and no trailing newline. Decode fail-closed for duplicate decoded keys, non-finite numbers (including finite-looking exponent overflow), trailing content, invalid UTF-8, lone Unicode surrogates, unsupported host values, and cyclic or excessively deep structures. Canonical-input validation requires exact byte-for-byte equality with the re-encoded form.
+- Reason: The frozen AAE boundary defines deterministic `ensure_ascii=False`, sorted, compact JSON with non-finite values forbidden. Explicitly closing overflow and invalid-Unicode edge cases preserves that byte-level contract across host parsing and hashing without changing the architecture.

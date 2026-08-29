@@ -39,12 +39,16 @@ the frozen Phase A module order: configuration, IDs, Canonical JSON V1, hashing,
 artifact envelopes, ledgers, strict validation, budgets, trace index, trust
 registry, and authority-separated SQLite repositories.
 
-Configuration and identifier contracts are now implemented and evidenced. The
-next exact-order item is Canonical JSON V1, followed by hashing.
+Configuration, identifier, and Canonical JSON V1 contracts are now implemented
+and evidenced. Strict decoding rejects duplicate keys, non-finite values,
+trailing content, invalid UTF-8, unsupported values, and non-canonical byte
+representations. The next exact-order item is hashing.
 
 ## Next implementation gate
 
-Phase A: deterministic host foundation, beginning with canonical JSON, strict decoding/validation, IDs, hashing, artifact envelopes, ledgers, budgets, trust registry, and SQLite connection/migrations.
+Phase A: deterministic host foundation, continuing with hashing, artifact
+envelopes, ledgers, strict schema validation, budgets, trust registry, and
+SQLite connection/migrations.
 
 ## Guardrail
 
