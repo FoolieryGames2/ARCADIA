@@ -71,3 +71,10 @@ Append decisions. Keep prior entries intact; supersede them explicitly.
 - Status: accepted
 - Decision: Encode Canonical JSON V1 as UTF-8 with Unicode preserved, lexicographically sorted object keys, compact separators, no byte-order mark, and no trailing newline. Decode fail-closed for duplicate decoded keys, non-finite numbers (including finite-looking exponent overflow), trailing content, invalid UTF-8, lone Unicode surrogates, unsupported host values, and cyclic or excessively deep structures. Canonical-input validation requires exact byte-for-byte equality with the re-encoded form.
 - Reason: The frozen AAE boundary defines deterministic `ensure_ascii=False`, sorted, compact JSON with non-finite values forbidden. Explicitly closing overflow and invalid-Unicode edge cases preserves that byte-level contract across host parsing and hashing without changing the architecture.
+
+## D-0011 — Typed SHA-256 hash identity
+
+- Date: 2026-08-29
+- Status: accepted
+- Decision: Represent host artifact digests canonically as `sha256:` followed by exactly 64 lowercase hexadecimal characters. Hash raw payloads as their exact bytes; hash text as strict UTF-8 without normalization; hash structured values only after Canonical JSON V1 encoding. Verification requires a typed digest and uses constant-time comparison.
+- Reason: The frozen documents select Canonical JSON plus SHA-256 and use algorithm-tagged hash references throughout the pipeline. A single strict representation prevents algorithm ambiguity, case/whitespace aliases, accidental hashing of pretty-printed JSON, and silent loss of raw-versus-normalized provenance.
