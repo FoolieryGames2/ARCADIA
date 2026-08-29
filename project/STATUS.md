@@ -9,6 +9,7 @@ Build a truth-preserving agent runtime whose learned specialists are compartment
 ## Verified
 
 - Git repository initialized at the workspace root.
+- Initial workspace checkpoint committed and published to `FoolieryGames2/ARCADIA` on GitHub.
 - Local baseline: Python `3.13.7`, SQLite `3.50.4`, and an in-memory FTS5 table creation test passes.
 - The v0.1 architecture and implementation order are frozen.
 - Documentation/static consolidation reports `PASS`.
@@ -18,7 +19,6 @@ Build a truth-preserving agent runtime whose learned specialists are compartment
 
 ## Not yet verified
 
-- Reproducible committed source-control checkpoint
 - Pinned Python and host-validation dependencies
 - Pinned SQLite/FTS5 assumptions
 - Pinned base GGUF identity
@@ -27,12 +27,11 @@ Build a truth-preserving agent runtime whose learned specialists are compartment
 
 ## Active gate: Phase 0 — freeze build inputs
 
-1. Establish the initial repository checkpoint.
-2. Choose and pin the Python toolchain and deterministic host dependencies.
-3. Re-verify SQLite FTS5 after the project runtime is pinned (local baseline currently passes).
-4. Select the initial base GGUF.
-5. Select and pin llama.cpp only before the real runtime spike.
-6. Create the single versioned runtime configuration source.
+1. Choose and pin the Python toolchain and deterministic host dependencies.
+2. Re-verify SQLite FTS5 after the project runtime is pinned (local baseline currently passes).
+3. Select the initial base GGUF.
+4. Select and pin llama.cpp only before the real runtime spike.
+5. Create the single versioned runtime configuration source.
 
 ## Next implementation gate
 
