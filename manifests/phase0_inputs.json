@@ -1,0 +1,64 @@
+{
+  "manifest_version": 1,
+  "project_version": "0.1-prototype",
+  "created_at": "2026-08-29T00:00:00Z",
+  "authority": {
+    "bundle_path": "ARCADIA_V0_1_PROTOTYPE_BUILD_DOCS_2026-08-29/ARCADIA_V0_1_PROTOTYPE_BUILD_DOCS_2026-08-29",
+    "sha256_manifest_path": "ARCADIA_V0_1_PROTOTYPE_BUILD_DOCS_2026-08-29/ARCADIA_V0_1_PROTOTYPE_BUILD_DOCS_2026-08-29/SHA256SUMS.txt",
+    "sha256_manifest_sha256": "de817029f765a2e6e099326742322b2a8df27c40cced3b5550aaeb20b96f2e49"
+  },
+  "host": {
+    "python": "3.12",
+    "requirements_lock_path": "requirements.lock",
+    "requirements_lock_sha256": "7344f126126d0cb7d3f482601a55522b20a035f5e187ae129e76f976a7e8ee7a",
+    "runtime_config_path": "configs/runtime.toml",
+    "runtime_config_sha256": "f9dbc271e602073611350739a0c955863840f44cd0f7a2cc66b8f367add9332a",
+    "sqlite_fts5_required": true
+  },
+  "base_model": {
+    "repository": "Qwen/Qwen2.5-3B-Instruct-GGUF",
+    "repository_revision": "7dabda4d13d513e3e842b20f0d435c732f172cbe",
+    "license": "qwen-research",
+    "filename": "qwen2.5-3b-instruct-q4_k_m.gguf",
+    "local_path": "models/qwen2.5-3b-instruct-q4_k_m.gguf",
+    "quantization": "Q4_K_M",
+    "size_bytes": 2104932768,
+    "sha256": "626b4a6678b86442240e33df819e00132d3ba7dddfe1cdc4fbb18e0a9615c62d",
+    "source_url": "https://huggingface.co/Qwen/Qwen2.5-3B-Instruct-GGUF/resolve/7dabda4d13d513e3e842b20f0d435c732f172cbe/qwen2.5-3b-instruct-q4_k_m.gguf"
+  },
+  "llama_cpp": {
+    "repository": "https://github.com/ggml-org/llama.cpp.git",
+    "commit": "c9ca51c1f6b18427cde490c7c7eba11d87a96b2d",
+    "submodule_path": "vendor/llama.cpp",
+    "cmake_generator": "Visual Studio 17 2022",
+    "cmake_options": {
+      "CMAKE_CUDA_ARCHITECTURES": "75",
+      "GGML_CUDA": true,
+      "GGML_NATIVE": true,
+      "BUILD_SHARED_LIBS": true,
+      "LLAMA_BUILD_SERVER": false,
+      "LLAMA_BUILD_TESTS": true,
+      "LLAMA_BUILD_EXAMPLES": true
+    },
+    "library_sha256": null
+  },
+  "native_toolchain": {
+    "visual_studio_product": "Microsoft.VisualStudio.Product.BuildTools",
+    "visual_studio_version": "17.14.39",
+    "msvc_compiler_version": "19.44.35228",
+    "cmake_version": "4.3.2",
+    "cuda_toolkit_version": "13.3.1",
+    "cuda_installed": false,
+    "gpu": "NVIDIA GeForce RTX 2060",
+    "gpu_compute_capability": "7.5",
+    "gpu_memory_mib": 6144,
+    "driver_version": "610.62"
+  },
+  "gate_0": {
+    "standing": "BLOCKED",
+    "blockers": [
+      "CUDA Toolkit 13.3.1 installation was canceled before completion.",
+      "Pinned llama.cpp CUDA library has not been built or hashed."
+    ]
+  }
+}

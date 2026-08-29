@@ -40,3 +40,7 @@ Thumbs.db
 
 # Preserve delivered checkpoint archives in the repository only by explicit choice
 *.zip
+
+# External training/import staging
+training-work/
+imports/

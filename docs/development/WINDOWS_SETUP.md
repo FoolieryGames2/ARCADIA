@@ -27,3 +27,13 @@ must pin all of the following before installation:
 Installing `llama-cpp-python` ad hoc is not the pinned libllama runtime required
 by the design. It may be used for an exploratory spike only if recorded as a
 separate, unqualified runtime identity.
+
+## Native CUDA runtime
+
+Run `setup_native.bat` from an administrator-approved terminal to install the
+pinned Visual Studio C++ and CUDA prerequisites. Run `build_llama_cuda.bat`
+after reopening the terminal. The exact source revision and build flags live in
+`manifests/phase0_inputs.json`.
+
+`scripts/verify_phase0.py` fails closed until the CUDA compiler, built library,
+and final library hash all match the manifest.
