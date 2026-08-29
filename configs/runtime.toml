@@ -1,0 +1,25 @@
+config_version = 1
+environment = "development"
+fast_path_enabled = false
+
+[storage]
+data_dir = "runtime-data"
+database_name = "arcadia.sqlite3"
+busy_timeout_ms = 5000
+require_fts5 = true
+
+[runtime]
+authority_tier = "T0"
+backend = "test_double"
+base_model_path = ""
+max_hot_adapters = 0
+
+[budgets]
+max_model_calls = 0
+max_repairs_per_call = 0
+max_reentries = 0
+
+[tracing]
+enabled = true
+raw_trace_enabled = false
+training_export_enabled = false

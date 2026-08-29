@@ -23,6 +23,7 @@ Models perform bounded semantic judgment. The host owns identity, legality, stat
 ## Workspace map
 
 - `project/STATUS.md` — live operating state and next actions
+- `project/TODO_V0_1.md` — evidence-backed Phase 0–L execution ledger
 - `project/DECISIONS.md` — append-only implementation decision log
 - `src/arcadia/` — implementation root (begins in Phase A)
 - `tests/` — deterministic and qualification tests
@@ -31,3 +32,12 @@ Models perform bounded semantic judgment. The host owns identity, legality, stat
 - checkpoint ZIPs — recovery snapshots
 
 No production claim should be made until the exact pinned runtime identity passes its required gates.
+
+## Windows setup
+
+Run `setup.bat` once to create the pinned Python 3.12 environment and install the
+host/development dependencies. Use `activate.bat` for a development shell and
+`check.bat` to run the environment, test, lint, and type-check gates.
+
+Model weights and the libllama/CUDA runtime are intentionally a separate Phase
+A3 setup because their exact identities must be pinned and qualified.

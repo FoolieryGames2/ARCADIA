@@ -1,0 +1,56 @@
+[build-system]
+requires = ["setuptools==80.9.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "arcadia-runtime"
+version = "0.1.0"
+description = "Adaptive Runtime for Compartmentalized Agents, Decisions, Interaction & Automation"
+readme = "README.md"
+requires-python = ">=3.12,<3.13"
+dependencies = [
+    "jsonschema==4.26.0",
+    "platformdirs==4.11.5",
+    "pydantic==2.13.5",
+    "rapidfuzz==3.14.5",
+]
+
+[project.optional-dependencies]
+dev = [
+    "hypothesis==6.165.10",
+    "mypy==1.18.2",
+    "pytest==9.1.1",
+    "pytest-asyncio==1.4.0",
+    "pytest-cov==7.1.0",
+    "ruff==0.16.5",
+]
+
+[project.scripts]
+arcadia = "arcadia.__main__:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+arcadia = ["py.typed"]
+
+[tool.pytest.ini_options]
+addopts = "--strict-config --strict-markers"
+testpaths = ["tests"]
+
+[tool.ruff]
+target-version = "py312"
+line-length = 100
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = ["E4", "E7", "E9", "F", "I", "UP", "B"]
+
+[tool.mypy]
+python_version = "3.12"
+strict = true
+packages = ["arcadia"]
+
+[tool.coverage.run]
+branch = true
+source = ["arcadia"]
