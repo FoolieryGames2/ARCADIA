@@ -142,6 +142,8 @@ def test_nested_and_unmanaged_transaction_control_are_rejected(tmp_path: Path) -
     "statement",
     [
         "PRAGMA foreign_keys = OFF",
+        "/* attempted bypass */ -- still direct caller SQL\n PRAGMA foreign_keys = OFF",
+        "/* attempted bypass */ PRAGMA(foreign_keys)",
         "ATTACH DATABASE ':memory:' AS escaped",
     ],
 )

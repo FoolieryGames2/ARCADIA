@@ -48,7 +48,7 @@ def _migrate(root: Path) -> tuple[SQLiteConnectionFactory, MigrationRunner]:
 
 def test_foundation_catalog_versions_names_and_hashes_are_frozen() -> None:
     assert FOUNDATION_MIGRATIONS.catalog_hash.value == (
-        "sha256:2d7d9660dddb818b188fdaf8c7153c850bb4812db6bd120e6a0d23b8c7762d6c"
+        "sha256:d16bcfb85f832b8f98591031a1d010668d9fb88616c062ae47f40518b1df9cbb"
     )
     assert tuple(
         (migration.version, migration.name, migration.migration_hash.value)
@@ -73,6 +73,11 @@ def test_foundation_catalog_versions_names_and_hashes_are_frozen() -> None:
             4,
             "registry_snapshot_substrate",
             "sha256:0df8179f14abf0d99a25b1a8c4e8f7ac14f0299cf14a49d7e25b0f794b645ef9",
+        ),
+        (
+            5,
+            "transcript_lifecycle",
+            "sha256:201ae389b35269168defece6bc3683a4f35a8444b32fdfbaa82ddbe7a9b50841",
         ),
     )
 
@@ -119,7 +124,7 @@ def test_empty_database_is_unmanaged_but_safe_to_adopt(tmp_path: Path) -> None:
         state = MigrationRunner().inspect(connection)
         assert not state.managed
         assert state.current_version == 0
-        assert state.target_version == 4
+        assert state.target_version == 5
 
 
 def test_nonempty_unmanaged_database_is_never_silently_adopted(tmp_path: Path) -> None:
@@ -138,13 +143,13 @@ def test_all_foundation_migrations_apply_in_one_report(tmp_path: Path) -> None:
         report = MigrationRunner().migrate(connection, applied_at=NOW)
         assert report.changed
         assert report.previous_version == 0
-        assert report.current_version == report.target_version == 4
-        assert tuple(record.version for record in report.applied_now) == (1, 2, 3, 4)
+        assert report.current_version == report.target_version == 5
+        assert tuple(record.version for record in report.applied_now) == (1, 2, 3, 4, 5)
         assert all(record.applied_at == TIMESTAMP for record in report.applied_now)
 
         state = MigrationRunner().inspect(connection)
         assert state.managed
-        assert state.current_version == 4
+        assert state.current_version == 5
         assert state.applied == report.applied_now
 
 
@@ -160,6 +165,14 @@ def test_foundation_creates_only_phase_a_schema_not_semantic_memory(tmp_path: Pa
         "schema_migrations",
         "system_meta",
         "transcript_entries",
+        "transcript_entries_fts",
+        "transcript_entries_fts_config",
+        "transcript_entries_fts_content",
+        "transcript_entries_fts_data",
+        "transcript_entries_fts_docsize",
+        "transcript_entries_fts_idx",
+        "transcript_publications",
+        "transcript_turn_states",
     }
     with factory.connect(ConnectionAccess.READ_ONLY) as connection:
         rows = connection.execute(
@@ -193,7 +206,7 @@ def test_partial_valid_prefix_advances_without_reapplying_history(tmp_path: Path
         assert first.current_version == 2
         second = MigrationRunner().migrate(connection, applied_at=NOW)
         assert second.previous_version == 2
-        assert tuple(item.version for item in second.applied_now) == (3, 4)
+        assert tuple(item.version for item in second.applied_now) == (3, 4, 5)
 
 
 def test_failing_statement_rolls_back_ledger_and_all_prior_schema(tmp_path: Path) -> None:
@@ -307,6 +320,37 @@ def test_transcript_schema_enforces_project_turn_and_role_boundaries(tmp_path: P
                         "SYSTEM",
                         "hidden authority",
                         sha256_text("hidden authority").value,
+                        TIMESTAMP,
+                    ),
+                )
+        with connection.transaction():
+            connection.execute(
+                "INSERT INTO transcript_entries VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                (
+                    "00000000-0000-4000-8000-000000000005",
+                    project,
+                    identifier,
+                    turn,
+                    1,
+                    "USER",
+                    "one exact user entry",
+                    sha256_text("one exact user entry").value,
+                    TIMESTAMP,
+                ),
+            )
+        with pytest.raises(sqlite3.IntegrityError):
+            with connection.transaction():
+                connection.execute(
+                    "INSERT INTO transcript_entries VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                    (
+                        "00000000-0000-4000-8000-000000000006",
+                        project,
+                        identifier,
+                        turn,
+                        2,
+                        "USER",
+                        "duplicate user entry",
+                        sha256_text("duplicate user entry").value,
                         TIMESTAMP,
                     ),
                 )

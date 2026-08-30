@@ -65,3 +65,10 @@ applied records.
 
 Gate A remains open for the three authority-separated repositories. The next
 exact-order item is `storage/transcript_repository.py`.
+
+## Forward-catalog note
+
+Phase A item 13 subsequently appended migration 5, `transcript_lifecycle`,
+without changing migrations 1–4. The current catalog hash and extension evidence
+are recorded in `ITEM13_TRANSCRIPT_REPOSITORY.md`; the pinned hash above remains
+the exact four-migration catalog demonstrated by this item at its checkpoint.

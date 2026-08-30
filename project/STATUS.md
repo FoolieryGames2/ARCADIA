@@ -62,8 +62,13 @@ keys/busy timeout/FTS5, separates read-only access, and permits durable mutation
 only inside its rollback-safe host transaction guard. The hash-verified migration
 runner now installs the distinct Phase A transcript, artifact, and registry-
 snapshot substrates atomically, refuses unmanaged or divergent history, and
-deliberately defers semantic-memory schema installation to Phase C. The next
-exact-order item is `storage/transcript_repository.py`.
+deliberately defers semantic-memory schema installation to Phase C. The scoped
+transcript repository now writes exact hashed user input and only an exact
+published assistant Result, commits completion plus its monotonically increasing
+transcript sequence atomically, recovers idempotently by turn UUID and Result
+hash, and exposes only bounded completed-history and scoped FTS retrieval. Failed
+drafts have no transcript write path. The next exact-order item is
+`storage/artifact_repository.py`.
 
 ## Next implementation gate
 

@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import re
 import sqlite3
 from collections.abc import Iterator, Sequence
 from contextlib import contextmanager
@@ -133,10 +134,23 @@ _FORBIDDEN_ACTIONS = frozenset(
     for action in (
         getattr(sqlite3, "SQLITE_ATTACH", None),
         getattr(sqlite3, "SQLITE_DETACH", None),
-        getattr(sqlite3, "SQLITE_PRAGMA", None),
     )
     if action is not None
 )
+_CALLER_FORBIDDEN_SQL = frozenset(
+    {
+        "ATTACH",
+        "BEGIN",
+        "COMMIT",
+        "DETACH",
+        "END",
+        "PRAGMA",
+        "RELEASE",
+        "ROLLBACK",
+        "SAVEPOINT",
+    }
+)
+_FIRST_SQL_TOKEN = re.compile(r"[A-Za-z]+")
 
 
 class DatabaseConnection:
@@ -184,6 +198,7 @@ class DatabaseConnection:
         self.__require_open()
         if type(statement) is not str or not statement.strip():
             raise StorageAccessError("SQL statement must be a nonempty string")
+        self.__reject_caller_control(statement)
         if isinstance(parameters, (str, bytes, bytearray)) or not isinstance(
             parameters, Sequence
         ):
@@ -200,6 +215,7 @@ class DatabaseConnection:
         self.__require_open()
         if type(statement) is not str or not statement.strip():
             raise StorageAccessError("SQL statement must be a nonempty string")
+        self.__reject_caller_control(statement)
         if isinstance(parameters, (str, bytes, bytearray)) or not isinstance(
             parameters, Sequence
         ):
@@ -290,8 +306,35 @@ class DatabaseConnection:
             raise StorageAccessError("database connection is closed")
 
     @staticmethod
+    def __reject_caller_control(statement: str) -> None:
+        """Reject caller-owned connection control before SQLite prepares it.
+
+        SQLite virtual tables legitimately issue internal PRAGMAs while preparing
+        ordinary DML.  The authorizer cannot distinguish those from a PRAGMA sent
+        by repository code, so direct statements are checked at this boundary and
+        ATTACH/DETACH remain independently denied by the authorizer.
+        """
+        remaining = statement.lstrip()
+        while remaining.startswith(("--", "/*")):
+            if remaining.startswith("--"):
+                newline = remaining.find("\n", 2)
+                remaining = "" if newline < 0 else remaining[newline + 1 :].lstrip()
+            else:
+                closing = remaining.find("*/", 2)
+                if closing < 0:
+                    raise StorageAccessError("SQL statement contains an unterminated comment")
+                remaining = remaining[closing + 2 :].lstrip()
+        match = _FIRST_SQL_TOKEN.match(remaining)
+        first_token = "" if match is None else match.group().upper()
+        if first_token in _CALLER_FORBIDDEN_SQL:
+            raise StorageAccessError(
+                "SQL bypassed transaction, connection, or PRAGMA authority"
+            )
+
+    @staticmethod
     def __translate_denial(error: sqlite3.DatabaseError) -> None:
-        if "not authorized" in str(error).lower():
+        message = str(error).lower()
+        if "not authorized" in message or "authorization denied" in message:
             raise StorageAccessError(
                 "SQL bypassed transaction, connection, or PRAGMA authority"
             ) from error

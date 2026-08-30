@@ -44,6 +44,7 @@ When this ledger and the canonical documents disagree, the canonical documents w
 | E-0017 | `evidence/phase_a/ITEM10_TRUST_REGISTRY.md`: exact-runtime per-mode trust and authority registry | PASS — Phase A item 10 |
 | E-0018 | `evidence/phase_a/ITEM11_STORAGE_CONNECTION.md`: managed workspace-contained SQLite connection boundary | PASS — Phase A item 11 |
 | E-0019 | `evidence/phase_a/ITEM12_STORAGE_MIGRATIONS.md`: atomic hash-verified Phase A SQLite migrations | PASS — Phase A item 12 |
+| E-0020 | `evidence/phase_a/ITEM13_TRANSCRIPT_REPOSITORY.md`: scoped exact transcript lifecycle and bounded history retrieval | PASS — Phase A item 13 |
 
 Add evidence here before changing a phase or qualification standing.
 
@@ -90,7 +91,7 @@ Add evidence here before changing a phase or qualification standing.
 
 - [x] `storage/connection.py` — verified WAL/foreign-key/FTS5 connections and rollback-safe transaction authority. Evidence: E-0018.
 - [x] `storage/migrations.py` — immutable forward-only catalog and atomic foundation schema. Evidence: E-0019.
-- [ ] `storage/transcript_repository.py`
+- [x] `storage/transcript_repository.py` — scoped exact transcript commits, recovery identity, and bounded history/FTS reads. Evidence: E-0020.
 - [ ] `storage/artifact_repository.py`
 - [ ] `storage/registry_snapshots.py`
 
@@ -299,9 +300,9 @@ Only after Gate L closes may v0.1 be called **implemented**. This does not imply
 
 ## Current next actions
 
-1. Implement Phase A configuration and identifier contracts.
-2. Implement Canonical JSON V1, hashing, and strict decoding.
-3. Add adversarial deterministic tests before extending the interface.
+1. Implement `storage/artifact_repository.py` in the frozen Phase A order.
+2. Implement `storage/registry_snapshots.py` without crossing repository authority.
+3. Close Gate A only after the complete deterministic suite and authority-separation evidence pass.
 4. Keep the interface limited to typed commands, events, repository load/save, tool visibility, and runtime standing until the host contracts exist.
 
 ## Change protocol

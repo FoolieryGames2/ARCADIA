@@ -317,6 +317,84 @@ FOUNDATION_MIGRATIONS = MigrationCatalog(
                 """.strip(),
             ),
         ),
+        Migration(
+            version=5,
+            name="transcript_lifecycle",
+            statements=(
+                """
+                INSERT INTO system_meta(key, value)
+                VALUES ('transcript_commit_seq', '0')
+                """.strip(),
+                """
+                CREATE TABLE transcript_turn_states (
+                    turn_uuid TEXT PRIMARY KEY CHECK(length(turn_uuid) = 36),
+                    project_uuid TEXT NOT NULL CHECK(length(project_uuid) = 36),
+                    conversation_uuid TEXT NOT NULL CHECK(length(conversation_uuid) = 36),
+                    status TEXT NOT NULL CHECK(status IN ('OPEN', 'COMPLETED')),
+                    FOREIGN KEY(project_uuid, conversation_uuid, turn_uuid)
+                        REFERENCES conversation_turns(project_uuid, conversation_uuid, turn_uuid)
+                ) STRICT
+                """.strip(),
+                """
+                INSERT INTO transcript_turn_states(
+                    turn_uuid, project_uuid, conversation_uuid, status
+                )
+                SELECT turn_uuid, project_uuid, conversation_uuid, 'OPEN'
+                FROM conversation_turns
+                """.strip(),
+                """
+                CREATE UNIQUE INDEX idx_transcript_entries_exact_identity
+                ON transcript_entries(project_uuid, conversation_uuid, turn_uuid, entry_uuid)
+                """.strip(),
+                """
+                CREATE UNIQUE INDEX idx_transcript_entries_turn_role
+                ON transcript_entries(project_uuid, turn_uuid, role)
+                """.strip(),
+                """
+                CREATE TABLE transcript_publications (
+                    publication_uuid TEXT PRIMARY KEY CHECK(length(publication_uuid) = 36),
+                    project_uuid TEXT NOT NULL CHECK(length(project_uuid) = 36),
+                    conversation_uuid TEXT NOT NULL CHECK(length(conversation_uuid) = 36),
+                    turn_uuid TEXT NOT NULL CHECK(length(turn_uuid) = 36),
+                    assistant_entry_uuid TEXT NOT NULL UNIQUE
+                        CHECK(length(assistant_entry_uuid) = 36),
+                    result_hash TEXT NOT NULL CHECK(length(result_hash) = 71),
+                    transcript_commit_seq INTEGER NOT NULL UNIQUE
+                        CHECK(transcript_commit_seq >= 1),
+                    committed_at TEXT NOT NULL CHECK(length(committed_at) = 27),
+                    UNIQUE(turn_uuid, result_hash),
+                    UNIQUE(turn_uuid),
+                    FOREIGN KEY(project_uuid, conversation_uuid, turn_uuid)
+                        REFERENCES conversation_turns(project_uuid, conversation_uuid, turn_uuid),
+                    FOREIGN KEY(
+                        project_uuid,
+                        conversation_uuid,
+                        turn_uuid,
+                        assistant_entry_uuid
+                    ) REFERENCES transcript_entries(
+                        project_uuid,
+                        conversation_uuid,
+                        turn_uuid,
+                        entry_uuid
+                    )
+                ) STRICT
+                """.strip(),
+                """
+                CREATE INDEX idx_transcript_publications_conversation_seq
+                ON transcript_publications(conversation_uuid, transcript_commit_seq)
+                """.strip(),
+                """
+                CREATE VIRTUAL TABLE transcript_entries_fts USING fts5(
+                    entry_uuid UNINDEXED,
+                    project_uuid UNINDEXED,
+                    conversation_uuid UNINDEXED,
+                    turn_uuid UNINDEXED,
+                    content,
+                    tokenize = 'unicode61'
+                )
+                """.strip(),
+            ),
+        ),
     )
 )
 
