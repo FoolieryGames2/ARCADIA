@@ -1,6 +1,6 @@
 # ARCADIA Operating Status
 
-Updated: 2026-08-29
+Updated: 2026-08-30
 
 ## North star
 
@@ -40,11 +40,12 @@ artifact envelopes, ledgers, strict validation, budgets, trace index, trust
 registry, and authority-separated SQLite repositories.
 
 Configuration, identifier, Canonical JSON V1, SHA-256 hashing, Artifact Envelope
-V1, and the additive technical turn ledger are now implemented and evidenced.
-The ledger preserves complete verified artifacts in immutable, contiguous,
-hash-chained entries with optimistic head matching and strict canonical replay;
-it has no transcript or semantic-memory write authority. The next exact-order
-item is strict schema validation.
+V1, additive technical turn ledger, and strict JSON Schema 2020-12 validation
+are now implemented and evidenced. Schemas are immutable canonical snapshots;
+every object schema rejects unknown properties, and deterministic reports bind
+validation outcomes to exact schema and instance hashes. Final rendered AAE
+extraction remains assigned to Phase A1. The next exact-order item is repair
+policy.
 
 ## Next implementation gate
 

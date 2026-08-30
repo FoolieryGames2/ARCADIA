@@ -37,6 +37,7 @@ When this ledger and the canonical documents disagree, the canonical documents w
 | E-0010 | `evidence/phase_a/ITEM3_HASHING.md`: typed SHA-256 identity and exact/canonical hashing | PASS — Phase A item 3 |
 | E-0011 | `evidence/phase_a/ITEM4_ARTIFACT_ENVELOPE.md`: immutable versioned artifact envelope | PASS — Phase A item 4 |
 | E-0012 | `evidence/phase_a/ITEM5_LEDGER.md`: additive hash-chained technical turn ledger | PASS — Phase A item 5 |
+| E-0013 | `evidence/phase_a/ITEM6_VALIDATION.md`: strict JSON Schema 2020-12 boundary | PASS — Phase A item 6 |
 
 Add evidence here before changing a phase or qualification standing.
 
@@ -73,7 +74,7 @@ Add evidence here before changing a phase or qualification standing.
 - [x] `core/hashing.py` — typed SHA-256 identity, exact-byte hashing, and verification. Evidence: E-0010.
 - [x] `core/artifact_envelope.py` — immutable versioned payload/provenance envelope. Evidence: E-0011.
 - [x] `core/ledger.py` — immutable additive technical turn ledger and replay. Evidence: E-0012.
-- [ ] `core/validation.py`
+- [x] `core/validation.py` — strict immutable Draft 2020-12 schema boundary. Evidence: E-0013.
 - [ ] `core/repair_policy.py`
 - [ ] `core/work_budget.py`
 - [ ] `core/trace_index.py`
@@ -93,7 +94,7 @@ Add evidence here before changing a phase or qualification standing.
 - [x] Human-readable aliases are scoped and non-authoritative. Evidence: E-0008.
 - [x] Canonical JSON V1 is deterministic. Evidence: E-0009.
 - [x] Strict decoder rejects duplicate keys, non-finite values, and trailing content. Evidence: E-0009.
-- [ ] JSON Schema 2020-12 validation is enforced.
+- [x] JSON Schema 2020-12 validation is enforced. Evidence: E-0013.
 - [ ] SQLite WAL, foreign keys, busy timeout, and rollback are tested.
 - [ ] Transcript and semantic-memory authorities remain separate.
 - [ ] Aggregate call/work/re-entry/repair budgets exist.
