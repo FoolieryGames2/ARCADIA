@@ -50,12 +50,15 @@ evidence, mandatory fresh-state flags, and a fail-closed per-call cap. The next
 aggregate work-budget ledger now atomically enforces all Config V1 learned-call,
 repair, token, expansion, work, retry, compensation, and discovery-depth limits
 with explicit `BUDGET_EXHAUSTED` evidence and no partial grants. The next
-exact-order item is the trace index.
+privacy-minimized trace index now covers the full slice/causal graph with fixed
+non-content metadata, permanent held-out classification, resolved parent/call
+lineage, retention/pin/tombstone state, and immutable chronological event replay.
+The next exact-order item is the trust registry.
 
 ## Next implementation gate
 
-Phase A: deterministic host foundation, continuing with trace/trust registries
-and SQLite connection/migrations.
+Phase A: deterministic host foundation, continuing with the trust registry and
+SQLite connection/migrations.
 
 ## Guardrail
 

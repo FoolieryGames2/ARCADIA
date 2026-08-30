@@ -40,6 +40,7 @@ When this ledger and the canonical documents disagree, the canonical documents w
 | E-0013 | `evidence/phase_a/ITEM6_VALIDATION.md`: strict JSON Schema 2020-12 boundary | PASS — Phase A item 6 |
 | E-0014 | `evidence/phase_a/ITEM7_REPAIR_POLICY.md`: bounded immutable learned-call repair policy | PASS — Phase A item 7 |
 | E-0015 | `evidence/phase_a/ITEM8_WORK_BUDGET.md`: aggregate immutable work-budget ledger | PASS — Phase A item 8 |
+| E-0016 | `evidence/phase_a/ITEM9_TRACE_INDEX.md`: privacy-minimized immutable trace index | PASS — Phase A item 9 |
 
 Add evidence here before changing a phase or qualification standing.
 
@@ -79,7 +80,7 @@ Add evidence here before changing a phase or qualification standing.
 - [x] `core/validation.py` — strict immutable Draft 2020-12 schema boundary. Evidence: E-0013.
 - [x] `core/repair_policy.py` — bounded immutable repair authorization and lineage. Evidence: E-0014.
 - [x] `core/work_budget.py` — aggregate atomic work/token authorization ledger. Evidence: E-0015.
-- [ ] `core/trace_index.py`
+- [x] `core/trace_index.py` — privacy-minimized trace lineage and tombstone index. Evidence: E-0016.
 - [ ] `core/trust_registry.py`
 
 ### Storage
