@@ -42,6 +42,7 @@ When this ledger and the canonical documents disagree, the canonical documents w
 | E-0015 | `evidence/phase_a/ITEM8_WORK_BUDGET.md`: aggregate immutable work-budget ledger | PASS — Phase A item 8 |
 | E-0016 | `evidence/phase_a/ITEM9_TRACE_INDEX.md`: privacy-minimized immutable trace index | PASS — Phase A item 9 |
 | E-0017 | `evidence/phase_a/ITEM10_TRUST_REGISTRY.md`: exact-runtime per-mode trust and authority registry | PASS — Phase A item 10 |
+| E-0018 | `evidence/phase_a/ITEM11_STORAGE_CONNECTION.md`: managed workspace-contained SQLite connection boundary | PASS — Phase A item 11 |
 
 Add evidence here before changing a phase or qualification standing.
 
@@ -86,7 +87,7 @@ Add evidence here before changing a phase or qualification standing.
 
 ### Storage
 
-- [ ] `storage/connection.py`
+- [x] `storage/connection.py` — verified WAL/foreign-key/FTS5 connections and rollback-safe transaction authority. Evidence: E-0018.
 - [ ] `storage/migrations.py`
 - [ ] `storage/transcript_repository.py`
 - [ ] `storage/artifact_repository.py`

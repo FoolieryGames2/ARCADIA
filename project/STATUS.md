@@ -56,13 +56,16 @@ lineage, retention/pin/tombstone state, and immutable chronological event replay
 The exact-runtime trust registry now enforces independent logical-mode T0–T6
 qualification, strict evidence-bound sequential promotion, explicit block/reset
 transitions, operational authority ceilings, and qualification-only BASE_ONLY
-behavior without fallback inheritance. The next exact-order item is
-`storage/connection.py`.
+behavior without fallback inheritance. The managed SQLite connection boundary
+now confines the configured database to the workspace, verifies WAL/foreign
+keys/busy timeout/FTS5, separates read-only access, and permits durable mutation
+only inside its rollback-safe host transaction guard. The next exact-order item
+is `storage/migrations.py`.
 
 ## Next implementation gate
 
-Phase A: deterministic host foundation, continuing with the authority-separated
-SQLite connection and migrations.
+Phase A: deterministic host foundation, continuing with versioned SQLite
+migrations and authority-separated repositories.
 
 ## Guardrail
 
