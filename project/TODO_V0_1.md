@@ -4,7 +4,7 @@ Updated: 2026-08-30
 
 Authority: `02_ARCADIA_V0_1_EXACT_BUILD_ORDER.md` and the v0.1 system documents
 
-Current standing: **Gate A passed / Phase A1 next / runtime authority T0**
+Current standing: **Gate A passed / Phase A1 active — PRE_VERSION registry / runtime authority T0**
 
 This is the live implementation ledger, not a replacement for the frozen build authority.
 When this ledger and the canonical documents disagree, the canonical documents win.
@@ -48,6 +48,7 @@ When this ledger and the canonical documents disagree, the canonical documents w
 | E-0021 | `evidence/phase_a/ITEM14_ARTIFACT_REPOSITORY.md`: immutable scoped technical artifact revision repository | PASS — Phase A item 14 |
 | E-0022 | `evidence/phase_a/ITEM15_REGISTRY_SNAPSHOTS.md`: immutable identity-bound registry snapshot repository | PASS — Phase A item 15 |
 | E-0023 | `evidence/phase_a/PHASE_A_GATE_REPORT.md`: complete deterministic foundation and authority-separation review | PASS — Gate A |
+| E-0024 | `evidence/phase_a1/AAE_REGISTRY_PRE_VERSION_REPORT.md`: 15-adapter/20-mode AAE registry review candidate | PASS — PRE_VERSION only; not dispatchable |
 
 Add evidence here before changing a phase or qualification standing.
 
@@ -114,8 +115,8 @@ Add evidence here before changing a phase or qualification standing.
 
 ## Phase A1 — AAE registry and canonical serialization
 
-- [ ] Create the machine-readable AAE Contract Registry.
-- [ ] Create Global Awareness definitions.
+- [x] Create the machine-readable AAE Contract Registry pre-version candidate. Evidence: E-0024. Freeze review remains open.
+- [x] Create shared Global Awareness pre-version definitions. Evidence: E-0024. Freeze review remains open.
 - [ ] Create strict input/output schemas and policy registries.
 - [ ] Implement canonical machine serializer.
 - [ ] Implement deterministic human audit renderer from the same source object.

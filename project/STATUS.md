@@ -82,8 +82,13 @@ active selection, overwrite, or deletion authority.
 
 Phase A is closed by `evidence/phase_a/PHASE_A_GATE_REPORT.md`: all frozen core
 and storage modules are implemented, all deterministic and authority-separation
-checks pass without a model, and runtime authority remains T0. The next work is
-Phase A1, beginning with the machine-readable AAE Contract Registry.
+checks pass without a model, and runtime authority remains T0. Phase A1 now has
+the imported `AAE-REGISTRY-PRE-1` review candidate: 15 physical adapter semantic
+identities, 20 independent logical modes, and one shared `GA-PRE-1` Global
+Awareness block. All records are immutable, explicitly unfrozen,
+`dispatch_enabled=False`, and fail `runtime_ready`; Recipe 4 remains host-only.
+Exact schemas, caps, inference profiles, trust thresholds, canonical serializer,
+audit renderer, final `CALL_DATA` gate, and adversarial fixtures remain open.
 
 ## Next implementation gate
 
