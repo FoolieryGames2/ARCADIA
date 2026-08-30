@@ -1,6 +1,6 @@
 # ARCADIA Operating Status
 
-Updated: 2026-08-29
+Updated: 2026-08-30
 
 ## North star
 
@@ -39,9 +39,36 @@ the frozen Phase A module order: configuration, IDs, Canonical JSON V1, hashing,
 artifact envelopes, ledgers, strict validation, budgets, trace index, trust
 registry, and authority-separated SQLite repositories.
 
+Configuration, identifier, Canonical JSON V1, SHA-256 hashing, Artifact Envelope
+V1, additive technical turn ledger, and strict JSON Schema 2020-12 validation
+are now implemented and evidenced. Schemas are immutable canonical snapshots;
+every object schema rejects unknown properties, and deterministic reports bind
+validation outcomes to exact schema and instance hashes. Final rendered AAE
+extraction remains assigned to Phase A1. Learned-call repairs now use immutable
+hash-bound source/mode/profile lineage, unique attempt UUIDs, exact failure
+evidence, mandatory fresh-state flags, and a fail-closed per-call cap. The next
+aggregate work-budget ledger now atomically enforces all Config V1 learned-call,
+repair, token, expansion, work, retry, compensation, and discovery-depth limits
+with explicit `BUDGET_EXHAUSTED` evidence and no partial grants. The next
+privacy-minimized trace index now covers the full slice/causal graph with fixed
+non-content metadata, permanent held-out classification, resolved parent/call
+lineage, retention/pin/tombstone state, and immutable chronological event replay.
+The exact-runtime trust registry now enforces independent logical-mode T0–T6
+qualification, strict evidence-bound sequential promotion, explicit block/reset
+transitions, operational authority ceilings, and qualification-only BASE_ONLY
+behavior without fallback inheritance. The managed SQLite connection boundary
+now confines the configured database to the workspace, verifies WAL/foreign
+keys/busy timeout/FTS5, separates read-only access, and permits durable mutation
+only inside its rollback-safe host transaction guard. The hash-verified migration
+runner now installs the distinct Phase A transcript, artifact, and registry-
+snapshot substrates atomically, refuses unmanaged or divergent history, and
+deliberately defers semantic-memory schema installation to Phase C. The next
+exact-order item is `storage/transcript_repository.py`.
+
 ## Next implementation gate
 
-Phase A: deterministic host foundation, beginning with canonical JSON, strict decoding/validation, IDs, hashing, artifact envelopes, ledgers, budgets, trust registry, and SQLite connection/migrations.
+Phase A: deterministic host foundation, continuing with the authority-separated
+transcript, artifact, and registry-snapshot repositories.
 
 ## Guardrail
 

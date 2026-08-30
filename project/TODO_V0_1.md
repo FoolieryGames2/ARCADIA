@@ -1,6 +1,6 @@
 # ARCADIA v0.1 Execution Ledger
 
-Updated: 2026-08-29
+Updated: 2026-08-30
 
 Authority: `02_ARCADIA_V0_1_EXACT_BUILD_ORDER.md` and the v0.1 system documents
 
@@ -32,6 +32,18 @@ When this ledger and the canonical documents disagree, the canonical documents w
 | E-0005 | Canonical document consolidation validation report | PASS — docs only |
 | E-0006 | `manifests/phase0_inputs.json` plus `scripts/verify_phase0.py` | PASS |
 | E-0007 | `evidence/phase0/PHASE0_GATE_REPORT.md`: native build, 43/43 tests, GPU smoke | PASS — Gate 0 only |
+| E-0008 | `evidence/phase_a/ITEM1_CONFIG_IDS.md`: strict Config V1 and scoped host IDs | PASS — Phase A item 1 |
+| E-0009 | `evidence/phase_a/ITEM2_CANONICAL_JSON.md`: Canonical JSON V1 and strict decoding | PASS — Phase A item 2 |
+| E-0010 | `evidence/phase_a/ITEM3_HASHING.md`: typed SHA-256 identity and exact/canonical hashing | PASS — Phase A item 3 |
+| E-0011 | `evidence/phase_a/ITEM4_ARTIFACT_ENVELOPE.md`: immutable versioned artifact envelope | PASS — Phase A item 4 |
+| E-0012 | `evidence/phase_a/ITEM5_LEDGER.md`: additive hash-chained technical turn ledger | PASS — Phase A item 5 |
+| E-0013 | `evidence/phase_a/ITEM6_VALIDATION.md`: strict JSON Schema 2020-12 boundary | PASS — Phase A item 6 |
+| E-0014 | `evidence/phase_a/ITEM7_REPAIR_POLICY.md`: bounded immutable learned-call repair policy | PASS — Phase A item 7 |
+| E-0015 | `evidence/phase_a/ITEM8_WORK_BUDGET.md`: aggregate immutable work-budget ledger | PASS — Phase A item 8 |
+| E-0016 | `evidence/phase_a/ITEM9_TRACE_INDEX.md`: privacy-minimized immutable trace index | PASS — Phase A item 9 |
+| E-0017 | `evidence/phase_a/ITEM10_TRUST_REGISTRY.md`: exact-runtime per-mode trust and authority registry | PASS — Phase A item 10 |
+| E-0018 | `evidence/phase_a/ITEM11_STORAGE_CONNECTION.md`: managed workspace-contained SQLite connection boundary | PASS — Phase A item 11 |
+| E-0019 | `evidence/phase_a/ITEM12_STORAGE_MIGRATIONS.md`: atomic hash-verified Phase A SQLite migrations | PASS — Phase A item 12 |
 
 Add evidence here before changing a phase or qualification standing.
 
@@ -62,36 +74,36 @@ Add evidence here before changing a phase or qualification standing.
 
 ### Core
 
-- [ ] `core/config.py`
-- [ ] `core/ids.py`
-- [ ] `core/canonical_json.py`
-- [ ] `core/hashing.py`
-- [ ] `core/artifact_envelope.py`
-- [ ] `core/ledger.py`
-- [ ] `core/validation.py`
-- [ ] `core/repair_policy.py`
-- [ ] `core/work_budget.py`
-- [ ] `core/trace_index.py`
-- [ ] `core/trust_registry.py`
+- [x] `core/config.py` — strict immutable Config V1. Evidence: E-0008.
+- [x] `core/ids.py` — host UUIDs and scoped readable aliases. Evidence: E-0008.
+- [x] `core/canonical_json.py` — Canonical JSON V1 and strict decoder. Evidence: E-0009.
+- [x] `core/hashing.py` — typed SHA-256 identity, exact-byte hashing, and verification. Evidence: E-0010.
+- [x] `core/artifact_envelope.py` — immutable versioned payload/provenance envelope. Evidence: E-0011.
+- [x] `core/ledger.py` — immutable additive technical turn ledger and replay. Evidence: E-0012.
+- [x] `core/validation.py` — strict immutable Draft 2020-12 schema boundary. Evidence: E-0013.
+- [x] `core/repair_policy.py` — bounded immutable repair authorization and lineage. Evidence: E-0014.
+- [x] `core/work_budget.py` — aggregate atomic work/token authorization ledger. Evidence: E-0015.
+- [x] `core/trace_index.py` — privacy-minimized trace lineage and tombstone index. Evidence: E-0016.
+- [x] `core/trust_registry.py` — exact-runtime, per-logical-mode qualification and authority routing. Evidence: E-0017.
 
 ### Storage
 
-- [ ] `storage/connection.py`
-- [ ] `storage/migrations.py`
+- [x] `storage/connection.py` — verified WAL/foreign-key/FTS5 connections and rollback-safe transaction authority. Evidence: E-0018.
+- [x] `storage/migrations.py` — immutable forward-only catalog and atomic foundation schema. Evidence: E-0019.
 - [ ] `storage/transcript_repository.py`
 - [ ] `storage/artifact_repository.py`
 - [ ] `storage/registry_snapshots.py`
 
 ### Gate A evidence
 
-- [ ] UUIDs remain host authority.
-- [ ] Human-readable aliases are scoped and non-authoritative.
-- [ ] Canonical JSON V1 is deterministic.
-- [ ] Strict decoder rejects duplicate keys, non-finite values, and trailing content.
-- [ ] JSON Schema 2020-12 validation is enforced.
-- [ ] SQLite WAL, foreign keys, busy timeout, and rollback are tested.
+- [x] UUIDs remain host authority. Evidence: E-0008.
+- [x] Human-readable aliases are scoped and non-authoritative. Evidence: E-0008.
+- [x] Canonical JSON V1 is deterministic. Evidence: E-0009.
+- [x] Strict decoder rejects duplicate keys, non-finite values, and trailing content. Evidence: E-0009.
+- [x] JSON Schema 2020-12 validation is enforced. Evidence: E-0013.
+- [x] SQLite WAL, foreign keys, busy timeout, and rollback are tested. Evidence: E-0018, E-0019.
 - [ ] Transcript and semantic-memory authorities remain separate.
-- [ ] Aggregate call/work/re-entry/repair budgets exist.
+- [x] Aggregate call/work/re-entry/repair budgets exist. Evidence: E-0014, E-0015.
 - [ ] Gate A deterministic test suite passes without a model.
 
 ---

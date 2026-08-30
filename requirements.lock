@@ -1,5 +1,6 @@
 # Resolved on Windows x86-64 with CPython 3.12.10 on 2026-08-29.
 # Regenerate deliberately after reviewing upstream changes.
+# Frozen hash profile: UTF-8 with LF line endings.
 annotated-types==0.8.0
 attrs==26.1.0
 colorama==0.4.6

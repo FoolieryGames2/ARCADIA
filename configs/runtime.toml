@@ -1,4 +1,5 @@
 config_version = 1
+project_version = "0.1-prototype"
 environment = "development"
 fast_path_enabled = false
 
@@ -13,13 +14,25 @@ authority_tier = "T0"
 backend = "test_double"
 base_model_path = ""
 max_hot_adapters = 0
+standard_active_adapters = 1
+standard_adapter_scale = 1.0
+serialized_manager_mutation = true
 
 [budgets]
 max_model_calls = 0
 max_repairs_per_call = 0
 max_reentries = 0
+max_history_expansions = 0
+max_context_retrieval_expansions = 0
+max_decision_work_items = 0
+max_reconciliation_discovery_depth = 0
+max_side_effect_retries = 0
+max_compensations = 0
+max_total_model_input_tokens = 0
+max_total_model_output_tokens = 0
 
 [tracing]
 enabled = true
 raw_trace_enabled = false
+raw_trace_retention_days = 30
 training_export_enabled = false
