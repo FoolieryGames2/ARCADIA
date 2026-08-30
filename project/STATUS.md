@@ -53,12 +53,16 @@ with explicit `BUDGET_EXHAUSTED` evidence and no partial grants. The next
 privacy-minimized trace index now covers the full slice/causal graph with fixed
 non-content metadata, permanent held-out classification, resolved parent/call
 lineage, retention/pin/tombstone state, and immutable chronological event replay.
-The next exact-order item is the trust registry.
+The exact-runtime trust registry now enforces independent logical-mode T0–T6
+qualification, strict evidence-bound sequential promotion, explicit block/reset
+transitions, operational authority ceilings, and qualification-only BASE_ONLY
+behavior without fallback inheritance. The next exact-order item is
+`storage/connection.py`.
 
 ## Next implementation gate
 
-Phase A: deterministic host foundation, continuing with the trust registry and
-SQLite connection/migrations.
+Phase A: deterministic host foundation, continuing with the authority-separated
+SQLite connection and migrations.
 
 ## Guardrail
 

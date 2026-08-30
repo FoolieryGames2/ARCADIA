@@ -1,6 +1,6 @@
 # ARCADIA v0.1 Execution Ledger
 
-Updated: 2026-08-29
+Updated: 2026-08-30
 
 Authority: `02_ARCADIA_V0_1_EXACT_BUILD_ORDER.md` and the v0.1 system documents
 
@@ -41,6 +41,7 @@ When this ledger and the canonical documents disagree, the canonical documents w
 | E-0014 | `evidence/phase_a/ITEM7_REPAIR_POLICY.md`: bounded immutable learned-call repair policy | PASS — Phase A item 7 |
 | E-0015 | `evidence/phase_a/ITEM8_WORK_BUDGET.md`: aggregate immutable work-budget ledger | PASS — Phase A item 8 |
 | E-0016 | `evidence/phase_a/ITEM9_TRACE_INDEX.md`: privacy-minimized immutable trace index | PASS — Phase A item 9 |
+| E-0017 | `evidence/phase_a/ITEM10_TRUST_REGISTRY.md`: exact-runtime per-mode trust and authority registry | PASS — Phase A item 10 |
 
 Add evidence here before changing a phase or qualification standing.
 
@@ -81,7 +82,7 @@ Add evidence here before changing a phase or qualification standing.
 - [x] `core/repair_policy.py` — bounded immutable repair authorization and lineage. Evidence: E-0014.
 - [x] `core/work_budget.py` — aggregate atomic work/token authorization ledger. Evidence: E-0015.
 - [x] `core/trace_index.py` — privacy-minimized trace lineage and tombstone index. Evidence: E-0016.
-- [ ] `core/trust_registry.py`
+- [x] `core/trust_registry.py` — exact-runtime, per-logical-mode qualification and authority routing. Evidence: E-0017.
 
 ### Storage
 
