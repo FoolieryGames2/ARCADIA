@@ -59,13 +59,16 @@ transitions, operational authority ceilings, and qualification-only BASE_ONLY
 behavior without fallback inheritance. The managed SQLite connection boundary
 now confines the configured database to the workspace, verifies WAL/foreign
 keys/busy timeout/FTS5, separates read-only access, and permits durable mutation
-only inside its rollback-safe host transaction guard. The next exact-order item
-is `storage/migrations.py`.
+only inside its rollback-safe host transaction guard. The hash-verified migration
+runner now installs the distinct Phase A transcript, artifact, and registry-
+snapshot substrates atomically, refuses unmanaged or divergent history, and
+deliberately defers semantic-memory schema installation to Phase C. The next
+exact-order item is `storage/transcript_repository.py`.
 
 ## Next implementation gate
 
-Phase A: deterministic host foundation, continuing with versioned SQLite
-migrations and authority-separated repositories.
+Phase A: deterministic host foundation, continuing with the authority-separated
+transcript, artifact, and registry-snapshot repositories.
 
 ## Guardrail
 

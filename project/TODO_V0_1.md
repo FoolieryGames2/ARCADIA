@@ -43,6 +43,7 @@ When this ledger and the canonical documents disagree, the canonical documents w
 | E-0016 | `evidence/phase_a/ITEM9_TRACE_INDEX.md`: privacy-minimized immutable trace index | PASS — Phase A item 9 |
 | E-0017 | `evidence/phase_a/ITEM10_TRUST_REGISTRY.md`: exact-runtime per-mode trust and authority registry | PASS — Phase A item 10 |
 | E-0018 | `evidence/phase_a/ITEM11_STORAGE_CONNECTION.md`: managed workspace-contained SQLite connection boundary | PASS — Phase A item 11 |
+| E-0019 | `evidence/phase_a/ITEM12_STORAGE_MIGRATIONS.md`: atomic hash-verified Phase A SQLite migrations | PASS — Phase A item 12 |
 
 Add evidence here before changing a phase or qualification standing.
 
@@ -88,7 +89,7 @@ Add evidence here before changing a phase or qualification standing.
 ### Storage
 
 - [x] `storage/connection.py` — verified WAL/foreign-key/FTS5 connections and rollback-safe transaction authority. Evidence: E-0018.
-- [ ] `storage/migrations.py`
+- [x] `storage/migrations.py` — immutable forward-only catalog and atomic foundation schema. Evidence: E-0019.
 - [ ] `storage/transcript_repository.py`
 - [ ] `storage/artifact_repository.py`
 - [ ] `storage/registry_snapshots.py`
@@ -100,7 +101,7 @@ Add evidence here before changing a phase or qualification standing.
 - [x] Canonical JSON V1 is deterministic. Evidence: E-0009.
 - [x] Strict decoder rejects duplicate keys, non-finite values, and trailing content. Evidence: E-0009.
 - [x] JSON Schema 2020-12 validation is enforced. Evidence: E-0013.
-- [ ] SQLite WAL, foreign keys, busy timeout, and rollback are tested.
+- [x] SQLite WAL, foreign keys, busy timeout, and rollback are tested. Evidence: E-0018, E-0019.
 - [ ] Transcript and semantic-memory authorities remain separate.
 - [x] Aggregate call/work/re-entry/repair budgets exist. Evidence: E-0014, E-0015.
 - [ ] Gate A deterministic test suite passes without a model.
