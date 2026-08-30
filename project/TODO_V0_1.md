@@ -38,6 +38,7 @@ When this ledger and the canonical documents disagree, the canonical documents w
 | E-0011 | `evidence/phase_a/ITEM4_ARTIFACT_ENVELOPE.md`: immutable versioned artifact envelope | PASS — Phase A item 4 |
 | E-0012 | `evidence/phase_a/ITEM5_LEDGER.md`: additive hash-chained technical turn ledger | PASS — Phase A item 5 |
 | E-0013 | `evidence/phase_a/ITEM6_VALIDATION.md`: strict JSON Schema 2020-12 boundary | PASS — Phase A item 6 |
+| E-0014 | `evidence/phase_a/ITEM7_REPAIR_POLICY.md`: bounded immutable learned-call repair policy | PASS — Phase A item 7 |
 
 Add evidence here before changing a phase or qualification standing.
 
@@ -75,7 +76,7 @@ Add evidence here before changing a phase or qualification standing.
 - [x] `core/artifact_envelope.py` — immutable versioned payload/provenance envelope. Evidence: E-0011.
 - [x] `core/ledger.py` — immutable additive technical turn ledger and replay. Evidence: E-0012.
 - [x] `core/validation.py` — strict immutable Draft 2020-12 schema boundary. Evidence: E-0013.
-- [ ] `core/repair_policy.py`
+- [x] `core/repair_policy.py` — bounded immutable repair authorization and lineage. Evidence: E-0014.
 - [ ] `core/work_budget.py`
 - [ ] `core/trace_index.py`
 - [ ] `core/trust_registry.py`

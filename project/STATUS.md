@@ -44,14 +44,15 @@ V1, additive technical turn ledger, and strict JSON Schema 2020-12 validation
 are now implemented and evidenced. Schemas are immutable canonical snapshots;
 every object schema rejects unknown properties, and deterministic reports bind
 validation outcomes to exact schema and instance hashes. Final rendered AAE
-extraction remains assigned to Phase A1. The next exact-order item is repair
-policy.
+extraction remains assigned to Phase A1. Learned-call repairs now use immutable
+hash-bound source/mode/profile lineage, unique attempt UUIDs, exact failure
+evidence, mandatory fresh-state flags, and a fail-closed per-call cap. The next
+exact-order item is aggregate work-budget accounting.
 
 ## Next implementation gate
 
-Phase A: deterministic host foundation, continuing with strict schema
-validation, repair policy, budgets, trace/trust registries, and SQLite
-connection/migrations.
+Phase A: deterministic host foundation, continuing with aggregate work budgets,
+trace/trust registries, and SQLite connection/migrations.
 
 ## Guardrail
 
