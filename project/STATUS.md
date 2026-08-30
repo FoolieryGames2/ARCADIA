@@ -47,12 +47,15 @@ validation outcomes to exact schema and instance hashes. Final rendered AAE
 extraction remains assigned to Phase A1. Learned-call repairs now use immutable
 hash-bound source/mode/profile lineage, unique attempt UUIDs, exact failure
 evidence, mandatory fresh-state flags, and a fail-closed per-call cap. The next
-exact-order item is aggregate work-budget accounting.
+aggregate work-budget ledger now atomically enforces all Config V1 learned-call,
+repair, token, expansion, work, retry, compensation, and discovery-depth limits
+with explicit `BUDGET_EXHAUSTED` evidence and no partial grants. The next
+exact-order item is the trace index.
 
 ## Next implementation gate
 
-Phase A: deterministic host foundation, continuing with aggregate work budgets,
-trace/trust registries, and SQLite connection/migrations.
+Phase A: deterministic host foundation, continuing with trace/trust registries
+and SQLite connection/migrations.
 
 ## Guardrail
 
