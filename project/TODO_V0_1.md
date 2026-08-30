@@ -45,6 +45,7 @@ When this ledger and the canonical documents disagree, the canonical documents w
 | E-0018 | `evidence/phase_a/ITEM11_STORAGE_CONNECTION.md`: managed workspace-contained SQLite connection boundary | PASS — Phase A item 11 |
 | E-0019 | `evidence/phase_a/ITEM12_STORAGE_MIGRATIONS.md`: atomic hash-verified Phase A SQLite migrations | PASS — Phase A item 12 |
 | E-0020 | `evidence/phase_a/ITEM13_TRANSCRIPT_REPOSITORY.md`: scoped exact transcript lifecycle and bounded history retrieval | PASS — Phase A item 13 |
+| E-0021 | `evidence/phase_a/ITEM14_ARTIFACT_REPOSITORY.md`: immutable scoped technical artifact revision repository | PASS — Phase A item 14 |
 
 Add evidence here before changing a phase or qualification standing.
 
@@ -92,7 +93,7 @@ Add evidence here before changing a phase or qualification standing.
 - [x] `storage/connection.py` — verified WAL/foreign-key/FTS5 connections and rollback-safe transaction authority. Evidence: E-0018.
 - [x] `storage/migrations.py` — immutable forward-only catalog and atomic foundation schema. Evidence: E-0019.
 - [x] `storage/transcript_repository.py` — scoped exact transcript commits, recovery identity, and bounded history/FTS reads. Evidence: E-0020.
-- [ ] `storage/artifact_repository.py`
+- [x] `storage/artifact_repository.py` — immutable envelope revisions, optimistic heads, and exact verified basis refs. Evidence: E-0021.
 - [ ] `storage/registry_snapshots.py`
 
 ### Gate A evidence
@@ -103,7 +104,7 @@ Add evidence here before changing a phase or qualification standing.
 - [x] Strict decoder rejects duplicate keys, non-finite values, and trailing content. Evidence: E-0009.
 - [x] JSON Schema 2020-12 validation is enforced. Evidence: E-0013.
 - [x] SQLite WAL, foreign keys, busy timeout, and rollback are tested. Evidence: E-0018, E-0019.
-- [ ] Transcript and semantic-memory authorities remain separate.
+- [x] Transcript and semantic-memory authorities remain separate. Evidence: E-0019, E-0020, E-0021.
 - [x] Aggregate call/work/re-entry/repair budgets exist. Evidence: E-0014, E-0015.
 - [ ] Gate A deterministic test suite passes without a model.
 
@@ -300,9 +301,9 @@ Only after Gate L closes may v0.1 be called **implemented**. This does not imply
 
 ## Current next actions
 
-1. Implement `storage/artifact_repository.py` in the frozen Phase A order.
-2. Implement `storage/registry_snapshots.py` without crossing repository authority.
-3. Close Gate A only after the complete deterministic suite and authority-separation evidence pass.
+1. Implement `storage/registry_snapshots.py` in the frozen Phase A order without crossing repository authority.
+2. Run the complete deterministic Gate A suite and authority-separation review.
+3. Close Gate A only after all required evidence passes.
 4. Keep the interface limited to typed commands, events, repository load/save, tool visibility, and runtime standing until the host contracts exist.
 
 ## Change protocol

@@ -67,8 +67,13 @@ transcript repository now writes exact hashed user input and only an exact
 published assistant Result, commits completion plus its monotonically increasing
 transcript sequence atomically, recovers idempotently by turn UUID and Result
 hash, and exposes only bounded completed-history and scoped FTS retrieval. Failed
-drafts have no transcript write path. The next exact-order item is
-`storage/artifact_repository.py`.
+drafts have no transcript write path. The artifact repository now accepts only complete,
+verified Artifact Envelope V1 values; appends revisions under an optimistic exact
+head; preserves stable project/turn/recipe/type/alias identity; verifies each
+upstream basis UUID, revision, project, and hash before commit and again on read;
+and detects revision gaps, time regression, relational drift, and durable envelope
+tampering. It has no overwrite, deletion, transcript, semantic-memory, or file-
+execution authority. The next exact-order item is `storage/registry_snapshots.py`.
 
 ## Next implementation gate
 
