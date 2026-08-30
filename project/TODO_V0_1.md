@@ -36,6 +36,7 @@ When this ledger and the canonical documents disagree, the canonical documents w
 | E-0009 | `evidence/phase_a/ITEM2_CANONICAL_JSON.md`: Canonical JSON V1 and strict decoding | PASS — Phase A item 2 |
 | E-0010 | `evidence/phase_a/ITEM3_HASHING.md`: typed SHA-256 identity and exact/canonical hashing | PASS — Phase A item 3 |
 | E-0011 | `evidence/phase_a/ITEM4_ARTIFACT_ENVELOPE.md`: immutable versioned artifact envelope | PASS — Phase A item 4 |
+| E-0012 | `evidence/phase_a/ITEM5_LEDGER.md`: additive hash-chained technical turn ledger | PASS — Phase A item 5 |
 
 Add evidence here before changing a phase or qualification standing.
 
@@ -71,7 +72,7 @@ Add evidence here before changing a phase or qualification standing.
 - [x] `core/canonical_json.py` — Canonical JSON V1 and strict decoder. Evidence: E-0009.
 - [x] `core/hashing.py` — typed SHA-256 identity, exact-byte hashing, and verification. Evidence: E-0010.
 - [x] `core/artifact_envelope.py` — immutable versioned payload/provenance envelope. Evidence: E-0011.
-- [ ] `core/ledger.py`
+- [x] `core/ledger.py` — immutable additive technical turn ledger and replay. Evidence: E-0012.
 - [ ] `core/validation.py`
 - [ ] `core/repair_policy.py`
 - [ ] `core/work_budget.py`
