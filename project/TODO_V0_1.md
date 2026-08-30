@@ -4,7 +4,7 @@ Updated: 2026-08-30
 
 Authority: `02_ARCADIA_V0_1_EXACT_BUILD_ORDER.md` and the v0.1 system documents
 
-Current standing: **Gate 0 passed / Phase A next / runtime authority T0**
+Current standing: **Gate A passed / Phase A1 next / runtime authority T0**
 
 This is the live implementation ledger, not a replacement for the frozen build authority.
 When this ledger and the canonical documents disagree, the canonical documents win.
@@ -46,6 +46,8 @@ When this ledger and the canonical documents disagree, the canonical documents w
 | E-0019 | `evidence/phase_a/ITEM12_STORAGE_MIGRATIONS.md`: atomic hash-verified Phase A SQLite migrations | PASS — Phase A item 12 |
 | E-0020 | `evidence/phase_a/ITEM13_TRANSCRIPT_REPOSITORY.md`: scoped exact transcript lifecycle and bounded history retrieval | PASS — Phase A item 13 |
 | E-0021 | `evidence/phase_a/ITEM14_ARTIFACT_REPOSITORY.md`: immutable scoped technical artifact revision repository | PASS — Phase A item 14 |
+| E-0022 | `evidence/phase_a/ITEM15_REGISTRY_SNAPSHOTS.md`: immutable identity-bound registry snapshot repository | PASS — Phase A item 15 |
+| E-0023 | `evidence/phase_a/PHASE_A_GATE_REPORT.md`: complete deterministic foundation and authority-separation review | PASS — Gate A |
 
 Add evidence here before changing a phase or qualification standing.
 
@@ -94,7 +96,7 @@ Add evidence here before changing a phase or qualification standing.
 - [x] `storage/migrations.py` — immutable forward-only catalog and atomic foundation schema. Evidence: E-0019.
 - [x] `storage/transcript_repository.py` — scoped exact transcript commits, recovery identity, and bounded history/FTS reads. Evidence: E-0020.
 - [x] `storage/artifact_repository.py` — immutable envelope revisions, optimistic heads, and exact verified basis refs. Evidence: E-0021.
-- [ ] `storage/registry_snapshots.py`
+- [x] `storage/registry_snapshots.py` — immutable kind/version snapshots bound to all runtime identity axes. Evidence: E-0022.
 
 ### Gate A evidence
 
@@ -106,7 +108,7 @@ Add evidence here before changing a phase or qualification standing.
 - [x] SQLite WAL, foreign keys, busy timeout, and rollback are tested. Evidence: E-0018, E-0019.
 - [x] Transcript and semantic-memory authorities remain separate. Evidence: E-0019, E-0020, E-0021.
 - [x] Aggregate call/work/re-entry/repair budgets exist. Evidence: E-0014, E-0015.
-- [ ] Gate A deterministic test suite passes without a model.
+- [x] Gate A deterministic test suite passes without a model. Evidence: E-0023.
 
 ---
 
@@ -301,10 +303,10 @@ Only after Gate L closes may v0.1 be called **implemented**. This does not imply
 
 ## Current next actions
 
-1. Implement `storage/registry_snapshots.py` in the frozen Phase A order without crossing repository authority.
-2. Run the complete deterministic Gate A suite and authority-separation review.
-3. Close Gate A only after all required evidence passes.
-4. Keep the interface limited to typed commands, events, repository load/save, tool visibility, and runtime standing until the host contracts exist.
+1. Create `phase/a1-aae` from the closed Gate A checkpoint when Phase A1 work begins.
+2. Implement the machine-readable AAE Contract Registry and Global Awareness definitions.
+3. Implement canonical machine serialization and deterministic human audit rendering from the same source object.
+4. Keep runtime authority at T0 and the interface limited until later gates provide their required contracts and evidence.
 
 ## Change protocol
 

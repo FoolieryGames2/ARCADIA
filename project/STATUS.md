@@ -30,7 +30,7 @@ Build a truth-preserving agent runtime whose learned specialists are compartment
 - Safe HOT adapter ceiling and A/B/A lifecycle behavior
 - Logical specialist qualification beyond T0
 
-## Active gate: Phase A — deterministic host foundation
+## Active gate: Phase A1 — AAE Contract Registry and canonical serialization
 
 Detailed execution tracking lives in `project/TODO_V0_1.md`. Items are marked complete only with reproducible evidence.
 
@@ -73,12 +73,23 @@ head; preserves stable project/turn/recipe/type/alias identity; verifies each
 upstream basis UUID, revision, project, and hash before commit and again on read;
 and detects revision gaps, time regression, relational drift, and durable envelope
 tampering. It has no overwrite, deletion, transcript, semantic-memory, or file-
-execution authority. The next exact-order item is `storage/registry_snapshots.py`.
+execution authority. The registry snapshot repository now seals canonical JSON
+registry documents with host UUID, project, kind/version, all five identity axes,
+creation time, and a hash over the complete unsigned snapshot. Kind/version is
+immutable within a project; exact retries are idempotent; reads are project-
+scoped and bounded; and the repository deliberately exposes no inferred latest/
+active selection, overwrite, or deletion authority.
+
+Phase A is closed by `evidence/phase_a/PHASE_A_GATE_REPORT.md`: all frozen core
+and storage modules are implemented, all deterministic and authority-separation
+checks pass without a model, and runtime authority remains T0. The next work is
+Phase A1, beginning with the machine-readable AAE Contract Registry.
 
 ## Next implementation gate
 
-Phase A: deterministic host foundation, continuing with the authority-separated
-transcript, artifact, and registry-snapshot repositories.
+Phase A1: AAE Contract Registry, structured Global Awareness, strict schemas and
+policies, canonical machine serialization, deterministic audit rendering, and
+the final rendered `CALL_DATA` reparse/revalidation gate.
 
 ## Guardrail
 
