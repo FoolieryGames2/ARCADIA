@@ -49,6 +49,7 @@ When this ledger and the canonical documents disagree, the canonical documents w
 | E-0022 | `evidence/phase_a/ITEM15_REGISTRY_SNAPSHOTS.md`: immutable identity-bound registry snapshot repository | PASS — Phase A item 15 |
 | E-0023 | `evidence/phase_a/PHASE_A_GATE_REPORT.md`: complete deterministic foundation and authority-separation review | PASS — Gate A |
 | E-0024 | `evidence/phase_a1/AAE_REGISTRY_PRE_VERSION_REPORT.md`: 15-adapter/20-mode AAE registry review candidate | PASS — PRE_VERSION only; not dispatchable |
+| E-0025 | `evidence/phase_a1/A1_VERTICAL_SLICE_01_SCOPE_PROPOSAL_REPORT.md`: strict Recipe 0 schema/serializer/CALL_DATA-gate golden slice | PASS — Slice 01 only; Gate A1 open |
 
 Add evidence here before changing a phase or qualification standing.
 
@@ -118,14 +119,14 @@ Add evidence here before changing a phase or qualification standing.
 - [x] Create the machine-readable AAE Contract Registry pre-version candidate. Evidence: E-0024. Freeze review remains open.
 - [x] Create shared Global Awareness pre-version definitions. Evidence: E-0024. Freeze review remains open.
 - [ ] Create strict input/output schemas and policy registries.
-- [ ] Implement canonical machine serializer.
-- [ ] Implement deterministic human audit renderer from the same source object.
-- [ ] Implement final rendered `CALL_DATA` reparse/revalidation gate.
-- [ ] Structurally separate authority instructions from untrusted data.
-- [ ] Add instruction-impersonation/adversarial fixtures.
+- [x] Implement canonical machine serializer. Evidence: E-0025.
+- [x] Implement deterministic human audit renderer from the same source object. Evidence: E-0025.
+- [x] Implement final structured-message `CALL_DATA` reparse/revalidation gate. Evidence: E-0025.
+- [x] Structurally separate authority instructions from untrusted data. Evidence: E-0025.
+- [x] Add instruction-impersonation/adversarial fixtures for Slice 01. Evidence: E-0025. Registry-wide coverage remains open.
 - [ ] Add deterministic context-budget projection with no silent truncation.
 - [ ] Prove training and runtime consume the same registry source.
-- [ ] Prove schema-less dispatch is impossible.
+- [x] Prove schema-less AAE preparation/pre-dispatch is impossible for Slice 01. Evidence: E-0025. Registry-wide dispatch remains disabled.
 - [ ] Close Gate A1.
 
 ---

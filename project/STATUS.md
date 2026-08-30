@@ -87,8 +87,14 @@ the imported `AAE-REGISTRY-PRE-1` review candidate: 15 physical adapter semantic
 identities, 20 independent logical modes, and one shared `GA-PRE-1` Global
 Awareness block. All records are immutable, explicitly unfrozen,
 `dispatch_enabled=False`, and fail `runtime_ready`; Recipe 4 remains host-only.
-Exact schemas, caps, inference profiles, trust thresholds, canonical serializer,
-audit renderer, final `CALL_DATA` gate, and adversarial fixtures remain open.
+Vertical Slice 01 now makes `SCOPE_PROPOSAL` executable through the deterministic
+boundary without a model: strict PRE-1 input/output schemas, semantic cross-field
+and host-bound checks, structured AAE construction, role-separated Canonical JSON
+messages, deterministic bracketed audit rendering, and final structured-message
+`CALL_DATA` reparse/schema/byte/value/hash verification. Injection-shaped text and
+fake AAE delimiters remain lower-trust data. The slice and registry remain
+non-dispatchable/T0; the remaining 19 schemas, registry-wide origin/trust policy,
+caps/projection, profiles, and training/runtime-source proof remain open.
 
 ## Next implementation gate
 

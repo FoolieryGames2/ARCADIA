@@ -188,7 +188,12 @@ _CONTRACTS: tuple[AAEContractRecord, ...] = (
         inputs=("CURRENT_TURN_ENVELOPE", "TRANSCRIPT_AVAILABILITY_METADATA", "HOST_SCOPE_POLICY"),
         refs=("TURN_UUID", "CONVERSATION_UUID", "TRANSCRIPT_CURSOR"),
         local_prefixes=("SCOPE_",),
-        response="One scope proposal outcome plus bounded recent/targeted scope request details when required.",
+        response=(
+            "Return only one JSON object with exactly these fields: mode, status, "
+            "recent_exchange_count, target_terms, reason_codes. status must be one of "
+            "SUFFICIENT_WITHOUT_HISTORY, REQUEST_RECENT, REQUEST_TARGETED. No prose or "
+            "additional fields."
+        ),
         enums={
             "proposal_outcome": (
                 "SUFFICIENT_WITHOUT_HISTORY",
