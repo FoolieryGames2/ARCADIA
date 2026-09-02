@@ -82,8 +82,23 @@ active selection, overwrite, or deletion authority.
 
 Phase A is closed by `evidence/phase_a/PHASE_A_GATE_REPORT.md`: all frozen core
 and storage modules are implemented, all deterministic and authority-separation
-checks pass without a model, and runtime authority remains T0. The next work is
-Phase A1, beginning with the machine-readable AAE Contract Registry.
+checks pass without a model, and runtime authority remains T0. Phase A1 now has
+the imported `AAE-REGISTRY-PRE-1` review candidate: 15 physical adapter semantic
+identities, 20 independent logical modes, and one shared `GA-PRE-1` Global
+Awareness block. All records are immutable, explicitly unfrozen,
+`dispatch_enabled=False`, and fail `runtime_ready`; Recipe 4 remains host-only.
+Vertical Slice 01 now makes `SCOPE_PROPOSAL` executable through the deterministic
+boundary without a model: strict PRE-1 input/output schemas, semantic cross-field
+and host-bound checks, structured AAE construction, role-separated Canonical JSON
+messages, deterministic bracketed audit rendering, and final structured-message
+`CALL_DATA` reparse/schema/byte/value/hash verification. Injection-shaped text and
+fake AAE delimiters remain lower-trust data. The reconciled PRE-08 checkpoint adds
+strict `SCOPE_VALIDATION`, shared strict-shape, origin/trust, legal-reference,
+vocabulary, repair-shape, and next-consumer policies, plus a separate deterministic
+PRE-1 tuning-settings handler. All 538 tests, Ruff, strict MyPy over 43 source files,
+and both Windows verification gates pass. The slice and registry remain
+non-dispatchable/T0; the remaining 18 learned schemas, complete measured settings,
+context projection, registry-wide same-source proof, and joint freeze review remain open.
 
 ## Next implementation gate
 

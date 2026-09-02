@@ -162,3 +162,24 @@ Append decisions. Keep prior entries intact; supersede them explicitly.
 - Status: accepted
 - Decision: Represent every stored runtime registry document as an immutable Canonical JSON object with a host snapshot UUID, project UUID, canonical registry kind and version, contract/schema/recipe/registry/runtime identity versions, canonical UTC creation time, and a typed SHA-256 hash over all of those fields plus the document. Bind each project/kind/version exactly once; permit only exact idempotent retry; provide exact UUID and kind/version resolution plus bounded chronological audit listing; and expose no generic latest, activation, overwrite, or deletion operation.
 - Reason: The frozen architecture makes registries versioned runtime state rather than hard-coded conditionals and requires durable objects to carry complete identity versions. Hashing the document together with its scope and identity axes prevents identical-looking JSON from being reused under a different runtime contract, while refusing to infer “latest” keeps activation and routing authority in their later explicit registries/controllers instead of lexical version ordering or insertion time.
+
+## D-0024 — Non-dispatchable AAE pre-version review candidate
+
+- Date: 2026-08-30
+- Status: accepted for Phase A1 review; not frozen
+- Decision: Import archive SHA-256 `f56593dae71dd11b84b03c0f3bfd55b1f3f298423085c5b997bdfad4583288d1` as `AAE-REGISTRY-PRE-1` on `phase/a1-aae`. Preserve its 15 physical adapter semantic identities, 20 independently keyed logical modes, shared `GA-PRE-1` Global Awareness block, Recipe 4 host-only exclusion, structured jurisdictions, candidate schema/profile references, and deterministic review surface. Keep every record `PRE_VERSION`, `dispatch_enabled=False`, schema/profile-unfrozen, caps incomplete, and minimum trust unset until explicit review and the remaining Phase A1 contracts pass.
+- Reason: The candidate supplies a concrete machine-readable source for reviewing specialist boundaries without silently promoting unresolved names, schemas, caps, profiles, repair counts, or trust thresholds into runtime authority. Its fail-closed readiness predicate makes it useful for tests now while preventing a pre-version registry from reaching model dispatch, training freeze, or qualification by implication.
+
+## D-0025 — Structured CALL_DATA extraction for AAE dispatch
+
+- Date: 2026-08-30
+- Status: accepted by frozen v0.1 AAE authority; implemented in PRE-version Slice 01
+- Decision: Build model-facing AAE as role-separated structured messages. The authority plane is a host-only trusted instruction message; Canonical JSON V1 `CALL_DATA` is the complete lower-trust user-role message. The final pre-dispatch gate locates `CALL_DATA` by host-owned message index, requires the lower-trust role and exact canonical JSON, reparses with the production strict decoder, reapplies the same immutable schema snapshot, and proves byte/value/schema-hash/instance-hash equality with the initially validated host data. The bracketed human-readable AAE is generated only as an audit surface and is never scanned for control delimiters.
+- Reason: The frozen v0.1 contract explicitly forbids a delimiter parser, requires authority/data structural separation, and requires fake `[RESPONSE_CONTRACT]` or closing tags inside user data to remain content. Structured extraction makes those strings incapable of changing the parser boundary while preserving deterministic human inspectability.
+
+## D-0026 — Reconciled PRE-08 schema, policy, and settings boundary
+
+- Date: 2026-09-01
+- Status: accepted for Phase A1 review; not frozen
+- Decision: Import archive SHA-256 `a72be5a88a9f0c9c9f687995ad2d7cf4e832d4c0415d0f2f378f3120215af1f8` as the PRE-08 handoff on `phase/a1-aae` after safe-path validation and isolated testing. Add strict `SCOPE_VALIDATION`; shared strict-shape, origin/trust, legal-reference, vocabulary, repair-shape, and next-consumer policies; and a separately versioned deterministic tuning-settings handler. Store semantic repair permission in the AAE contract, tunable repair counts and field ceilings in settings, and downstream-edge legality in the registry while retaining host-only route selection. Merge shared files into the newer local Slice 01 checkpoint and refuse stale archive replacements of Phase 0, storage, environment, evidence numbering, and Git state.
+- Reason: These boundaries keep semantic legality stable while allowing measured numeric tuning, prevent model-selected routing and identifier laundering, and preserve one reviewable source for all 20 modes without granting dispatch authority. Reconciliation instead of overlay preserves the already evidenced local hardening and makes the exact handoff provenance reproducible. The implementation remains PRE_VERSION/T0 because most mode schemas, projection, settings completeness, same-source training proof, and joint freeze review are still open.
