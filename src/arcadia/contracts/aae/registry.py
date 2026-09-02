@@ -2,7 +2,7 @@
 
 This module is intentionally non-dispatchable. It freezes the *shape* and candidate
 semantic jurisdictions for joint review without pretending that schemas, inference
-profiles, field caps, or trust thresholds have already passed their later gates.
+profiles, settings profiles/limits, or trust thresholds have already passed their later gates.
 """
 
 from __future__ import annotations
@@ -15,7 +15,6 @@ from arcadia.contracts.aae.global_awareness import GLOBAL_AWARENESS_PRE_V1
 from arcadia.contracts.aae.types import (
     AAEContractRecord,
     AuthorityClass,
-    FieldCaps,
     LocalKeyPolicy,
     RegistryStatus,
     RepairShape,
@@ -77,8 +76,8 @@ def _schema(contract_slug: str, direction: str) -> SchemaRef:
     )
 
 
-def _repair(*, max_repairs: int | None = None) -> RepairShape:
-    return RepairShape(allowed=True, max_repairs=max_repairs)
+def _repair() -> RepairShape:
+    return RepairShape(allowed=True)
 
 
 def _awareness(
@@ -122,7 +121,6 @@ def _contract(
     validation: tuple[str, ...],
     consumers: tuple[str, ...],
     review_notes: tuple[str, ...] = (),
-    repair_max: int | None = None,
 ) -> AAEContractRecord:
     return AAEContractRecord(
         contract_id=f"aae.{slug}",
@@ -136,6 +134,7 @@ def _contract(
         awareness=awareness,
         legal_input_artifact_classes=inputs,
         legal_authoritative_ref_namespaces=refs,
+        origin_trust_policy_id=f"origin_trust.{mode.lower()}.pre1",
         local_key_policy=LocalKeyPolicy(allowed_prefixes=local_prefixes),
         input_schema=_schema(slug, "input"),
         output_schema=_schema(slug, "output"),
@@ -145,12 +144,12 @@ def _contract(
         uncertainty_behavior=uncertainty,
         forbidden_output_fields_or_actions=forbidden_output,
         host_validation_rules=validation,
-        repair=_repair(max_repairs=repair_max),
+        repair=_repair(),
         next_legal_consumers=consumers,
         inference_profile_id=f"ip.{slug}.pre1",
         inference_profile_frozen=False,
         minimum_trust_level=None,
-        field_caps=FieldCaps(),
+        settings_profile_id=f"settings.{mode.lower()}.pre1",
         review_notes=review_notes,
     )
 
@@ -641,7 +640,6 @@ _CONTRACTS: tuple[AAEContractRecord, ...] = (
             "PERSISTENCE_REQUIRED does not request SQLite execution",
         ),
         consumers=("R3_HOST_ASSESSMENT_VALIDATOR", "R3_PLAN_COMPOSER"),
-        repair_max=2,
     ),
     _contract(
         slug="r3.plan_composer",
@@ -681,7 +679,6 @@ _CONTRACTS: tuple[AAEContractRecord, ...] = (
             "blocked requirements receive no illegitimate executable work",
         ),
         consumers=("R3_HOST_GRAPH_VALIDATOR", "R3_HOST_W_ID_ALLOCATOR", "R4_EXECUTION_HOST", "R6_PERSISTENCE"),
-        repair_max=2,
         review_notes=("Exact work-type/work-origin enum sets are intentionally deferred to the schema pass rather than partially copied here.",),
     ),
     _contract(
@@ -731,7 +728,6 @@ _CONTRACTS: tuple[AAEContractRecord, ...] = (
             "no operation is claimed without immutable receipt basis",
         ),
         consumers=("R5_HOST_EF_VALIDATOR", "R5_HOST_EF_ALLOCATOR", "R5_RECONCILIATION_COMPOSER"),
-        repair_max=1,
     ),
     _contract(
         slug="r5.reconciliation_composer",
@@ -781,7 +777,6 @@ _CONTRACTS: tuple[AAEContractRecord, ...] = (
             "discovery is not mislabeled as repair",
         ),
         consumers=("R5_HOST_TRANSITION_VALIDATOR", "R2_CONTEXT_REENTRY", "R3_DECISION_REENTRY", "R6_PERSISTENCE", "R7_COMPLETION"),
-        repair_max=2,
     ),
     _contract(
         slug="r6.persistence_assessor",
@@ -826,7 +821,6 @@ _CONTRACTS: tuple[AAEContractRecord, ...] = (
             "no executable SQL appears",
         ),
         consumers=("R6_HOST_PA_VALIDATOR", "R6_PERSISTENCE_COMPOSER"),
-        repair_max=2,
     ),
     _contract(
         slug="r6.persistence_composer",
@@ -882,7 +876,6 @@ _CONTRACTS: tuple[AAEContractRecord, ...] = (
             "no executable SQL appears",
         ),
         consumers=("R6_HOST_PLAN_VALIDATOR", "R6_HOST_UUID_ALLOCATOR", "R6_ATOMIC_TRANSACTION_HOST", "R7_COMPLETION"),
-        repair_max=2,
     ),
     _contract(
         slug="r7.completion_assessor",
@@ -930,7 +923,6 @@ _CONTRACTS: tuple[AAEContractRecord, ...] = (
             "no final-response prose field appears",
         ),
         consumers=("R7_HOST_CA_VALIDATOR", "R7_HOST_CA_ALLOCATOR", "R7_COMPLETION_COMPOSER"),
-        repair_max=2,
     ),
     _contract(
         slug="r7.completion_composer",
@@ -969,7 +961,6 @@ _CONTRACTS: tuple[AAEContractRecord, ...] = (
             "no final prose/tool/SQL/Persistence mutation appears",
         ),
         consumers=("R7_HOST_COMPLETION_VALIDATOR", "R7_FINAL_STANDING_PACKET_FREEZER", "R8_RESULT"),
-        repair_max=2,
     ),
     _contract(
         slug="r8.howard_result_comment",

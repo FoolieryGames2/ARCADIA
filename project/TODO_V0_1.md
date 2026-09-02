@@ -1,6 +1,6 @@
 # ARCADIA v0.1 Execution Ledger
 
-Updated: 2026-08-30
+Updated: 2026-09-01
 
 Authority: `02_ARCADIA_V0_1_EXACT_BUILD_ORDER.md` and the v0.1 system documents
 
@@ -50,6 +50,7 @@ When this ledger and the canonical documents disagree, the canonical documents w
 | E-0023 | `evidence/phase_a/PHASE_A_GATE_REPORT.md`: complete deterministic foundation and authority-separation review | PASS — Gate A |
 | E-0024 | `evidence/phase_a1/AAE_REGISTRY_PRE_VERSION_REPORT.md`: 15-adapter/20-mode AAE registry review candidate | PASS — PRE_VERSION only; not dispatchable |
 | E-0025 | `evidence/phase_a1/A1_VERTICAL_SLICE_01_SCOPE_PROPOSAL_REPORT.md`: strict Recipe 0 schema/serializer/CALL_DATA-gate golden slice | PASS — Slice 01 only; Gate A1 open |
+| E-0026 | `evidence/phase_a1/A1_PRE08_HANDOFF_RECONCILIATION_REPORT.md`: reconciled PRE-08 R0 schema/policy/settings checkpoint | PASS — PRE_VERSION only; Gate A1 open |
 
 Add evidence here before changing a phase or qualification standing.
 
@@ -118,13 +119,13 @@ Add evidence here before changing a phase or qualification standing.
 
 - [x] Create the machine-readable AAE Contract Registry pre-version candidate. Evidence: E-0024. Freeze review remains open.
 - [x] Create shared Global Awareness pre-version definitions. Evidence: E-0024. Freeze review remains open.
-- [ ] Create strict input/output schemas and policy registries.
+- [ ] Create strict input/output schemas and policy registries. Recipe 0 and shared PRE-1 policy foundations pass; remaining learned modes are open. Evidence: E-0026.
 - [x] Implement canonical machine serializer. Evidence: E-0025.
 - [x] Implement deterministic human audit renderer from the same source object. Evidence: E-0025.
 - [x] Implement final structured-message `CALL_DATA` reparse/revalidation gate. Evidence: E-0025.
 - [x] Structurally separate authority instructions from untrusted data. Evidence: E-0025.
 - [x] Add instruction-impersonation/adversarial fixtures for Slice 01. Evidence: E-0025. Registry-wide coverage remains open.
-- [ ] Add deterministic context-budget projection with no silent truncation.
+- [ ] Add deterministic context-budget projection with no silent truncation. PRE-1 tuning settings and dynamic-ceiling resolution exist; projection remains open. Evidence: E-0026.
 - [ ] Prove training and runtime consume the same registry source.
 - [x] Prove schema-less AAE preparation/pre-dispatch is impossible for Slice 01. Evidence: E-0025. Registry-wide dispatch remains disabled.
 - [ ] Close Gate A1.
@@ -305,10 +306,11 @@ Only after Gate L closes may v0.1 be called **implemented**. This does not imply
 
 ## Current next actions
 
-1. Create `phase/a1-aae` from the closed Gate A checkpoint when Phase A1 work begins.
-2. Implement the machine-readable AAE Contract Registry and Global Awareness definitions.
-3. Implement canonical machine serialization and deterministic human audit rendering from the same source object.
-4. Keep runtime authority at T0 and the interface limited until later gates provide their required contracts and evidence.
+1. Review and implement the five Recipe 1 strict schemas in frozen mode order.
+2. Continue Recipe 2, Recipe 3, and Recipe 5–8 schemas without introducing Recipe 4 learned authority.
+3. Complete deterministic context-budget projection and the remaining per-mode settings profiles from measured evidence.
+4. Prove all 20 modes resolve their schemas and policies from the same registry source used by runtime and training.
+5. Keep runtime authority at T0 and Gate A1 open until the registry-wide integrity and joint freeze review pass.
 
 ## Change protocol
 

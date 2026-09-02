@@ -92,9 +92,13 @@ boundary without a model: strict PRE-1 input/output schemas, semantic cross-fiel
 and host-bound checks, structured AAE construction, role-separated Canonical JSON
 messages, deterministic bracketed audit rendering, and final structured-message
 `CALL_DATA` reparse/schema/byte/value/hash verification. Injection-shaped text and
-fake AAE delimiters remain lower-trust data. The slice and registry remain
-non-dispatchable/T0; the remaining 19 schemas, registry-wide origin/trust policy,
-caps/projection, profiles, and training/runtime-source proof remain open.
+fake AAE delimiters remain lower-trust data. The reconciled PRE-08 checkpoint adds
+strict `SCOPE_VALIDATION`, shared strict-shape, origin/trust, legal-reference,
+vocabulary, repair-shape, and next-consumer policies, plus a separate deterministic
+PRE-1 tuning-settings handler. All 538 tests, Ruff, strict MyPy over 43 source files,
+and both Windows verification gates pass. The slice and registry remain
+non-dispatchable/T0; the remaining 18 learned schemas, complete measured settings,
+context projection, registry-wide same-source proof, and joint freeze review remain open.
 
 ## Next implementation gate
 

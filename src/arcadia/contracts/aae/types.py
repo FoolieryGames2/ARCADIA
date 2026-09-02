@@ -34,31 +34,6 @@ class SchemaRef:
 
 
 @dataclass(frozen=True, slots=True)
-class FieldCaps:
-    """Model-visible caps. None means deliberately unresolved in this pre-version."""
-
-    max_items_per_array: int | None = None
-    max_string_chars: int | None = None
-    max_source_excerpt_chars: int | None = None
-    max_total_input_tokens: int | None = None
-    reserved_output_tokens: int | None = None
-    projection_policy_id: str = "deterministic_projection.pre_v1"
-
-    @property
-    def complete(self) -> bool:
-        return all(
-            value is not None
-            for value in (
-                self.max_items_per_array,
-                self.max_string_chars,
-                self.max_source_excerpt_chars,
-                self.max_total_input_tokens,
-                self.reserved_output_tokens,
-            )
-        )
-
-
-@dataclass(frozen=True, slots=True)
 class LocalKeyPolicy:
     """Rules for model-proposed identifiers that are never authoritative IDs."""
 
@@ -69,15 +44,18 @@ class LocalKeyPolicy:
 
 @dataclass(frozen=True, slots=True)
 class RepairShape:
-    """Bounded repair framing for one contract."""
+    """Semantic repair framing for one contract; numeric caps live in settings."""
 
     allowed: bool
     same_authoritative_packet: bool = True
+    same_specialist_mode: bool = True
+    same_inference_profile: bool = True
     exact_validation_error_required: bool = True
     fresh_context_required: bool = True
     fresh_sampler_required: bool = True
+    new_attempt_uuid_required: bool = True
     expanded_authority_forbidden: bool = True
-    max_repairs: int | None = None
+    exhausted_repair_routes_typed_failure: bool = True
 
 
 @dataclass(frozen=True, slots=True)
@@ -109,6 +87,7 @@ class AAEContractRecord:
     awareness: SpecialistAwareness
     legal_input_artifact_classes: tuple[str, ...]
     legal_authoritative_ref_namespaces: tuple[str, ...]
+    origin_trust_policy_id: str
     local_key_policy: LocalKeyPolicy
     input_schema: SchemaRef
     output_schema: SchemaRef
@@ -123,7 +102,7 @@ class AAEContractRecord:
     inference_profile_id: str
     inference_profile_frozen: bool
     minimum_trust_level: str | None
-    field_caps: FieldCaps
+    settings_profile_id: str
     review_notes: tuple[str, ...] = ()
 
     def __post_init__(self) -> None:
@@ -140,5 +119,5 @@ class AAEContractRecord:
             and self.output_schema.frozen
             and self.inference_profile_frozen
             and self.minimum_trust_level is not None
-            and self.field_caps.complete
+            and bool(self.settings_profile_id)
         )

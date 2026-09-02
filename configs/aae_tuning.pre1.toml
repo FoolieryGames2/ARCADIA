@@ -1,0 +1,32 @@
+settings_format_version = 1
+settings_id = "AAE-TUNING-PRE-1"
+status = "PRE_VERSION"
+
+# PRE-1 deliberately does not pretend that final token ceilings are known before
+# adapter/runtime measurement. Missing values mean UNRESOLVED, never unlimited.
+# Repair-count tuning also lives here. PRE-1 intentionally leaves max_repair_attempts
+# unresolved until qualification/runtime evidence supports contract-specific values.
+[global_defaults]
+
+[budget_classes.TINY]
+[budget_classes.SMALL]
+[budget_classes.MEDIUM]
+[budget_classes.LARGE]
+[budget_classes.FULL_CAPABLE]
+
+# Only the two currently executable Recipe-0 modes are assigned in PRE-1.
+# Existing local safety ceilings are carried over as broad profile ceilings; finer
+# field-specific schema caps remain stricter where already present.
+[profiles."settings.scope_proposal.pre1"]
+specialist_mode_id = "SCOPE_PROPOSAL"
+budget_class = "SMALL"
+[profiles."settings.scope_proposal.pre1".overrides]
+max_string_chars = 65536
+max_array_items = 16
+
+[profiles."settings.scope_validation.pre1"]
+specialist_mode_id = "SCOPE_VALIDATION"
+budget_class = "MEDIUM"
+[profiles."settings.scope_validation.pre1".overrides]
+max_string_chars = 65536
+max_array_items = 64

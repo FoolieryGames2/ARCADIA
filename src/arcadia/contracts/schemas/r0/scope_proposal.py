@@ -5,11 +5,13 @@ from __future__ import annotations
 from typing import Final
 
 from arcadia.contracts.aae.registry import MODE_SCOPE_PROPOSAL, get_contract
+from arcadia.contracts.policies.schema_rules import require_fixed_top_level_output_shape
+from arcadia.contracts.policies.vocabulary import MACHINE_LABEL_PATTERN_PRE_V1
 from arcadia.core.canonical_json import JsonValue, strict_json_loads
 from arcadia.core.validation import JSON_SCHEMA_DIALECT, StrictJsonSchema, compile_strict_schema
 
 # These are PRE-version safety caps for the first executable A1 slice. They are
-# deliberately local to this schema and do not complete/freeze registry FieldCaps.
+# deliberately local to this schema and do not complete/freeze its settings profile.
 PRE1_MAX_RAW_PROMPT_CHARS: Final = 65_536
 PRE1_MAX_TARGET_TERMS: Final = 8
 PRE1_MAX_TARGET_TERM_CHARS: Final = 256
@@ -17,7 +19,10 @@ PRE1_MAX_REASON_CODES: Final = 16
 PRE1_MAX_REASON_CODE_CHARS: Final = 64
 
 _CANONICAL_TOKEN_PATTERN: Final = r"^[A-Za-z0-9][A-Za-z0-9._:+/\-]{0,127}$"
-_REASON_CODE_PATTERN: Final = r"^[A-Z][A-Z0-9_]{0,63}$"
+_REASON_CODE_PATTERN: Final = MACHINE_LABEL_PATTERN_PRE_V1
+
+_SCOPE_CONTRACT: Final = get_contract(MODE_SCOPE_PROPOSAL)
+_PROPOSAL_OUTCOME: Final = _SCOPE_CONTRACT.semantic_enums["proposal_outcome"]
 
 _INPUT_SCHEMA_VALUE: Final[dict[str, object]] = {
     "$schema": JSON_SCHEMA_DIALECT,
@@ -92,11 +97,7 @@ _OUTPUT_SCHEMA_VALUE: Final[dict[str, object]] = {
         "mode": {"type": "string", "const": MODE_SCOPE_PROPOSAL},
         "status": {
             "type": "string",
-            "enum": [
-                "SUFFICIENT_WITHOUT_HISTORY",
-                "REQUEST_RECENT",
-                "REQUEST_TARGETED",
-            ],
+            "enum": list(_PROPOSAL_OUTCOME),
         },
         "recent_exchange_count": {"type": "integer", "minimum": 0},
         "target_terms": {
@@ -124,17 +125,17 @@ _OUTPUT_SCHEMA_VALUE: Final[dict[str, object]] = {
     },
 }
 
-_SCOPE_CONTRACT: Final = get_contract(MODE_SCOPE_PROPOSAL)
-
 SCOPE_PROPOSAL_INPUT_SCHEMA: Final[StrictJsonSchema] = compile_strict_schema(
     schema_id=_SCOPE_CONTRACT.input_schema.schema_id,
     schema_version=_SCOPE_CONTRACT.input_schema.schema_version,
     schema=_INPUT_SCHEMA_VALUE,
 )
-SCOPE_PROPOSAL_OUTPUT_SCHEMA: Final[StrictJsonSchema] = compile_strict_schema(
-    schema_id=_SCOPE_CONTRACT.output_schema.schema_id,
-    schema_version=_SCOPE_CONTRACT.output_schema.schema_version,
-    schema=_OUTPUT_SCHEMA_VALUE,
+SCOPE_PROPOSAL_OUTPUT_SCHEMA: Final[StrictJsonSchema] = require_fixed_top_level_output_shape(
+    compile_strict_schema(
+        schema_id=_SCOPE_CONTRACT.output_schema.schema_id,
+        schema_version=_SCOPE_CONTRACT.output_schema.schema_version,
+        schema=_OUTPUT_SCHEMA_VALUE,
+    )
 )
 
 
@@ -164,6 +165,9 @@ def require_valid_scope_proposal_output(
 
     output_obj = _require_object(output, "scope proposal output")
     call_obj = _require_object(call_data, "scope proposal CALL_DATA")
+    metadata = _require_object(
+        call_obj["current_transcript_metadata"], "current_transcript_metadata"
+    )
     policy = _require_object(call_obj["host_policy_limits"], "host_policy_limits")
 
     status = output_obj["status"]
@@ -173,11 +177,18 @@ def require_valid_scope_proposal_output(
     assert type(recent_count) is int
     assert type(target_terms) is list
 
+    completed_exchange_count = metadata["completed_exchange_count"]
     max_recent = policy["max_contiguous_lookback_exchanges"]
+    assert type(completed_exchange_count) is int
     assert type(max_recent) is int
     if recent_count > max_recent:
         raise ScopeProposalSemanticError(
             "recent_exchange_count exceeds host max_contiguous_lookback_exchanges"
+        )
+
+    if status in {"REQUEST_RECENT", "REQUEST_TARGETED"} and completed_exchange_count == 0:
+        raise ScopeProposalSemanticError(
+            "history cannot be requested when completed_exchange_count is 0"
         )
 
     if status == "SUFFICIENT_WITHOUT_HISTORY":
@@ -189,6 +200,10 @@ def require_valid_scope_proposal_output(
         if recent_count < 1:
             raise ScopeProposalSemanticError(
                 "REQUEST_RECENT requires recent_exchange_count >= 1"
+            )
+        if recent_count > completed_exchange_count:
+            raise ScopeProposalSemanticError(
+                "recent_exchange_count exceeds completed_exchange_count"
             )
         if target_terms:
             raise ScopeProposalSemanticError(
