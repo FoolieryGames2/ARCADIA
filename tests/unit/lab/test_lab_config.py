@@ -12,11 +12,14 @@ from arcadia.lab.config import (
 
 DEFAULTS = """\
 config_version = 1
+entry_mode = "direct"
+runtime_transport = "process"
 context_tokens = 2048
 max_output_tokens = 256
 temperature = 0.2
 seed = 42
 gpu_layers = 99
+server_port = 18080
 system_prompt = "T0 only"
 """
 

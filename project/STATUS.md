@@ -138,6 +138,20 @@ and the complete deterministic gate passes 580 tests plus Ruff and strict MyPy
 over 66 source files. This direct lab boundary does not dispatch an AAE, attach
 an adapter, persist transcript/memory, or inherit Recipe authority.
 
+The next runtime slice is evidenced by
+`evidence/phase_a3/RESIDENT_BASE_ONLY_R0_HARNESS_2026-09-04.md`. A reproducible
+loopback-only llama.cpp server now keeps the pinned Qwen3 weights resident on
+the RTX 2060 while every request receives fresh context and sampler state. The
+measured cold loads ranged from 17.5–27.6 seconds; successive direct requests completed
+in 0.35 and 0.20 seconds without another model load. The qualification-only
+base invoker applies the structured AAE serializer, final `CALL_DATA` gate,
+exact token reservation, schema-constrained generation, strict output and R0
+semantic validation, and a hash-bound activation receipt. A live zero-history
+Recipe 0 call passed in 2.55 seconds and produced a Conversation Packet, then
+stopped explicitly at `R1 NOT_IMPLEMENTED`. The complete gate now passes 585
+tests plus Ruff and strict MyPy over 69 source files. This is not the full
+Recipe 0–8 pipeline or the complete A2 `SpecialistInvoker`/adapter lifecycle.
+
 The shared A1 context-budget boundary is evidenced by
 `evidence/phase_a1/A1_CONTEXT_BUDGET_PROJECTION_PRE1_REPORT.md`. The mechanism
 and 20 policy identities are deterministic and tested, while checked-in numeric
