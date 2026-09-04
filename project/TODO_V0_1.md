@@ -56,6 +56,7 @@ When this ledger and the canonical documents disagree, the canonical documents w
 | E-0029 | `evidence/phase_a1/A1_ALL_LEARNED_MODE_SCHEMAS_PRE1_REPORT.md`: all 20 strict schema pairs and exact hash manifest | PASS — PRE-1 contracts; Gate A1 open |
 | E-0030 | `evidence/phase_a3/QWEN3_BASE_ONLY_SPIKE_2026-09-04.md`: verified source, pinned CUDA build, immutable Q4_K_M candidate, and 37/37-layer base-only smoke | PASS — candidate smoke only; Gate A3 open / T0 |
 | E-0031 | `evidence/phase_a1/A1_CONTEXT_BUDGET_PROJECTION_PRE1_REPORT.md`: whole-candidate exact-token projection, structural limits, explicit incomplete/exhausted standings, and 20 policy identities | PASS — PRE-1 boundary; Gate A1 open / T0 |
+| E-0032 | `evidence/phase_a3/T0_BASE_MODEL_LAB_CLI_2026-09-04.md`: validated local settings, clean one-shot/interactive CLI, exact runtime verification, and live CUDA response | PASS — operator lab only; Gate A3 open / T0 |
 
 Add evidence here before changing a phase or qualification standing.
 
@@ -327,6 +328,7 @@ Only after Gate L closes may v0.1 be called **implemented**. This does not imply
 4. Complete deterministic context-budget projection and prove all 20 modes resolve from the same runtime/training registry source.
 5. Build A2 with test doubles, then use A3 measurements to select the exact Qwen3 deployment identity and finish runtime-dependent settings/InferenceProfiles.
 6. Keep runtime authority at T0 and Gate A1 open until its registry-wide integrity and freeze review pass.
+7. Use the explicit T0 lab to capture reviewed base-only evaluation fixtures before producing the first registry-derived Colab training package; never export lab transcripts automatically.
 
 ## Change protocol
 

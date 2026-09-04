@@ -1,0 +1,7 @@
+config_version = 1
+context_tokens = 2048
+max_output_tokens = 256
+temperature = 0.2
+seed = 42
+gpu_layers = 99
+system_prompt = "You are ARCADIA in a local T0 experiment. Be helpful and concise. Do not claim tool use, specialist qualification, persistent memory, or authority you have not been given."

@@ -129,6 +129,15 @@ The Qwen3 base-only spike is evidenced by
 and measures a clean 37/37-layer CUDA smoke. This is a T0 candidate checkpoint,
 not `SpecialistInvoker`, LoRA, residency, or Gate A3 qualification.
 
+The operator-facing base-model lab is evidenced by
+`evidence/phase_a3/T0_BASE_MODEL_LAB_CLI_2026-09-04.md`. `run_arcadia.bat`
+now opens a clean interactive or one-shot Qwen3 experience, with validated
+checked-in defaults, atomic Git-ignored local overrides, exact runtime
+verification, and explicit T0 metrics. A live CUDA call returned `ARCADIA READY`,
+and the complete deterministic gate passes 580 tests plus Ruff and strict MyPy
+over 66 source files. This direct lab boundary does not dispatch an AAE, attach
+an adapter, persist transcript/memory, or inherit Recipe authority.
+
 The shared A1 context-budget boundary is evidenced by
 `evidence/phase_a1/A1_CONTEXT_BUDGET_PROJECTION_PRE1_REPORT.md`. The mechanism
 and 20 policy identities are deterministic and tested, while checked-in numeric
