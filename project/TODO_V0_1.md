@@ -54,6 +54,7 @@ When this ledger and the canonical documents disagree, the canonical documents w
 | E-0027 | `evidence/architecture/ARCHITECTURE_FREEZE_INTAKE_2026-09-04.md`: exact full Recipe 0–8 architecture authority intake | PASS — architecture only; implementation/runtime open |
 | E-0028 | `evidence/phase_a1/A1_R0_OPEN_CONTINUATION_ARCHITECTURE_DELTA.md`: durable one-next-turn cue, exact prior-exchange prefetch/drop, and five frozen scenarios | PASS — PRE-1 host correction; Gate A1 open |
 | E-0029 | `evidence/phase_a1/A1_ALL_LEARNED_MODE_SCHEMAS_PRE1_REPORT.md`: all 20 strict schema pairs and exact hash manifest | PASS — PRE-1 contracts; Gate A1 open |
+| E-0030 | `evidence/phase_a3/QWEN3_BASE_ONLY_SPIKE_2026-09-04.md`: verified source, pinned CUDA build, immutable Q4_K_M candidate, and 37/37-layer base-only smoke | PASS — candidate smoke only; Gate A3 open / T0 |
 
 Add evidence here before changing a phase or qualification standing.
 
@@ -83,7 +84,7 @@ the Qwen3 deployment identity must earn separate A3 evidence.
 - [x] Define model artifact download and hash verification. Adapter import remains Phase K work. Evidence: E-0006.
 - [x] Import and hash-freeze the full Recipe 0–8 architecture authority. Evidence: E-0027.
 - [x] Lock `Qwen/Qwen3-4B-Instruct-2507` as the starting model family without inheriting Qwen2.5 qualification. Evidence: E-0027.
-- [ ] Select and hash an exact Qwen3 GGUF deployment candidate through A3 measurement.
+- [x] Select and hash an exact Qwen3 GGUF deployment candidate through a narrow A3 base-only measurement. Evidence: E-0030. Full A3 qualification remains open.
 - [ ] Pin and qualify the exact Qwen3-compatible llama.cpp build/runtime identity.
 
 ---
@@ -165,7 +166,7 @@ the Qwen3 deployment identity must earn separate A3 evidence.
 
 ## Phase A3 — Real pinned GGUF/LoRA spike
 
-- [ ] Build/load the exact pinned libllama identity.
+- [x] Build/load the exact pinned libllama identity in direct BASE_ONLY_TEST_MODE. Evidence: E-0030. `SpecialistInvoker` and adapter qualification remain open.
 - [ ] Keep one pinned base GGUF resident.
 - [ ] Run BASE_ONLY_TEST_MODE through the real `SpecialistInvoker`.
 - [ ] Load a small pinned LoRA set.

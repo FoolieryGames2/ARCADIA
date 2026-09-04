@@ -1,0 +1,102 @@
+{
+  "manifest_version": 1,
+  "manifest_id": "ARCADIA-QWEN3-B10796-Q4_K_M-CANDIDATE-2026-09-04",
+  "standing": "BASE_ONLY_CUDA_SMOKE_PASS_A3_QUALIFICATION_OPEN",
+  "runtime_authority": "T0",
+  "source_model": {
+    "repository": "Qwen/Qwen3-4B-Instruct-2507",
+    "revision": "cdbee75f17c01a7cc42f958dc650907174af0554",
+    "manifest_path": "manifests/qwen3_4b_source_2026-09-04.json",
+    "manifest_sha256": "4098102bc9b426bfa832813f5bda7aee498ad272462fad57d0cb844a9725fb11"
+  },
+  "llama_cpp": {
+    "repository": "https://github.com/ggml-org/llama.cpp.git",
+    "tag": "b10796",
+    "commit": "9a4843cf2f1a3fc8e39f8148e92ee6bfe18e2db6",
+    "historical_phase0_submodule_changed": false
+  },
+  "build": {
+    "operating_system": "Windows",
+    "architecture": "x64",
+    "cmake_version": "4.3.2",
+    "msvc_version": "19.44.35228",
+    "cuda_toolkit_version": "13.3.73",
+    "cuda_compute_capability": "75",
+    "shared_libraries": true,
+    "tests_enabled": true,
+    "examples_enabled": true,
+    "tools_enabled": true,
+    "server_enabled": false,
+    "ggml_cuda": true,
+    "ggml_native": true
+  },
+  "conversion": {
+    "python_version": "3.12.10",
+    "converter": "convert_hf_to_gguf.py",
+    "converter_sha256": "21b70f59d9cfa5f3963bfe9b1c648c16b1fdeca9cff67778bf776d1137b267b5",
+    "requirements_sha256": "d3d51500d1ec00b102d53b4cde29cb36ecfa28199bcda506b9d807bfa50a39be",
+    "intermediate": {
+      "filename": "qwen3-4b-instruct-2507-f16.gguf",
+      "size_bytes": 8051283488,
+      "sha256": "edec599214b9367149799066c83866637d86074bc58d627303305a143fd07d18"
+    },
+    "candidate": {
+      "filename": "qwen3-4b-instruct-2507-q4_k_m.gguf",
+      "quantization": "Q4_K_M",
+      "size_bytes": 2497279008,
+      "sha256": "4e00d30a00c71456198672a86a155a2935a7201f5112734f7dbf564362243f73"
+    }
+  },
+  "runtime_files": [
+    {"name": "ggml-base.dll", "size_bytes": 673280, "sha256": "4291dda00621f314566fd89379a040098589955661a9808a1ec0630f5f463490"},
+    {"name": "ggml-cpu.dll", "size_bytes": 955392, "sha256": "8d8a7de21aeb39e8a05360347dca5b7f1515ebf2326e7f5689122662ead4310b"},
+    {"name": "ggml-cuda.dll", "size_bytes": 53078016, "sha256": "3958dbf34b24351fc44c94cd300c0f832628114fd3829c18054ec43fa6647cfe"},
+    {"name": "ggml.dll", "size_bytes": 67072, "sha256": "3c7d23a843ff77a95324971511c2c9c8c4f3a048ffe880ca3c06d16b87d46499"},
+    {"name": "llama-common.dll", "size_bytes": 8203264, "sha256": "23d0ecae19f8d8fe6c56eb2d879d1cf978473bda59f5300bc1f0171b4b33648c"},
+    {"name": "llama-completion-impl.dll", "size_bytes": 247808, "sha256": "d8df06dc9cbb7b9fae5643fc4e51aabc325421b4fa09d69d8fa128d8b42efab7"},
+    {"name": "llama-completion.exe", "size_bytes": 10752, "sha256": "5a4693c7668115866188c5b0dd6dafdc28d56cb52b39f6b909c9ddfdc27090be"},
+    {"name": "llama-quantize-impl.dll", "size_bytes": 332288, "sha256": "bc3b657eb5b8cc8369aef7c3d692bb0653167edd2397060278f976bf12ae2ec6"},
+    {"name": "llama-quantize.exe", "size_bytes": 10752, "sha256": "a2df4ecad1ae34d12d1adb763b87970c05ab23ceb9cf1568618a131c0839c00d"},
+    {"name": "llama.dll", "size_bytes": 2593792, "sha256": "68386d3bb9dfd5b1935c100ba23beb42d7e53ea578be30fab1f3cb5e3db94efe"}
+  ],
+  "base_only_smoke": {
+    "mode": "BASE_ONLY_TEST_MODE",
+    "adapter_loaded": false,
+    "device": "NVIDIA GeForce RTX 2060",
+    "driver_version": "610.62",
+    "device_memory_mib": 6144,
+    "context_tokens": 2048,
+    "seed": 42,
+    "temperature": 0,
+    "layers_offloaded": "37/37",
+    "model_buffer_mib": 2375.91,
+    "kv_buffer_mib": 288.0,
+    "compute_buffer_mib": 301.75,
+    "observed_cuda_allocation_mib": 2965,
+    "observed_cuda_reserve_mib": 1047,
+    "prompt": "Reply with only the word Ready.",
+    "output": "Ready.",
+    "process_exit_code": 0,
+    "load_time_ms": 15942.23,
+    "prompt_tokens_per_second": 93.21,
+    "generation_tokens_per_second": 49.51
+  },
+  "native_tests": {
+    "registered": 43,
+    "passed": 43,
+    "failed": 0,
+    "ctest_elapsed_seconds": 444.24
+  },
+  "qualification_boundary": {
+    "source_package_verified": true,
+    "gguf_conversion_verified": true,
+    "cuda_base_load_verified": true,
+    "specialist_invoker_verified": false,
+    "adapter_load_verified": false,
+    "adapter_isolation_verified": false,
+    "resident_lifecycle_verified": false,
+    "safe_hot_ceiling_measured": false,
+    "gate_a3_closed": false,
+    "authority_promotion_permitted": false
+  }
+}
