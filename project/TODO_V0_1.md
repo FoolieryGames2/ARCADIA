@@ -1,8 +1,8 @@
 # ARCADIA v0.1 Execution Ledger
 
-Updated: 2026-09-01
+Updated: 2026-09-04
 
-Authority: `02_ARCADIA_V0_1_EXACT_BUILD_ORDER.md` and the v0.1 system documents
+Authority: `architecture/v0.1/freeze-2026-09-04/`, then the 2026-08-29 exact build order where non-conflicting
 
 Current standing: **Gate A passed / Phase A1 active — PRE_VERSION registry / runtime authority T0**
 
@@ -51,6 +51,7 @@ When this ledger and the canonical documents disagree, the canonical documents w
 | E-0024 | `evidence/phase_a1/AAE_REGISTRY_PRE_VERSION_REPORT.md`: 15-adapter/20-mode AAE registry review candidate | PASS — PRE_VERSION only; not dispatchable |
 | E-0025 | `evidence/phase_a1/A1_VERTICAL_SLICE_01_SCOPE_PROPOSAL_REPORT.md`: strict Recipe 0 schema/serializer/CALL_DATA-gate golden slice | PASS — Slice 01 only; Gate A1 open |
 | E-0026 | `evidence/phase_a1/A1_PRE08_HANDOFF_RECONCILIATION_REPORT.md`: reconciled PRE-08 R0 schema/policy/settings checkpoint | PASS — PRE_VERSION only; Gate A1 open |
+| E-0027 | `evidence/architecture/ARCHITECTURE_FREEZE_INTAKE_2026-09-04.md`: exact full Recipe 0–8 architecture authority intake | PASS — architecture only; implementation/runtime open |
 
 Add evidence here before changing a phase or qualification standing.
 
@@ -68,12 +69,20 @@ Add evidence here before changing a phase or qualification standing.
 - [x] Record a reproducible Phase 0 source manifest. Evidence: E-0006.
 - [x] Close Gate 0: no unresolved contradiction blocks the narrow runtime spike. Evidence: E-0007.
 
+The original Gate 0 evidence remains valid for its exact historical Qwen2.5 runtime
+identity. The 2026-09-04 authority supersedes that model as the active v0.1 family;
+the Qwen3 deployment identity must earn separate A3 evidence.
+
 ### Immediate Phase 0 decisions
 
 - [x] Choose Qwen2.5-3B-Instruct Q4_K_M for the RTX 2060 6 GB qualification spike. Evidence: E-0006.
 - [x] Select the pinned CUDA source-build strategy. Evidence: E-0006, E-0007.
 - [x] Install and pin the native build prerequisites. Evidence: E-0007.
 - [x] Define model artifact download and hash verification. Adapter import remains Phase K work. Evidence: E-0006.
+- [x] Import and hash-freeze the full Recipe 0–8 architecture authority. Evidence: E-0027.
+- [x] Lock `Qwen/Qwen3-4B-Instruct-2507` as the starting model family without inheriting Qwen2.5 qualification. Evidence: E-0027.
+- [ ] Select and hash an exact Qwen3 GGUF deployment candidate through A3 measurement.
+- [ ] Pin and qualify the exact Qwen3-compatible llama.cpp build/runtime identity.
 
 ---
 
@@ -128,6 +137,7 @@ Add evidence here before changing a phase or qualification standing.
 - [ ] Add deterministic context-budget projection with no silent truncation. PRE-1 tuning settings and dynamic-ceiling resolution exist; projection remains open. Evidence: E-0026.
 - [ ] Prove training and runtime consume the same registry source.
 - [x] Prove schema-less AAE preparation/pre-dispatch is impossible for Slice 01. Evidence: E-0025. Registry-wide dispatch remains disabled.
+- [ ] Implement the frozen Recipe 0 one-next-turn `AWAITING_USER_INPUT` continuation correction. Authority: E-0027; active delta: `evidence/phase_a1/A1_R0_OPEN_CONTINUATION_ARCHITECTURE_DELTA.md`.
 - [ ] Close Gate A1.
 
 ---
@@ -306,11 +316,12 @@ Only after Gate L closes may v0.1 be called **implemented**. This does not imply
 
 ## Current next actions
 
-1. Review and implement the five Recipe 1 strict schemas in frozen mode order.
-2. Continue Recipe 2, Recipe 3, and Recipe 5–8 schemas without introducing Recipe 4 learned authority.
-3. Complete deterministic context-budget projection and the remaining per-mode settings profiles from measured evidence.
-4. Prove all 20 modes resolve their schemas and policies from the same registry source used by runtime and training.
-5. Keep runtime authority at T0 and Gate A1 open until the registry-wide integrity and joint freeze review pass.
+1. Implement the frozen Recipe 0 open-continuation schema delta and deterministic host fixtures.
+2. Review and implement the five Recipe 1 strict schemas in frozen mode order.
+3. Continue Recipe 2, Recipe 3, and Recipe 5–8 schemas without introducing Recipe 4 learned authority.
+4. Complete deterministic context-budget projection and prove all 20 modes resolve from the same runtime/training registry source.
+5. Build A2 with test doubles, then use A3 measurements to select the exact Qwen3 deployment identity and finish runtime-dependent settings/InferenceProfiles.
+6. Keep runtime authority at T0 and Gate A1 open until its registry-wide integrity and freeze review pass.
 
 ## Change protocol
 

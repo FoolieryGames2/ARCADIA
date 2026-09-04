@@ -1,0 +1,66 @@
+{
+  "manifest_version": 1,
+  "checkpoint_id": "ARCADIA-V0.1-ARCHITECTURE-FREEZE-2026-09-04",
+  "checkpoint_date": "2026-09-04",
+  "standing": "ARCHITECTURE_FROZEN_IMPLEMENTATION_AND_RUNTIME_QUALIFICATION_OPEN",
+  "authority_root": "architecture/v0.1/freeze-2026-09-04",
+  "payload_manifest": {
+    "path": "architecture/v0.1/freeze-2026-09-04/SHA256SUMS.txt",
+    "size_bytes": 3733,
+    "sha256": "d483b23806a8e77e48b8908f68289170bdfcbec4979cf2244d1646ff30cb0cef",
+    "entry_count": 28
+  },
+  "source_archive": {
+    "filename": "ARCADIA_V0_1_FULL_ARCHITECTURE_FREEZE_BUILD_HANDOFF_2026-09-04.zip",
+    "size_bytes": 3784335,
+    "sha256": "ee24e082df3b24e93b47de371dcc4d87ee2a81c048413dea502dca02fec900a4"
+  },
+  "implementation_handoff": "ARCADIA_V0_1_BUILD_HANDOFF_2026-09-04.md",
+  "authority_precedence": [
+    {
+      "rank": 1,
+      "scope": "full_checkpoint_and_recipe_4_through_8_freezes"
+    },
+    {
+      "rank": 2,
+      "scope": "recipe_2_context_and_recipe_3_decision_freezes"
+    },
+    {
+      "rank": 3,
+      "scope": "accepted_recipe_0_continuation_correction"
+    },
+    {
+      "rank": 4,
+      "scope": "runtime_model_and_terminology_locks"
+    },
+    {
+      "rank": 5,
+      "scope": "older_v0_1_system_and_exact_build_documents_when_non_conflicting"
+    },
+    {
+      "rank": 6,
+      "scope": "historical_and_reference_bundles_for_audit_only"
+    }
+  ],
+  "foundation_model": {
+    "repository": "Qwen/Qwen3-4B-Instruct-2507",
+    "family_status": "LOCKED_STARTING_MODEL_FAMILY",
+    "deployment_identity_status": "UNQUALIFIED",
+    "open_identity_fields": [
+      "gguf_quantization",
+      "gguf_file_sha256",
+      "llama_cpp_commit",
+      "llama_cpp_build_hashes",
+      "context_profiles",
+      "sampler_profiles",
+      "adapter_residency_policy"
+    ]
+  },
+  "supersession": {
+    "scope": "active_v0_1_foundation_model_family",
+    "prior": "Qwen/Qwen2.5-3B-Instruct-GGUF",
+    "disposition": "HISTORICAL_PHASE0_SPIKE_EVIDENCE_ONLY"
+  },
+  "runtime_authority": "T0",
+  "gate_a1": "OPEN"
+}
