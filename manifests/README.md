@@ -19,3 +19,7 @@ the model-family change.
   forward llama.cpp build, conversion products, runtime binaries, and measured
   base-only CUDA smoke. It selects a qualification candidate at T0; it does not
   qualify adapters, `SpecialistInvoker`, residency, or Gate A3.
+- `aae_context_projection_pre1.json` binds all 20 learned modes to unique PRE-1
+  projection-policy identities and freezes whole-candidate, exact-token-count,
+  explicit-exhaustion behavior. It does not supply measured final limits or
+  enable dispatch.

@@ -103,6 +103,7 @@ class AAEContractRecord:
     inference_profile_frozen: bool
     minimum_trust_level: str | None
     settings_profile_id: str
+    context_projection_policy_id: str
     review_notes: tuple[str, ...] = ()
 
     def __post_init__(self) -> None:
