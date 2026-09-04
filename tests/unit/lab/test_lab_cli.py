@@ -9,7 +9,7 @@ from arcadia.lab import LabResponse, LabSettings, RuntimeIdentity
 
 
 def _settings() -> LabSettings:
-    return LabSettings(2048, 128, 0.2, 42, 99, "T0 test")
+    return LabSettings("direct", "process", 2048, 128, 0.2, 42, 99, 18080, "T0 test")
 
 
 def _identity(tmp_path: Path) -> RuntimeIdentity:

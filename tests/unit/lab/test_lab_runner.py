@@ -12,11 +12,14 @@ from arcadia.lab.runner import LabRuntimeError, run_base_prompt, verify_runtime_
 
 def _settings() -> LabSettings:
     return LabSettings(
+        entry_mode="direct",
+        runtime_transport="process",
         context_tokens=2048,
         max_output_tokens=64,
         temperature=0.3,
         seed=7,
         gpu_layers=35,
+        server_port=18080,
         system_prompt="System boundary",
     )
 

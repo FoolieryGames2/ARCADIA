@@ -85,6 +85,17 @@ experience for inspecting the pinned base model, not the future Recipe 0–8
 application path. Each prompt is an independent experiment; this surface does
 not retain conversational history or create a shadow transcript.
 
+Prepare the pinned resident CUDA server once after the base runtime build:
+
+```bat
+prepare_qwen3_server.bat
+```
+
+The default `resident` transport pays the model-load cost once when the lab
+opens, then reuses the loaded model weights for fast stateless requests. Use
+`--transport process` only when testing the original one-process-per-prompt
+boundary.
+
 Useful one-shot commands:
 
 ```bat
@@ -93,6 +104,8 @@ run_arcadia.bat --show-settings
 run_arcadia.bat --set temperature 0.4
 run_arcadia.bat --reset-settings
 run_arcadia.bat --verify
+run_arcadia.bat "Test this turn" --mode recipe
+run_arcadia.bat "Talk directly to the model" --mode direct
 ```
 
 Inside the interactive lab, use `/config`, `/set NAME VALUE`, `/reset`,
@@ -100,6 +113,12 @@ Inside the interactive lab, use `/config`, `/set NAME VALUE`, `/reset`,
 in the Git-ignored `runtime-data/lab_settings.json`; checked-in safe defaults
 remain in `configs/lab.toml`. One-shot flags such as `--temperature 0.7`,
 `--seed 9`, or `--max-output-tokens 512` do not change saved settings.
+
+`--mode direct` preserves the direct model line. `--mode recipe` currently
+executes the real zero-history Recipe 0 boundary through the qualification-only
+base invoker, prints its validated trace and activation receipt, and stops
+honestly at `R1 NOT_IMPLEMENTED`. It is the first executable slice toward the
+full Recipe 0–8 base-model harness; it does not claim the later recipes ran.
 
 Run `check_architecture_freeze.bat` to execute the normal deterministic gates and
 verify the exact frozen authority payload set.

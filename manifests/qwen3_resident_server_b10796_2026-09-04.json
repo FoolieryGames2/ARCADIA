@@ -1,0 +1,27 @@
+{
+  "manifest_version": 1,
+  "manifest_id": "qwen3-resident-server-b10796-2026-09-04",
+  "standing": "T0_BASE_ONLY_CANDIDATE",
+  "runtime_authority": "T0",
+  "llama_cpp_commit": "9a4843cf2f1a3fc8e39f8148e92ee6bfe18e2db6",
+  "build": {
+    "cuda_toolkit": "13.3",
+    "cuda_architectures": "75",
+    "ggml_cuda": true,
+    "shared_libraries": true,
+    "server_enabled": true,
+    "host_binding": "127.0.0.1",
+    "parallel_slots": 1
+  },
+  "server": {
+    "path": "build/qwen3-runtime-b10796/build/bin/Release/llama-server.exe",
+    "size_bytes": 10752,
+    "sha256": "fb931a5ee34a4ebd508044de6564b0dba5947f6ebf26ba762d97501f79076c7f"
+  },
+  "server_implementation": {
+    "path": "build/qwen3-runtime-b10796/build/bin/Release/llama-server-impl.dll",
+    "size_bytes": 3177984,
+    "sha256": "6f8d223b3ff2a9dc68e3ca4a26ba70a91bcd7432cd8525a560533d2565238d68"
+  },
+  "base_candidate_manifest": "manifests/qwen3_runtime_candidate_b10796_q4_k_m_2026-09-04.json"
+}
