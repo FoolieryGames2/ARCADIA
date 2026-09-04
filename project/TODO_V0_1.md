@@ -55,6 +55,7 @@ When this ledger and the canonical documents disagree, the canonical documents w
 | E-0028 | `evidence/phase_a1/A1_R0_OPEN_CONTINUATION_ARCHITECTURE_DELTA.md`: durable one-next-turn cue, exact prior-exchange prefetch/drop, and five frozen scenarios | PASS — PRE-1 host correction; Gate A1 open |
 | E-0029 | `evidence/phase_a1/A1_ALL_LEARNED_MODE_SCHEMAS_PRE1_REPORT.md`: all 20 strict schema pairs and exact hash manifest | PASS — PRE-1 contracts; Gate A1 open |
 | E-0030 | `evidence/phase_a3/QWEN3_BASE_ONLY_SPIKE_2026-09-04.md`: verified source, pinned CUDA build, immutable Q4_K_M candidate, and 37/37-layer base-only smoke | PASS — candidate smoke only; Gate A3 open / T0 |
+| E-0031 | `evidence/phase_a1/A1_CONTEXT_BUDGET_PROJECTION_PRE1_REPORT.md`: whole-candidate exact-token projection, structural limits, explicit incomplete/exhausted standings, and 20 policy identities | PASS — PRE-1 boundary; Gate A1 open / T0 |
 
 Add evidence here before changing a phase or qualification standing.
 
@@ -137,7 +138,8 @@ the Qwen3 deployment identity must earn separate A3 evidence.
 - [x] Implement final structured-message `CALL_DATA` reparse/revalidation gate. Evidence: E-0025.
 - [x] Structurally separate authority instructions from untrusted data. Evidence: E-0025.
 - [x] Add instruction-impersonation/adversarial fixtures for Slice 01. Evidence: E-0025. Registry-wide coverage remains open.
-- [ ] Add deterministic context-budget projection with no silent truncation. PRE-1 tuning settings and dynamic-ceiling resolution exist; projection remains open. Evidence: E-0026.
+- [x] Add deterministic context-budget projection with no silent truncation. Evidence: E-0031. Measured final limits remain unresolved.
+- [ ] Supply recipe-owned semantically sufficient projection-candidate builders as each controller is implemented.
 - [ ] Prove training and runtime consume the same registry source.
 - [x] Prove schema-less AAE preparation/pre-dispatch is impossible for Slice 01 and schema catalog resolution is total for all 20 modes. Evidence: E-0025, E-0029. Registry-wide dispatch remains disabled.
 - [x] Implement the frozen Recipe 0 one-next-turn `AWAITING_USER_INPUT` continuation correction. Evidence: E-0028.

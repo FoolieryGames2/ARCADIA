@@ -28,6 +28,9 @@ Build a truth-preserving agent runtime whose learned specialists are compartment
 - The architecture authority's 28 declared payload hashes and exact 29-file tree reproduce.
 - Recipe 0's one-next-turn continuation correction passes all five frozen scenarios.
 - All 20 learned logical modes resolve strict PRE-1 input/output schemas with exact hash identities.
+- All 20 learned modes bind unique PRE-1 context-projection policies; the shared
+  boundary selects only complete schema-valid candidates using exact token counts
+  and returns explicit incomplete/exhausted evidence without silent truncation.
 
 ## Not yet verified
 
@@ -36,7 +39,7 @@ Build a truth-preserving agent runtime whose learned specialists are compartment
 - LoRA load/apply/isolation behavior
 - Safe HOT adapter ceiling and A/B/A lifecycle behavior
 - Logical specialist qualification beyond T0
-- Complete measured tuning profiles and deterministic context-budget projection
+- Complete measured tuning profiles and recipe-owned projection candidates
 - Training/runtime same-registry-source proof and joint A1 contract freeze
 
 ## Active gate: Phase A1 — AAE Contract Registry and canonical serialization
@@ -125,6 +128,11 @@ The Qwen3 base-only spike is evidenced by
 `b10796` / `9a4843c`, the generated Q4_K_M candidate and runtime binary hashes,
 and measures a clean 37/37-layer CUDA smoke. This is a T0 candidate checkpoint,
 not `SpecialistInvoker`, LoRA, residency, or Gate A3 qualification.
+
+The shared A1 context-budget boundary is evidenced by
+`evidence/phase_a1/A1_CONTEXT_BUDGET_PROJECTION_PRE1_REPORT.md`. The mechanism
+and 20 policy identities are deterministic and tested, while checked-in numeric
+limits remain intentionally unresolved pending measured InferenceProfiles.
 
 ## Next implementation gate
 

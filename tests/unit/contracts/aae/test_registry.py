@@ -30,6 +30,12 @@ def test_pre_registry_has_frozen_roster_shape_without_claiming_runtime_authority
         assert record.output_schema.frozen is False
         assert record.inference_profile_frozen is False
         assert record.settings_profile_id == f"settings.{record.specialist_mode_id.lower()}.pre1"
+        assert record.context_projection_policy_id == (
+            f"projection.{record.specialist_mode_id.lower()}.pre1"
+        )
+    assert len(
+        {record.context_projection_policy_id for record in AAE_REGISTRY_PRE_V1.values()}
+    ) == len(AAE_REGISTRY_PRE_V1)
 
 
 def test_contract_and_logical_mode_ids_are_unique() -> None:

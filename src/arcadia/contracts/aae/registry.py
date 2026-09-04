@@ -150,6 +150,7 @@ def _contract(
         inference_profile_frozen=False,
         minimum_trust_level=None,
         settings_profile_id=f"settings.{mode.lower()}.pre1",
+        context_projection_policy_id=f"projection.{mode.lower()}.pre1",
         review_notes=review_notes,
     )
 
@@ -202,15 +203,26 @@ _CONTRACTS: tuple[AAEContractRecord, ...] = (
         },
         empty="Empty output is invalid; the proposal must select one explicit outcome.",
         uncertainty="Request bounded history rather than infer missing conversational reference meaning.",
-        forbidden_output=("semantic memory request", "Intent requirements", "tool request", "user-facing answer"),
+        forbidden_output=(
+            "semantic memory request",
+            "Intent requirements",
+            "tool request",
+            "user-facing answer",
+        ),
         validation=(
             "proposal outcome is legal",
             "requested scope stays within host policy bounds",
             "all copied current-turn identities match supplied values",
             "no authoritative identifier is invented",
         ),
-        consumers=("R0_HOST_SCOPE_VALIDATOR", "R0_HOST_RETRIEVER", "R0_CONVERSATION_PACKET_FREEZER"),
-        review_notes=("R0 numeric retrieval bounds live in host policy/config, not model authority.",),
+        consumers=(
+            "R0_HOST_SCOPE_VALIDATOR",
+            "R0_HOST_RETRIEVER",
+            "R0_CONVERSATION_PACKET_FREEZER",
+        ),
+        review_notes=(
+            "R0 numeric retrieval bounds live in host policy/config, not model authority.",
+        ),
     ),
     _contract(
         slug="r0.scope_validation",
@@ -236,7 +248,10 @@ _CONTRACTS: tuple[AAEContractRecord, ...] = (
                 "Do not rewrite transcript text.",
                 "Do not perform Intent, tools, persistence, or answer the user.",
             ),
-            next_consumers=("Host Conversation Packet freezer", "Host bounded transcript retriever"),
+            next_consumers=(
+                "Host Conversation Packet freezer",
+                "Host bounded transcript retriever",
+            ),
         ),
         inputs=("CURRENT_RAW_TURN", "FROZEN_TRANSCRIPT_SLICE", "HOST_SCOPE_POLICY"),
         refs=("TURN_UUID", "TRANSCRIPT_TURN_UUID", "TRANSCRIPT_HASH"),
@@ -254,7 +269,12 @@ _CONTRACTS: tuple[AAEContractRecord, ...] = (
         },
         empty="Empty output is invalid; validation must preserve an explicit sufficient or unresolved state.",
         uncertainty="Use UNRESOLVABLE_WITH_TRANSCRIPT or BOUND_EXHAUSTED when the supplied transcript cannot safely resolve the reference.",
-        forbidden_output=("semantic-memory claim", "rewritten transcript", "Intent requirement", "user-facing answer"),
+        forbidden_output=(
+            "semantic-memory claim",
+            "rewritten transcript",
+            "Intent requirement",
+            "user-facing answer",
+        ),
         validation=(
             "validation outcome is legal",
             "all cited transcript items were supplied",
@@ -293,7 +313,13 @@ _CONTRACTS: tuple[AAEContractRecord, ...] = (
         enums=None,
         empty="No edits is valid: normalized_prompt may equal raw_prompt and edit/uncertainty arrays may be empty.",
         uncertainty="Place uncertain corrections in the uncertainty structure; do not silently substitute a speculative repair.",
-        forbidden_output=("paraphrase", "project meaning", "history claim", "requirement", "tool action"),
+        forbidden_output=(
+            "paraphrase",
+            "project meaning",
+            "history claim",
+            "requirement",
+            "tool action",
+        ),
         validation=(
             "raw_prompt exactly matches supplied prompt",
             "normalized_prompt is bounded text",
@@ -330,14 +356,26 @@ _CONTRACTS: tuple[AAEContractRecord, ...] = (
             ),
             next_consumers=("Prompt Analyst",),
         ),
-        inputs=("RAW_USER_PROMPT", "NORMALIZED_PROMPT", "SPELL_UNCERTAINTY", "HOST_LINGUISTIC_MAP", "R0_TRANSCRIPT_EVIDENCE"),
+        inputs=(
+            "RAW_USER_PROMPT",
+            "NORMALIZED_PROMPT",
+            "SPELL_UNCERTAINTY",
+            "HOST_LINGUISTIC_MAP",
+            "R0_TRANSCRIPT_EVIDENCE",
+        ),
         refs=("SOURCE_SPAN", "TRANSCRIPT_TURN_UUID"),
         local_prefixes=("TERM_", "REF_"),
         response="Bounded term/reference meaning records, lookup-needed flags, confidence/uncertainty, and exact source references.",
         enums={"meaning_status": ("provisional", "unresolved")},
         empty="No special term records is valid when ordinary surface meaning is sufficient; the contract must still return a valid artifact.",
         uncertainty="Meaning remains provisional; unresolved history/project meaning is routed to later Context rather than guessed.",
-        forbidden_output=("authoritative historical truth", "SQLite query", "research result", "Rxxx", "tool selection"),
+        forbidden_output=(
+            "authoritative historical truth",
+            "SQLite query",
+            "research result",
+            "Rxxx",
+            "tool selection",
+        ),
         validation=(
             "source refs are present in supplied spans/evidence",
             "lookup-needed flags use schema-owned values",
@@ -345,7 +383,9 @@ _CONTRACTS: tuple[AAEContractRecord, ...] = (
             "no undeclared fields",
         ),
         consumers=("R1_PROMPT_ANALYST",),
-        review_notes=("The exact Meaning status vocabulary is still a schema-review item; 'provisional' is explicitly source-backed." ,),
+        review_notes=(
+            "The exact Meaning status vocabulary is still a schema-review item; 'provisional' is explicitly source-backed.",
+        ),
     ),
     _contract(
         slug="r1.prompt_analysis",
@@ -399,7 +439,13 @@ _CONTRACTS: tuple[AAEContractRecord, ...] = (
         },
         empty="Individual categories may be empty; the overall analysis artifact may not be omitted.",
         uncertainty="Classify ambiguity explicitly and preserve unresolved items; never turn uncertain communication into a fabricated fact.",
-        forbidden_output=("Rxxx allocation", "claim truth judgment", "tool selection", "memory retrieval", "user clarification action"),
+        forbidden_output=(
+            "Rxxx allocation",
+            "claim truth judgment",
+            "tool selection",
+            "memory retrieval",
+            "user clarification action",
+        ),
         validation=(
             "all source spans exist in supplied host span map",
             "enums are legal",
@@ -431,16 +477,30 @@ _CONTRACTS: tuple[AAEContractRecord, ...] = (
                 "Do not execute or create tool request packets.",
                 "Do not query memory, claim tool success, write SQLite, decide terminal Completion, or allocate authoritative Rxxx IDs.",
             ),
-            next_consumers=("Host Intent validator/ID allocator", "Optional Intent Howard presentation"),
+            next_consumers=(
+                "Host Intent validator/ID allocator",
+                "Optional Intent Howard presentation",
+            ),
         ),
-        inputs=("MEANING_ARTIFACT", "PROMPT_ANALYSIS_ARTIFACT", "CURRENT_TURN_SOURCE_REFS", "CAPABILITY_AVAILABILITY"),
+        inputs=(
+            "MEANING_ARTIFACT",
+            "PROMPT_ANALYSIS_ARTIFACT",
+            "CURRENT_TURN_SOURCE_REFS",
+            "CAPABILITY_AVAILABILITY",
+        ),
         refs=("SOURCE_SPAN", "CAPABILITY_ID"),
         local_prefixes=("REQ_", "GROUP_", "CTX_NEED_", "MEM_CAND_"),
         response="Primary/secondary intent proposal, locally keyed requirements, dependencies/grouping, Context needs, capability candidates, memory candidates, blockers, clarification state, and copied control signals.",
         enums=None,
         empty="A valid artifact must explicitly represent the communicated need; authoritative Rxxx allocation is host-only after validation.",
         uncertainty="Prefer context_resolution_first when bounded Context may resolve an ambiguity; require user clarification only when the contract cannot safely proceed otherwise.",
-        forbidden_output=("Rxxx invented by model", "tool request packet", "execution_status other than not_executed semantic metadata", "SQLite mutation", "terminal status"),
+        forbidden_output=(
+            "Rxxx invented by model",
+            "tool request packet",
+            "execution_status other than not_executed semantic metadata",
+            "SQLite mutation",
+            "terminal status",
+        ),
         validation=(
             "every proposed requirement has a unique local key",
             "local requirement dependency graph is acyclic",
@@ -448,8 +508,15 @@ _CONTRACTS: tuple[AAEContractRecord, ...] = (
             "literal constraints/source refs are preserved",
             "no authoritative IDs are invented",
         ),
-        consumers=("R1_HOST_INTENT_VALIDATOR", "R1_HOST_ID_ALLOCATOR", "R1_HOWARD_INTENT_COMMENT", "R2_CONTEXT"),
-        review_notes=("Exact Organizer output schema and clarification vocabulary remain for joint schema review.",),
+        consumers=(
+            "R1_HOST_INTENT_VALIDATOR",
+            "R1_HOST_ID_ALLOCATOR",
+            "R1_HOWARD_INTENT_COMMENT",
+            "R2_CONTEXT",
+        ),
+        review_notes=(
+            "Exact Organizer output schema and clarification vocabulary remain for joint schema review.",
+        ),
     ),
     _contract(
         slug="r1.howard_intent_comment",
@@ -476,7 +543,14 @@ _CONTRACTS: tuple[AAEContractRecord, ...] = (
         enums=None,
         empty="Empty comment is permitted only if the host elects not to expose the optional presentation; if invoked for output, empty text is invalid.",
         uncertainty="Reflect accepted unresolved/blocker state exactly; do not resolve it conversationally.",
-        forbidden_output=("new requirement", "new fact", "research", "tool request", "memory claim", "Intent mutation"),
+        forbidden_output=(
+            "new requirement",
+            "new fact",
+            "research",
+            "tool request",
+            "memory claim",
+            "Intent mutation",
+        ),
         validation=(
             "no new Rxxx/reference is introduced",
             "protected literals remain exact",
@@ -504,7 +578,13 @@ _CONTRACTS: tuple[AAEContractRecord, ...] = (
             ),
             next_consumers=("Host Evidence validator", "Conversational Howard / Context lane"),
         ),
-        inputs=("CONTEXT_LANE", "CONTEXT_SPLIT", "INTENT_NEED_REFS", "EVIDENCE_CANDIDATES", "EVIDENCE_METADATA"),
+        inputs=(
+            "CONTEXT_LANE",
+            "CONTEXT_SPLIT",
+            "INTENT_NEED_REFS",
+            "EVIDENCE_CANDIDATES",
+            "EVIDENCE_METADATA",
+        ),
         refs=("Rxxx", "Ixxx", "Lxxx", "SPLIT_ID", "Exxx"),
         local_prefixes=("JUDGMENT_",),
         response="Complete per-candidate supports/contradicts/relevant/irrelevant/ambiguous judgments.",
@@ -519,7 +599,14 @@ _CONTRACTS: tuple[AAEContractRecord, ...] = (
         },
         empty="A no-match/no-candidates lane is a valid explicit semantic result; silent omission is not.",
         uncertainty="Prefer partial/conflict/unresolved/no_match over unsupported certainty.",
-        forbidden_output=("SQLite query", "new Exxx", "memory write", "Intent mutation", "tool-success claim", "user-facing answer"),
+        forbidden_output=(
+            "SQLite query",
+            "new Exxx",
+            "memory write",
+            "Intent mutation",
+            "tool-success claim",
+            "user-facing answer",
+        ),
         validation=(
             "lane and split IDs are supplied and version-correct",
             "all evidence refs were supplied",
@@ -548,7 +635,10 @@ _CONTRACTS: tuple[AAEContractRecord, ...] = (
             forbidden=(
                 "Do not retrieve, invent support, change Intent, erase conflicts, execute tools, persist, decide terminal Completion, or answer the user.",
             ),
-            next_consumers=("Host Context-point validator/ID allocator", "Host lane report freezer"),
+            next_consumers=(
+                "Host Context-point validator/ID allocator",
+                "Host lane report freezer",
+            ),
         ),
         inputs=("INTENT_REFS", "VALIDATED_LANE_EVIDENCE", "LANE_PURPOSE"),
         refs=("Ixxx", "Rxxx", "Dxxx", "Exxx"),
@@ -557,7 +647,14 @@ _CONTRACTS: tuple[AAEContractRecord, ...] = (
         enums={"context_point_mode": ("supported", "inference", "unresolved")},
         empty="Zero promoted Context points can be valid when the lane legitimately establishes only no-match/unresolved state; that state must remain explicit.",
         uncertainty="Use inference/unresolved modes with support refs; never present inference as direct support.",
-        forbidden_output=("authoritative Cxxx allocation", "retrieval request outside host loop", "unsupported fact", "Intent mutation", "tool action", "terminal status"),
+        forbidden_output=(
+            "authoritative Cxxx allocation",
+            "retrieval request outside host loop",
+            "unsupported fact",
+            "Intent mutation",
+            "tool action",
+            "terminal status",
+        ),
         validation=(
             "every support ref was supplied and legal for the lane",
             "local Context keys are unique",
@@ -565,7 +662,11 @@ _CONTRACTS: tuple[AAEContractRecord, ...] = (
             "conflicts/unresolved conditions are not silently erased",
             "host allocates Cxxx only after acceptance",
         ),
-        consumers=("R2_HOST_CONTEXT_POINT_VALIDATOR", "R2_HOST_CONTEXT_ID_ALLOCATOR", "R2_LANE_REPORT_FREEZER"),
+        consumers=(
+            "R2_HOST_CONTEXT_POINT_VALIDATOR",
+            "R2_HOST_CONTEXT_ID_ALLOCATOR",
+            "R2_LANE_REPORT_FREEZER",
+        ),
     ),
     _contract(
         slug="r2.howard_context_final",
@@ -594,7 +695,14 @@ _CONTRACTS: tuple[AAEContractRecord, ...] = (
         enums=None,
         empty="No additional Context facts can be valid for a self-contained turn, but the final Context artifact must still explicitly represent readiness/unresolved state.",
         uncertainty="Carry unresolved/conflict state forward exactly; do not choose a winner without supplied authority.",
-        forbidden_output=("Intent rewrite", "invented project fact", "tool action", "persistence", "terminal Completion", "user-facing answer"),
+        forbidden_output=(
+            "Intent rewrite",
+            "invented project fact",
+            "tool action",
+            "persistence",
+            "terminal Completion",
+            "user-facing answer",
+        ),
         validation=(
             "all referenced Context/Intent/evidence artifacts are accepted and supplied",
             "Intent requirements are unchanged",
@@ -602,7 +710,9 @@ _CONTRACTS: tuple[AAEContractRecord, ...] = (
             "final artifact is structurally ready before Decision handoff",
         ),
         consumers=("R2_HOST_CONTEXT_FREEZER", "R3_DECISION"),
-        review_notes=("The source trace contained a slice-specific 'no lane reports' phrase; this pre-version generalizes it to all completed validated loop reports.",),
+        review_notes=(
+            "The source trace contained a slice-specific 'no lane reports' phrase; this pre-version generalizes it to all completed validated loop reports.",
+        ),
     ),
     _contract(
         slug="r3.requirement_assessor",
@@ -625,18 +735,35 @@ _CONTRACTS: tuple[AAEContractRecord, ...] = (
             ),
             next_consumers=("Host assessment validator", "Plan Composer"),
         ),
-        inputs=("IMMUTABLE_REQUIREMENT", "RELEVANT_ACCEPTED_CONTEXT", "CAPABILITY_AVAILABILITY", "DECISION_TRIGGER"),
+        inputs=(
+            "IMMUTABLE_REQUIREMENT",
+            "RELEVANT_ACCEPTED_CONTEXT",
+            "CAPABILITY_AVAILABILITY",
+            "DECISION_TRIGGER",
+        ),
         refs=("Rxxx", "Cxxx", "CAPABILITY_ID", "PRIOR_WORK_REF"),
         local_prefixes=("ASSESS_", "WORK_NEED_"),
         response="Per-requirement disposition, basis refs, need summary, work needs/evidence targets, blocker data, and post-work obligations.",
         enums={
             "disposition": ("READY", "WORK_REQUIRED", "BLOCKED", "PERSISTENCE_REQUIRED"),
-            "block_reason": ("USER_INFORMATION_NEEDED", "MISSING_CONTEXT", "CAPABILITY_UNAVAILABLE", "INVALID_UPSTREAM_STATE"),
+            "block_reason": (
+                "USER_INFORMATION_NEEDED",
+                "MISSING_CONTEXT",
+                "CAPABILITY_UNAVAILABLE",
+                "INVALID_UPSTREAM_STATE",
+            ),
             "work_origin": ("ORIGINAL", "DISCOVERY", "REPAIR"),
         },
         empty="Empty output is invalid; every in-scope requirement receives one explicit Decision disposition.",
         uncertainty="Use BLOCKED/MISSING_CONTEXT only when a legitimate path cannot be formed; minor uncertainty alone is not automatically a blocker.",
-        forbidden_output=("tool syntax", "receipt", "SQLite operation", "new Rxxx", "terminal status", "cross-requirement graph"),
+        forbidden_output=(
+            "tool syntax",
+            "receipt",
+            "SQLite operation",
+            "new Rxxx",
+            "terminal status",
+            "cross-requirement graph",
+        ),
         validation=(
             "requirement ID exactly matches the one supplied",
             "basis refs exist and are in scope",
@@ -669,14 +796,25 @@ _CONTRACTS: tuple[AAEContractRecord, ...] = (
             ),
             next_consumers=("Host graph/capability validator", "Host Wxxx allocator"),
         ),
-        inputs=("VALIDATED_REQUIREMENT_ASSESSMENTS", "CAPABILITY_REGISTRY_PROJECTION", "DECISION_SCOPE", "PRIOR_ACCEPTED_WORK"),
+        inputs=(
+            "VALIDATED_REQUIREMENT_ASSESSMENTS",
+            "CAPABILITY_REGISTRY_PROJECTION",
+            "DECISION_SCOPE",
+            "PRIOR_ACCEPTED_WORK",
+        ),
         refs=("Rxxx", "Axxx", "Cxxx", "Wxxx", "CAPABILITY_ID"),
         local_prefixes=("WORK_", "EDGE_", "PERSIST_"),
         response="Minimal shared work graph proposal with locally keyed new work, requirement links, dependencies, capability targets, evidence targets, and preserved non-work obligations.",
         enums=None,
         empty="Zero new work is valid when assessments establish that no executable work is legitimate; READY/BLOCKED/PERSISTENCE_REQUIRED states must still be preserved.",
         uncertainty="Do not create speculative work merely to eliminate a blocker; preserve blocked state when prerequisites are missing.",
-        forbidden_output=("authoritative Wxxx allocation", "execution", "receipt", "SQLite", "terminal status"),
+        forbidden_output=(
+            "authoritative Wxxx allocation",
+            "execution",
+            "receipt",
+            "SQLite",
+            "terminal status",
+        ),
         validation=(
             "every referenced assessment/requirement exists",
             "local work keys are unique",
@@ -685,8 +823,15 @@ _CONTRACTS: tuple[AAEContractRecord, ...] = (
             "shared work merges only compatible goals/evidence targets",
             "blocked requirements receive no illegitimate executable work",
         ),
-        consumers=("R3_HOST_GRAPH_VALIDATOR", "R3_HOST_W_ID_ALLOCATOR", "R4_EXECUTION_HOST", "R6_PERSISTENCE"),
-        review_notes=("Exact work-type/work-origin enum sets are intentionally deferred to the schema pass rather than partially copied here.",),
+        consumers=(
+            "R3_HOST_GRAPH_VALIDATOR",
+            "R3_HOST_W_ID_ALLOCATOR",
+            "R4_EXECUTION_HOST",
+            "R6_PERSISTENCE",
+        ),
+        review_notes=(
+            "Exact work-type/work-origin enum sets are intentionally deferred to the schema pass rather than partially copied here.",
+        ),
     ),
     _contract(
         slug="r5.evidence_reconciler",
@@ -708,7 +853,15 @@ _CONTRACTS: tuple[AAEContractRecord, ...] = (
             ),
             next_consumers=("Host Evidence Finding validator/allocator", "Reconciliation Composer"),
         ),
-        inputs=("WORK_ITEM", "EVIDENCE_TARGET", "REQUIREMENT_REFS", "IMMUTABLE_EXECUTION_RECEIPTS", "RESULT_ITEMS", "RELEVANT_ACTIVE_CONTEXT", "HOST_SIGNAL_PACK"),
+        inputs=(
+            "WORK_ITEM",
+            "EVIDENCE_TARGET",
+            "REQUIREMENT_REFS",
+            "IMMUTABLE_EXECUTION_RECEIPTS",
+            "RESULT_ITEMS",
+            "RELEVANT_ACTIVE_CONTEXT",
+            "HOST_SIGNAL_PACK",
+        ),
         refs=("Wxxx", "Rxxx", "RECxxx", "RESULT_REF", "Cxxx"),
         local_prefixes=("EF_", "DISCOVERY_", "CTX_IMPACT_"),
         response="Evidence Finding proposal containing semantic_state, established claims/support refs, not-established targets, conflicts, material discoveries, Context impacts, and immutable execution basis.",
@@ -725,7 +878,14 @@ _CONTRACTS: tuple[AAEContractRecord, ...] = (
         },
         empty="No established claim is valid when the target is NOT_ESTABLISHED; an explicit semantic_state and gap basis are still required.",
         uncertainty="Preserve partial evidence, conflict, and missing evidence; no support ref means no promotable claim.",
-        forbidden_output=("new Rxxx", "SQLite", "Context promotion", "terminal status", "tool request", "receipt mutation"),
+        forbidden_output=(
+            "new Rxxx",
+            "SQLite",
+            "Context promotion",
+            "terminal status",
+            "tool request",
+            "receipt mutation",
+        ),
         validation=(
             "work/requirement/receipt/result refs are supplied and legal",
             "semantic_state is legal",
@@ -758,7 +918,12 @@ _CONTRACTS: tuple[AAEContractRecord, ...] = (
             ),
             next_consumers=("Host Reconciliation transition validator",),
         ),
-        inputs=("VALIDATED_EVIDENCE_FINDINGS", "ACTIVE_CONTEXT", "IMMUTABLE_REQUIREMENT_SCOPE", "PRIOR_RECONCILIATION_STATE"),
+        inputs=(
+            "VALIDATED_EVIDENCE_FINDINGS",
+            "ACTIVE_CONTEXT",
+            "IMMUTABLE_REQUIREMENT_SCOPE",
+            "PRIOR_RECONCILIATION_STATE",
+        ),
         refs=("EFxxx", "Rxxx", "Wxxx", "Cxxx", "RECxxx", "DNxxx", "REPAIR_REQUEST_REF"),
         local_prefixes=("DN_", "CTX_IMPACT_", "REPAIR_", "PERSIST_CAND_"),
         response="Cross-work Reconciliation proposal with nonterminal posture flags, remaining gaps/conflicts, Context impacts, Derived Needs, repairs, persistence relevance, and next-transition recommendations.",
@@ -781,7 +946,14 @@ _CONTRACTS: tuple[AAEContractRecord, ...] = (
         },
         empty="No further action is a valid explicit outcome when NO_GAP_IDENTIFIED is supported; silent omission of in-scope requirements is invalid.",
         uncertainty="Keep conflict/gap states nonterminal and route bounded re-entry/repair only when supported.",
-        forbidden_output=("terminal Completion status", "tool call", "DB write", "direct Context promotion", "Intent rewrite", "receipt mutation"),
+        forbidden_output=(
+            "terminal Completion status",
+            "tool call",
+            "DB write",
+            "direct Context promotion",
+            "Intent rewrite",
+            "receipt mutation",
+        ),
         validation=(
             "all EF/requirement/context refs are supplied",
             "posture flags are legal and nonterminal",
@@ -789,7 +961,13 @@ _CONTRACTS: tuple[AAEContractRecord, ...] = (
             "every proposed transition is host-legal",
             "discovery is not mislabeled as repair",
         ),
-        consumers=("R5_HOST_TRANSITION_VALIDATOR", "R2_CONTEXT_REENTRY", "R3_DECISION_REENTRY", "R6_PERSISTENCE", "R7_COMPLETION"),
+        consumers=(
+            "R5_HOST_TRANSITION_VALIDATOR",
+            "R2_CONTEXT_REENTRY",
+            "R3_DECISION_REENTRY",
+            "R6_PERSISTENCE",
+            "R7_COMPLETION",
+        ),
     ),
     _contract(
         slug="r6.persistence_assessor",
@@ -812,19 +990,55 @@ _CONTRACTS: tuple[AAEContractRecord, ...] = (
             ),
             next_consumers=("Host Persistence Assessment validator", "Persistence Composer"),
         ),
-        inputs=("PERSISTENCE_ITEM", "ITEM_AUTHORITY_CLASS", "PROVENANCE", "RELEVANT_CONTEXT", "RELEVANT_EVIDENCE_FINDINGS", "FROZEN_MEMORY_SNAPSHOT", "PERSISTENCE_POLICY"),
-        refs=("Rxxx", "Cxxx", "EFxxx", "ITEM_UUID", "MEMORY_ENTITY_UUID", "MEMORY_CLAIM_UUID", "MEMORY_SNAPSHOT_UUID"),
+        inputs=(
+            "PERSISTENCE_ITEM",
+            "ITEM_AUTHORITY_CLASS",
+            "PROVENANCE",
+            "RELEVANT_CONTEXT",
+            "RELEVANT_EVIDENCE_FINDINGS",
+            "FROZEN_MEMORY_SNAPSHOT",
+            "PERSISTENCE_POLICY",
+        ),
+        refs=(
+            "Rxxx",
+            "Cxxx",
+            "EFxxx",
+            "ITEM_UUID",
+            "MEMORY_ENTITY_UUID",
+            "MEMORY_CLAIM_UUID",
+            "MEMORY_SNAPSHOT_UUID",
+        ),
         local_prefixes=("PA_", "NEW_ENTITY_", "CLAIM_PROPOSAL_"),
         response="Per-item durability judgment, entity resolution, semantic claim proposals, existing-claim relation, alias implications, recommended result, reason codes, and provenance refs.",
         enums={
             "item_authority_class": ("NORMATIVE", "ADVISORY"),
             "durability_judgment": ("DURABLE", "NOT_DURABLE", "POLICY_BLOCKED", "INSUFFICIENT"),
-            "entity_resolution": ("MATCH_EXISTING", "CREATE_NEW", "IDENTITY_AMBIGUOUS", "NEEDS_MORE_MEMORY"),
-            "semantic_relation": ("SAME", "CHANGE", "CORRECTION", "REFINEMENT", "CONFLICT", "RETRACTION", "UNRELATED"),
+            "entity_resolution": (
+                "MATCH_EXISTING",
+                "CREATE_NEW",
+                "IDENTITY_AMBIGUOUS",
+                "NEEDS_MORE_MEMORY",
+            ),
+            "semantic_relation": (
+                "SAME",
+                "CHANGE",
+                "CORRECTION",
+                "REFINEMENT",
+                "CONFLICT",
+                "RETRACTION",
+                "UNRELATED",
+            ),
         },
         empty="Every supplied persistence item requires an explicit assessment; no silent drop is legal.",
         uncertainty="Use IDENTITY_AMBIGUOUS/NEEDS_MORE_MEMORY/INSUFFICIENT rather than creating duplicate entities or guessing identity.",
-        forbidden_output=("permanent semantic UUID", "SQL", "transcript mutation", "Rxxx mutation", "Completion status", "unbounded memory request"),
+        forbidden_output=(
+            "permanent semantic UUID",
+            "SQL",
+            "transcript mutation",
+            "Rxxx mutation",
+            "Completion status",
+            "unbounded memory request",
+        ),
         validation=(
             "item UUID/authority/provenance match supplied item",
             "memory snapshot identity/base commit are preserved",
@@ -854,10 +1068,28 @@ _CONTRACTS: tuple[AAEContractRecord, ...] = (
             forbidden=(
                 "Do not execute SQL, allocate permanent UUIDs, mutate upstream artifacts, or assign Completion status.",
             ),
-            next_consumers=("Host Persistence plan validator", "Host UUID allocator", "Atomic Persistence transaction host"),
+            next_consumers=(
+                "Host Persistence plan validator",
+                "Host UUID allocator",
+                "Atomic Persistence transaction host",
+            ),
         ),
-        inputs=("VALIDATED_PERSISTENCE_ASSESSMENTS", "NORMATIVE_OBLIGATIONS", "ADVISORY_CANDIDATES", "FROZEN_MEMORY_BASE", "SEMANTIC_POLICY"),
-        refs=("PAxxx", "ITEM_UUID", "Rxxx", "MEMORY_ENTITY_UUID", "MEMORY_CLAIM_UUID", "MEMORY_ALIAS_UUID", "MEMORY_CONFLICT_UUID"),
+        inputs=(
+            "VALIDATED_PERSISTENCE_ASSESSMENTS",
+            "NORMATIVE_OBLIGATIONS",
+            "ADVISORY_CANDIDATES",
+            "FROZEN_MEMORY_BASE",
+            "SEMANTIC_POLICY",
+        ),
+        refs=(
+            "PAxxx",
+            "ITEM_UUID",
+            "Rxxx",
+            "MEMORY_ENTITY_UUID",
+            "MEMORY_CLAIM_UUID",
+            "MEMORY_ALIAS_UUID",
+            "MEMORY_CONFLICT_UUID",
+        ),
         local_prefixes=("PP_", "NEW_E", "NEW_CLAIM_", "NEW_ALIAS_", "NEW_CONFLICT_"),
         response="Atomic semantic mutation plan with complete item_results, local new-entity refs, claim/alias/conflict/entity-merge mutations, transaction properties, provenance links, and diagnostics.",
         enums={
@@ -887,7 +1119,13 @@ _CONTRACTS: tuple[AAEContractRecord, ...] = (
         },
         empty="A no-change transaction can be valid, but every normative/advisory item must still receive explicit coverage/disposition.",
         uncertainty="Preserve ambiguous identity/conflict states; never force a merge or create a duplicate merely to complete the plan.",
-        forbidden_output=("SQL", "permanent UUID allocation", "upstream mutation", "Completion status", "silent obligation drop"),
+        forbidden_output=(
+            "SQL",
+            "permanent UUID allocation",
+            "upstream mutation",
+            "Completion status",
+            "silent obligation drop",
+        ),
         validation=(
             "every normative obligation appears exactly once",
             "every advisory candidate receives explicit disposition",
@@ -897,7 +1135,12 @@ _CONTRACTS: tuple[AAEContractRecord, ...] = (
             "expected memory base commit is preserved",
             "no executable SQL appears",
         ),
-        consumers=("R6_HOST_PLAN_VALIDATOR", "R6_HOST_UUID_ALLOCATOR", "R6_ATOMIC_TRANSACTION_HOST", "R7_COMPLETION"),
+        consumers=(
+            "R6_HOST_PLAN_VALIDATOR",
+            "R6_HOST_UUID_ALLOCATOR",
+            "R6_ATOMIC_TRANSACTION_HOST",
+            "R7_COMPLETION",
+        ),
     ),
     _contract(
         slug="r7.completion_assessor",
@@ -917,9 +1160,16 @@ _CONTRACTS: tuple[AAEContractRecord, ...] = (
             forbidden=(
                 "Do not create new work, reopen recipes, execute tools, persist, invent facts, or write final user prose.",
             ),
-            next_consumers=("Host Completion Assessment validator/allocator", "Completion Composer"),
+            next_consumers=(
+                "Host Completion Assessment validator/allocator",
+                "Completion Composer",
+            ),
         ),
-        inputs=("REQUIREMENT_CLOSURE_BUNDLE", "ALLOWED_TERMINAL_STATUSES", "COMPLETION_POLICY_SNAPSHOT"),
+        inputs=(
+            "REQUIREMENT_CLOSURE_BUNDLE",
+            "ALLOWED_TERMINAL_STATUSES",
+            "COMPLETION_POLICY_SNAPSHOT",
+        ),
         refs=("Rxxx", "Cxxx", "Wxxx", "RECxxx", "EFxxx", "PRC_REF", "DNxxx", "RRQ_REF"),
         local_prefixes=("CA_",),
         response="Per-R terminal_status plus fulfilled/unmet components, blockers, failure causes, and conflict refs.",
@@ -935,7 +1185,14 @@ _CONTRACTS: tuple[AAEContractRecord, ...] = (
         },
         empty="Empty output is invalid; every immutable in-scope Rxxx receives one terminal standing.",
         uncertainty="Preserve blockers/failures/gaps exactly; PARTIALLY_SATISFIED requires genuine fulfilled material and a material remaining gap.",
-        forbidden_output=("new work", "recipe re-entry", "tool call", "persistence mutation", "new fact", "final response prose"),
+        forbidden_output=(
+            "new work",
+            "recipe re-entry",
+            "tool call",
+            "persistence mutation",
+            "new fact",
+            "final response prose",
+        ),
         validation=(
             "Rxxx exactly matches supplied closure bundle",
             "terminal status is legal",
@@ -964,16 +1221,31 @@ _CONTRACTS: tuple[AAEContractRecord, ...] = (
             forbidden=(
                 "Do not re-decide Completion Assessment statuses, drop requirements, invent facts, execute, persist, or write user-facing final prose.",
             ),
-            next_consumers=("Host Completion validator/freezer producing the Final Standing Packet",),
+            next_consumers=(
+                "Host Completion validator/freezer producing the Final Standing Packet",
+            ),
         ),
-        inputs=("VALIDATED_COMPLETION_ASSESSMENTS", "IMMUTABLE_REQUIREMENT_LIST", "CROSS_REQUIREMENT_RELATIONSHIPS", "HOST_COVERAGE_SIGNALS", "COMPLETION_POLICY_SNAPSHOT"),
+        inputs=(
+            "VALIDATED_COMPLETION_ASSESSMENTS",
+            "IMMUTABLE_REQUIREMENT_LIST",
+            "CROSS_REQUIREMENT_RELATIONSHIPS",
+            "HOST_COVERAGE_SIGNALS",
+            "COMPLETION_POLICY_SNAPSHOT",
+        ),
         refs=("Rxxx", "CAxxx", "FACT_REF", "BLOCKER_REF", "FAILURE_REF"),
         local_prefixes=("CP_",),
         response="Presentation-only result focus, supported shared items, disclosure emphasis, protected-literal importance, and diagnostics; statuses remain host-owned inputs.",
         enums={"overall_turn_posture": ("ALL_SATISFIED", "MIXED", "BLOCKED", "FAILED")},
         empty="Empty output is invalid when any Rxxx exists; every immutable requirement must be covered exactly once.",
         uncertainty="Organization may expose mixed/blocker/failure posture but may not upgrade or downgrade a per-R status.",
-        forbidden_output=("status mutation", "dropped Rxxx", "invented fact", "execution", "persistence", "final prose"),
+        forbidden_output=(
+            "status mutation",
+            "dropped Rxxx",
+            "invented fact",
+            "execution",
+            "persistence",
+            "final prose",
+        ),
         validation=(
             "every Rxxx is covered exactly once",
             "every CA ref exists",
@@ -995,7 +1267,9 @@ _CONTRACTS: tuple[AAEContractRecord, ...] = (
             authority=AuthorityClass.PRESENTATION_ONLY,
             purpose="Naturalize one frozen requirement standing without changing its status or facts.",
             input_origin="One result-comment packet projected from the Final Standing Packet.",
-            responsibilities=("State the frozen standing using only supplied allowed facts and disclosures.",),
+            responsibilities=(
+                "State the frozen standing using only supplied allowed facts and disclosures.",
+            ),
             forbidden=(
                 "Do not mutate status, add facts, perform tools/persistence, expose internal implementation details, or override Literal Lock.",
             ),
@@ -1008,7 +1282,14 @@ _CONTRACTS: tuple[AAEContractRecord, ...] = (
         enums={"terminal_status": ("SATISFIED", "PARTIALLY_SATISFIED", "BLOCKED", "FAILED")},
         empty="If the host invokes this mode for a required comment, empty output is invalid.",
         uncertainty="Use only the frozen standing/facts; do not soften an unresolved blocker/failure into certainty.",
-        forbidden_output=("status change", "new fact", "tool action", "persistence", "internal implementation disclosure", "literal-lock override"),
+        forbidden_output=(
+            "status change",
+            "new fact",
+            "tool action",
+            "persistence",
+            "internal implementation disclosure",
+            "literal-lock override",
+        ),
         validation=(
             "standing language is consistent with frozen status",
             "required disclosures are present",
@@ -1038,14 +1319,31 @@ _CONTRACTS: tuple[AAEContractRecord, ...] = (
             ),
             next_consumers=("Host final validator", "Publication host"),
         ),
-        inputs=("RAW_USER_PROMPT", "RESOLVED_REQUEST_PRESENTATION", "FINAL_STANDING_PROJECTION", "VALIDATED_RESULT_COMMENTS", "DISCLOSURE_MAP", "LITERAL_LOCK", "RESPONSE_BUDGET", "STYLE_POLICY", "PUBLICATION_CONSTRAINTS"),
+        inputs=(
+            "RAW_USER_PROMPT",
+            "RESOLVED_REQUEST_PRESENTATION",
+            "FINAL_STANDING_PROJECTION",
+            "VALIDATED_RESULT_COMMENTS",
+            "DISCLOSURE_MAP",
+            "LITERAL_LOCK",
+            "RESPONSE_BUDGET",
+            "STYLE_POLICY",
+            "PUBLICATION_CONSTRAINTS",
+        ),
         refs=("FSP_REF", "RESULT_COMMENT_REF", "FACT_REF", "BLOCKER_REF", "FAILURE_REF"),
         local_prefixes=(),
         response="final_response_text only; host wraps validated text into the Result artifact and publication receipt.",
         enums=None,
         empty="Empty final_response_text is invalid for a publishable turn unless a separate deterministic host policy explicitly owns the response.",
         uncertainty="Communicate frozen uncertainty/blockers/failures faithfully; presentation cannot create certainty absent from Completion.",
-        forbidden_output=("status mutation", "new fact", "hidden required disclosure", "literal mutation", "tool/persistence claim", "internal pipeline state"),
+        forbidden_output=(
+            "status mutation",
+            "new fact",
+            "hidden required disclosure",
+            "literal mutation",
+            "tool/persistence claim",
+            "internal pipeline state",
+        ),
         validation=(
             "UTF-8/size gate passes",
             "forbidden internal-ID scan passes",
@@ -1066,7 +1364,9 @@ def _validate_pre_registry(records: tuple[AAEContractRecord, ...]) -> None:
     adapters = {record.physical_adapter_id for record in records}
 
     if len(records) != 20:
-        raise RuntimeError(f"pre-version AAE registry must contain 20 logical modes, got {len(records)}")
+        raise RuntimeError(
+            f"pre-version AAE registry must contain 20 logical modes, got {len(records)}"
+        )
     if len(set(contract_ids)) != len(contract_ids):
         raise RuntimeError("duplicate AAE contract_id")
     if len(set(mode_ids)) != len(mode_ids):
@@ -1076,13 +1376,19 @@ def _validate_pre_registry(records: tuple[AAEContractRecord, ...]) -> None:
 
     for record in records:
         if record.registry_status is not RegistryStatus.PRE_VERSION:
-            raise RuntimeError(f"{record.contract_id}: pre-version record unexpectedly marked frozen")
+            raise RuntimeError(
+                f"{record.contract_id}: pre-version record unexpectedly marked frozen"
+            )
         if record.dispatch_enabled or record.runtime_ready:
-            raise RuntimeError(f"{record.contract_id}: pre-version registry must not permit dispatch")
+            raise RuntimeError(
+                f"{record.contract_id}: pre-version registry must not permit dispatch"
+            )
         if record.global_awareness_version != GLOBAL_VERSION:
             raise RuntimeError(f"{record.contract_id}: unknown Global Awareness version")
         if not record.input_schema.schema_id or not record.output_schema.schema_id:
-            raise RuntimeError(f"{record.contract_id}: schema references are required even before freeze")
+            raise RuntimeError(
+                f"{record.contract_id}: schema references are required even before freeze"
+            )
         if not record.awareness.purpose or not record.awareness.next_consumers:
             raise RuntimeError(f"{record.contract_id}: incomplete Specialist Awareness")
 
