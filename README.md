@@ -70,5 +70,36 @@ several minutes on the RTX 2060.
 This is explicit `BASE_ONLY_TEST_MODE` infrastructure. It does not dispatch an
 AAE, apply a LoRA, or promote runtime authority above T0.
 
+## Local ARCADIA test lab
+
+After the Python environment and Qwen3 runtime are prepared, double-click
+`run_arcadia.bat` or run it from a terminal:
+
+```bat
+run_arcadia.bat
+```
+
+That opens a simple interactive prompt and prints replies beneath `ARCADIA>`.
+The lab is intentionally labeled `T0 BASE_ONLY_TEST_MODE`: it is an operator
+experience for inspecting the pinned base model, not the future Recipe 0–8
+application path. Each prompt is an independent experiment; this surface does
+not retain conversational history or create a shadow transcript.
+
+Useful one-shot commands:
+
+```bat
+run_arcadia.bat "Explain what ARCADIA is in one sentence."
+run_arcadia.bat --show-settings
+run_arcadia.bat --set temperature 0.4
+run_arcadia.bat --reset-settings
+run_arcadia.bat --verify
+```
+
+Inside the interactive lab, use `/config`, `/set NAME VALUE`, `/reset`,
+`/verify`, `/help`, and `/quit`. Persistent operator overrides are stored only
+in the Git-ignored `runtime-data/lab_settings.json`; checked-in safe defaults
+remain in `configs/lab.toml`. One-shot flags such as `--temperature 0.7`,
+`--seed 9`, or `--max-output-tokens 512` do not change saved settings.
+
 Run `check_architecture_freeze.bat` to execute the normal deterministic gates and
 verify the exact frozen authority payload set.
