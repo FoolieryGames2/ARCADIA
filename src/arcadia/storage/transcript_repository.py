@@ -10,6 +10,7 @@ from enum import StrEnum
 from math import isfinite
 
 from arcadia.core.artifact_envelope import canonical_utc_timestamp
+from arcadia.core.canonical_json import JsonValue
 from arcadia.core.hashing import Sha256Digest, parse_sha256_digest, sha256_text
 from arcadia.core.ids import CanonicalId
 from arcadia.storage.connection import ConnectionAccess, DatabaseConnection, SQLiteConnectionFactory
@@ -50,6 +51,49 @@ class TranscriptRole(StrEnum):
 class TurnStatus(StrEnum):
     OPEN = "OPEN"
     COMPLETED = "COMPLETED"
+
+
+class ContinuationStatus(StrEnum):
+    NONE = "NONE"
+    AWAITING_USER_INPUT = "AWAITING_USER_INPUT"
+
+
+class ContinuationReason(StrEnum):
+    USER_INFORMATION_NEEDED = "USER_INFORMATION_NEEDED"
+
+
+@dataclass(frozen=True, slots=True)
+class ContinuationState:
+    """Fixed-shape host metadata for Recipe 0's one-next-turn cue."""
+
+    status: ContinuationStatus
+    source_turn_id: CanonicalId | None
+    reason_code: ContinuationReason | None
+
+    def __post_init__(self) -> None:
+        if self.status is ContinuationStatus.NONE:
+            if self.source_turn_id is not None or self.reason_code is not None:
+                raise TranscriptIntegrityError("NONE continuation state must have null details")
+        elif (
+            type(self.source_turn_id) is not CanonicalId
+            or self.reason_code is not ContinuationReason.USER_INFORMATION_NEEDED
+        ):
+            raise TranscriptIntegrityError(
+                "AWAITING_USER_INPUT requires its source turn and fixed reason code"
+            )
+
+    @classmethod
+    def none(cls) -> ContinuationState:
+        return cls(ContinuationStatus.NONE, None, None)
+
+    def to_value(self) -> dict[str, JsonValue]:
+        return {
+            "status": self.status.value,
+            "source_turn_uuid": (
+                None if self.source_turn_id is None else str(self.source_turn_id)
+            ),
+            "reason_code": None if self.reason_code is None else self.reason_code.value,
+        }
 
 
 @dataclass(frozen=True, slots=True)
@@ -251,6 +295,32 @@ class TranscriptRepository:
                 )
                 connection.execute(
                     """
+                    UPDATE transcript_open_continuations
+                    SET claimed_by_turn_uuid=?
+                    WHERE source_turn_uuid=(
+                        SELECT previous.turn_uuid
+                        FROM conversation_turns AS previous
+                        JOIN transcript_turn_states AS previous_state
+                          ON previous_state.turn_uuid=previous.turn_uuid
+                        WHERE previous.project_uuid=?
+                          AND previous.conversation_uuid=?
+                          AND previous.turn_ordinal=?
+                          AND previous_state.status='COMPLETED'
+                    )
+                      AND project_uuid=? AND conversation_uuid=?
+                      AND claimed_by_turn_uuid IS NULL AND consumed=0
+                    """,
+                    (
+                        str(turn_id),
+                        str(self.project_id),
+                        str(conversation_id),
+                        turn_ordinal - 1,
+                        str(self.project_id),
+                        str(conversation_id),
+                    ),
+                )
+                connection.execute(
+                    """
                     INSERT INTO transcript_entries(
                         entry_uuid, project_uuid, conversation_uuid, turn_uuid,
                         entry_ordinal, role, content, content_hash, created_at
@@ -303,6 +373,7 @@ class TranscriptRepository:
         result_hash: Sha256Digest,
         exact_published_text: str,
         committed_at: datetime,
+        completed_turn_requires_user_input: bool = False,
     ) -> CompletedExchange:
         self._require_id("turn_id", turn_id)
         if type(result_hash) is not Sha256Digest:
@@ -310,6 +381,8 @@ class TranscriptRepository:
         text = self._require_content(exact_published_text)
         if sha256_text(text) != result_hash:
             raise TranscriptIntegrityError("published text does not match immutable result hash")
+        if type(completed_turn_requires_user_input) is not bool:
+            raise TranscriptFieldError("completed_turn_requires_user_input must be an exact bool")
         timestamp = canonical_utc_timestamp(committed_at)
         with self.factory.connect() as connection:
             self._require_current_schema(connection)
@@ -322,6 +395,13 @@ class TranscriptRepository:
                     if existing.result_hash != result_hash:
                         raise TranscriptConflictError(
                             "turn already has a different immutable published result"
+                        )
+                    if (
+                        self._continuation_exists(connection, turn_id)
+                        != completed_turn_requires_user_input
+                    ):
+                        raise TranscriptConflictError(
+                            "publication retry changes authoritative continuation posture"
                         )
                     return self._load_exchange(connection, turn)
                 if turn.status is not TurnStatus.OPEN:
@@ -379,6 +459,19 @@ class TranscriptRepository:
                         timestamp,
                     ),
                 )
+                if completed_turn_requires_user_input:
+                    connection.execute(
+                        """
+                        INSERT INTO transcript_open_continuations(
+                            source_turn_uuid, project_uuid, conversation_uuid, reason_code
+                        ) VALUES (?, ?, ?, 'USER_INFORMATION_NEEDED')
+                        """,
+                        (
+                            str(turn_id),
+                            str(self.project_id),
+                            str(turn.conversation_id),
+                        ),
+                    )
                 updated_seq = connection.execute(
                     """
                     UPDATE system_meta SET value=?
@@ -428,10 +521,104 @@ class TranscriptRepository:
                 )
         return CompletedExchange(completed_turn, user_entry, assistant_entry, publication)
 
+    def continuation_state_for_turn(self, *, turn_id: CanonicalId) -> ContinuationState:
+        """Return only a valid marker claimed by this immediately following turn."""
+
+        self._require_id("turn_id", turn_id)
+        with self.factory.connect(ConnectionAccess.READ_ONLY) as connection:
+            self._require_current_schema(connection)
+            turn = self._find_turn_any_project(connection, turn_id)
+            if turn is None or turn.project_id != self.project_id:
+                raise TranscriptNotFoundError("project turn does not exist")
+            row = connection.execute(
+                """
+                SELECT marker.source_turn_uuid, marker.reason_code,
+                       source.turn_ordinal AS source_ordinal
+                FROM transcript_open_continuations AS marker
+                JOIN conversation_turns AS source
+                  ON source.turn_uuid=marker.source_turn_uuid
+                JOIN transcript_turn_states AS source_state
+                  ON source_state.turn_uuid=source.turn_uuid
+                WHERE marker.project_uuid=?
+                  AND marker.conversation_uuid=?
+                  AND marker.claimed_by_turn_uuid=?
+                  AND marker.consumed=0
+                  AND source_state.status='COMPLETED'
+                """,
+                (str(self.project_id), str(turn.conversation_id), str(turn_id)),
+            ).fetchone()
+            if row is None:
+                return ContinuationState.none()
+            source_ordinal = row["source_ordinal"]
+            if type(source_ordinal) is not int or source_ordinal + 1 != turn.turn_ordinal:
+                raise TranscriptIntegrityError(
+                    "continuation marker is not bound to the immediately prior exchange"
+                )
+            try:
+                source_turn_id = CanonicalId.parse(self._row_text(row, "source_turn_uuid"))
+                reason = ContinuationReason(self._row_text(row, "reason_code"))
+            except ValueError as exc:
+                raise TranscriptIntegrityError("continuation marker is malformed") from exc
+            return ContinuationState(
+                ContinuationStatus.AWAITING_USER_INPUT, source_turn_id, reason
+            )
+
+    def consume_continuation(self, *, turn_id: CanonicalId) -> ContinuationState:
+        """Consume this turn's cue exactly once when Recipe 0 freezes its packet."""
+
+        state = self.continuation_state_for_turn(turn_id=turn_id)
+        if state.status is ContinuationStatus.NONE:
+            return state
+        with self.factory.connect() as connection:
+            self._require_current_schema(connection)
+            with connection.transaction():
+                updated = connection.execute(
+                    """
+                    UPDATE transcript_open_continuations SET consumed=1
+                    WHERE project_uuid=? AND claimed_by_turn_uuid=? AND consumed=0
+                    """,
+                    (str(self.project_id), str(turn_id)),
+                )
+                if updated.rowcount != 1:
+                    raise TranscriptConflictError(
+                        "continuation marker changed before packet freeze"
+                    )
+        return state
+
+    def load_continuation_exchange(self, *, turn_id: CanonicalId) -> CompletedExchange | None:
+        """Load the exact prior exchange named by an active continuation cue."""
+
+        state = self.continuation_state_for_turn(turn_id=turn_id)
+        if state.source_turn_id is None:
+            return None
+        with self.factory.connect(ConnectionAccess.READ_ONLY) as connection:
+            self._require_current_schema(connection)
+            source = self._find_turn_any_project(connection, state.source_turn_id)
+            if source is None or source.project_id != self.project_id:
+                raise TranscriptIntegrityError("continuation source turn is missing")
+            return self._load_exchange(connection, source)
+
     def transcript_commit_seq(self) -> int:
         with self.factory.connect(ConnectionAccess.READ_ONLY) as connection:
             self._require_current_schema(connection)
             return self._read_commit_seq(connection)
+
+    def completed_exchange_count(self, *, conversation_id: CanonicalId) -> int:
+        self._require_id("conversation_id", conversation_id)
+        with self.factory.connect(ConnectionAccess.READ_ONLY) as connection:
+            self._require_current_schema(connection)
+            self._require_conversation(connection, conversation_id)
+            row = connection.execute(
+                """
+                SELECT COUNT(*) AS exchange_count
+                FROM transcript_turn_states
+                WHERE project_uuid=? AND conversation_uuid=? AND status='COMPLETED'
+                """,
+                (str(self.project_id), str(conversation_id)),
+            ).fetchone()
+            if row is None or type(row["exchange_count"]) is not int:
+                raise TranscriptIntegrityError("SQLite returned a malformed exchange count")
+            return row["exchange_count"]
 
     def load_recent_exchanges(
         self, *, conversation_id: CanonicalId, limit: int
@@ -614,6 +801,18 @@ class TranscriptRepository:
             (str(turn_id),),
         ).fetchone()
         return None if row is None else self._decode_publication(row)
+
+    def _continuation_exists(
+        self, connection: DatabaseConnection, source_turn_id: CanonicalId
+    ) -> bool:
+        row = connection.execute(
+            """
+            SELECT 1 AS present FROM transcript_open_continuations
+            WHERE project_uuid=? AND source_turn_uuid=?
+            """,
+            (str(self.project_id), str(source_turn_id)),
+        ).fetchone()
+        return row is not None
 
     def _next_turn_ordinal(
         self, connection: DatabaseConnection, conversation_id: CanonicalId

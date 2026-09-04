@@ -33,18 +33,18 @@ tests/unit/contracts/policies/test_schema_rules.py
 `SCOPE_PROPOSAL` is the first live consumer of the fixed-output-shape rule and the
 history-existence semantic rule. This does not freeze the shared policy yet.
 
-## 2. Finish Recipe 0 — baseline PRE-1 implemented / frozen continuation delta open
+## 2. Finish Recipe 0 — PRE-1 implemented and continuation-qualified
 
 - [x] Strict input schema.
 - [x] Strict output schema.
 - [x] Frozen statuses/enums supported by canonical R0.
 - [x] Host semantic validation rules.
 - [x] Review fixed-shape behavior against real R0 branches.
-- [ ] Add host-owned fixed-shape `continuation_state` to current transcript metadata.
-- [ ] Add one-next-turn exact prior-exchange prefetch for `AWAITING_USER_INPUT`.
-- [ ] Add `SUFFICIENT_WITHOUT_HISTORY` without weakening the fixed output shape.
-- [ ] Prove unrelated-turn discard and unconditional one-turn expiry.
-- [ ] Pass the frozen journal-elicitation exact-payload integration case.
+- [x] Add host-owned fixed-shape `continuation_state` to current transcript metadata.
+- [x] Add one-next-turn exact prior-exchange prefetch for `AWAITING_USER_INPUT`.
+- [x] Add `SUFFICIENT_WITHOUT_HISTORY` without weakening the fixed output shape.
+- [x] Prove unrelated-turn discard and unconditional one-turn expiry.
+- [x] Pass the frozen journal-elicitation exact-payload integration case.
 
 **PRE-1 implementation:**
 
@@ -57,7 +57,8 @@ The frozen four-field output shape is preserved exactly. `NEEDS_MORE_RECENT` and
 `NEEDS_TARGETED_HISTORY` do not invent new count/search-term fields; deterministic
 expansion-delta selection remains host policy/runtime work. Frozen transcript text
 is hash-verified before the semantic verdict is accepted. This item remains PRE-version
-until the 2026-09-04 continuation delta and joint review/freeze pass.
+until joint review/freeze. Continuation evidence is recorded in
+`evidence/phase_a1/A1_R0_OPEN_CONTINUATION_ARCHITECTURE_DELTA.md`.
 
 ## 3. Origin / Trust policy registry — PRE-1 implemented
 
@@ -209,34 +210,34 @@ its schema, trust, settings, qualification, or runtime gates.
 
 ## 9. Recipe 1 — Intent schemas
 
-- [ ] `SPELL_NORMALIZATION`
-- [ ] `TERM_MEANING`
-- [ ] `PROMPT_ANALYSIS`
-- [ ] `INTENT_ORGANIZER`
-- [ ] `INTENT_COMMENT`
+- [x] `SPELL_NORMALIZATION`
+- [x] `TERM_MEANING`
+- [x] `PROMPT_ANALYSIS`
+- [x] `INTENT_ORGANIZER`
+- [x] `INTENT_COMMENT`
 
 ## 10. Recipe 2 + Recipe 3 schemas
 
-- [ ] Context modes.
-- [ ] Requirement Assessor.
-- [ ] Plan Composer.
+- [x] Context modes.
+- [x] Requirement Assessor.
+- [x] Plan Composer.
 
 ## 11. Recipe 5–8 schemas
 
-- [ ] Reconciliation.
-- [ ] Persistence.
-- [ ] Completion.
-- [ ] Result / Howard.
-- [ ] Confirm Recipe 4 remains host-only with no learned schema contract.
+- [x] Reconciliation.
+- [x] Persistence.
+- [x] Completion.
+- [x] Result / selected conversational adapter.
+- [x] Confirm Recipe 4 remains host-only with no learned schema contract.
 
 ## 12. Cross-contract integrity review
 
-- [ ] All 20 logical modes resolve strict input/output schemas.
-- [ ] Every schema ref resolves to the intended exact version/hash.
-- [ ] Every mode resolves origin/trust policy.
-- [ ] Every legal ref namespace is known.
-- [ ] Field caps exist where required.
-- [ ] Repair and next-consumer metadata resolve.
-- [ ] Schema-less learned dispatch is impossible.
-- [ ] Full `check.bat` passes on canonical Windows environment.
+- [x] All 20 logical modes resolve strict input/output schemas.
+- [x] Every schema ref resolves to the intended exact version/hash.
+- [x] Every mode resolves origin/trust policy.
+- [x] Every legal ref namespace is known.
+- [x] Conservative PRE-1 field caps exist where required; measured tuning remains item 6 work.
+- [x] Repair and next-consumer metadata resolve.
+- [x] Schema-less learned dispatch is impossible because catalog resolution is total and the registry remains non-dispatchable.
+- [x] Full `check.bat` passes on canonical Windows environment (551 tests, Ruff, strict MyPy).
 - [ ] Joint review complete before marking parent A1 TODO item done.

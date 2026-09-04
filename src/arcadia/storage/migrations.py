@@ -395,6 +395,35 @@ FOUNDATION_MIGRATIONS = MigrationCatalog(
                 """.strip(),
             ),
         ),
+        Migration(
+            version=6,
+            name="transcript_open_continuations",
+            statements=(
+                """
+                CREATE TABLE transcript_open_continuations (
+                    source_turn_uuid TEXT PRIMARY KEY CHECK(length(source_turn_uuid) = 36),
+                    project_uuid TEXT NOT NULL CHECK(length(project_uuid) = 36),
+                    conversation_uuid TEXT NOT NULL CHECK(length(conversation_uuid) = 36),
+                    reason_code TEXT NOT NULL
+                        CHECK(reason_code = 'USER_INFORMATION_NEEDED'),
+                    claimed_by_turn_uuid TEXT UNIQUE CHECK(
+                        claimed_by_turn_uuid IS NULL OR length(claimed_by_turn_uuid) = 36
+                    ),
+                    consumed INTEGER NOT NULL DEFAULT 0 CHECK(consumed IN (0, 1)),
+                    FOREIGN KEY(project_uuid, conversation_uuid, source_turn_uuid)
+                        REFERENCES conversation_turns(project_uuid, conversation_uuid, turn_uuid),
+                    FOREIGN KEY(project_uuid, conversation_uuid, claimed_by_turn_uuid)
+                        REFERENCES conversation_turns(project_uuid, conversation_uuid, turn_uuid)
+                ) STRICT
+                """.strip(),
+                """
+                CREATE INDEX idx_transcript_open_continuations_claim
+                ON transcript_open_continuations(
+                    project_uuid, conversation_uuid, claimed_by_turn_uuid, consumed
+                )
+                """.strip(),
+            ),
+        ),
     )
 )
 

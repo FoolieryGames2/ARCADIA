@@ -24,6 +24,8 @@ Build a truth-preserving agent runtime whose learned specialists are compartment
 - The historical Qwen2.5 3B Q4_K_M spike offloads 37/37 layers to the RTX 2060 and exits cleanly.
 - `Qwen/Qwen3-4B-Instruct-2507` is the locked starting v0.1 foundation-model family.
 - The architecture authority's 28 declared payload hashes and exact 29-file tree reproduce.
+- Recipe 0's one-next-turn continuation correction passes all five frozen scenarios.
+- All 20 learned logical modes resolve strict PRE-1 input/output schemas with exact hash identities.
 
 ## Not yet verified
 
@@ -33,6 +35,8 @@ Build a truth-preserving agent runtime whose learned specialists are compartment
 - LoRA load/apply/isolation behavior
 - Safe HOT adapter ceiling and A/B/A lifecycle behavior
 - Logical specialist qualification beyond T0
+- Complete measured tuning profiles and deterministic context-budget projection
+- Training/runtime same-registry-source proof and joint A1 contract freeze
 
 ## Active gate: Phase A1 — AAE Contract Registry and canonical serialization
 
@@ -101,20 +105,19 @@ messages, deterministic bracketed audit rendering, and final structured-message
 fake AAE delimiters remain lower-trust data. The reconciled PRE-08 checkpoint adds
 strict `SCOPE_VALIDATION`, shared strict-shape, origin/trust, legal-reference,
 vocabulary, repair-shape, and next-consumer policies, plus a separate deterministic
-PRE-1 tuning-settings handler. All 538 tests, Ruff, strict MyPy over 43 source files,
-and both Windows verification gates pass. The slice and registry remain
-non-dispatchable/T0; the remaining 18 learned schemas, complete measured settings,
-context projection, registry-wide same-source proof, and joint freeze review remain open.
+PRE-1 tuning-settings handler.
 
 The 2026-09-04 architecture-freeze intake is evidenced by
 `evidence/architecture/ARCHITECTURE_FREEZE_INTAKE_2026-09-04.md`. Its dedicated
 Recipe 2–8 freezes and Recipe 0 continuation correction now govern conflicts with
-older documents. The correction requires a one-next-turn host-owned
-`AWAITING_USER_INPUT` marker and exact preceding-exchange prefetch; implementation
-is still open. This intake freezes architecture only and changes no implementation
-gate, adapter trust tier, or runtime qualification.
-The intake checkpoint raises the deterministic repository suite to 540 passing
-tests; Ruff and strict MyPy continue to pass.
+older documents. The one-next-turn host-owned `AWAITING_USER_INPUT` correction is
+now durable and passes all five required prefetch/retain/drop/expiry/journal cases.
+The 18 formerly missing learned-mode schema pairs are implemented in recipe-owned
+packages, yielding a total 20-mode exact-hash PRE-1 catalog. Recipe 4 remains
+host-only. The full suite now passes 551 tests, Ruff, and strict MyPy over 62 source
+files. The registry remains non-dispatchable/T0; complete measured settings,
+context projection, registry-wide same-source proof, and joint freeze review remain
+open. No runtime or adapter qualification is implied.
 
 ## Next implementation gate
 

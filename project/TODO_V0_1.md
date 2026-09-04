@@ -52,6 +52,8 @@ When this ledger and the canonical documents disagree, the canonical documents w
 | E-0025 | `evidence/phase_a1/A1_VERTICAL_SLICE_01_SCOPE_PROPOSAL_REPORT.md`: strict Recipe 0 schema/serializer/CALL_DATA-gate golden slice | PASS — Slice 01 only; Gate A1 open |
 | E-0026 | `evidence/phase_a1/A1_PRE08_HANDOFF_RECONCILIATION_REPORT.md`: reconciled PRE-08 R0 schema/policy/settings checkpoint | PASS — PRE_VERSION only; Gate A1 open |
 | E-0027 | `evidence/architecture/ARCHITECTURE_FREEZE_INTAKE_2026-09-04.md`: exact full Recipe 0–8 architecture authority intake | PASS — architecture only; implementation/runtime open |
+| E-0028 | `evidence/phase_a1/A1_R0_OPEN_CONTINUATION_ARCHITECTURE_DELTA.md`: durable one-next-turn cue, exact prior-exchange prefetch/drop, and five frozen scenarios | PASS — PRE-1 host correction; Gate A1 open |
+| E-0029 | `evidence/phase_a1/A1_ALL_LEARNED_MODE_SCHEMAS_PRE1_REPORT.md`: all 20 strict schema pairs and exact hash manifest | PASS — PRE-1 contracts; Gate A1 open |
 
 Add evidence here before changing a phase or qualification standing.
 
@@ -128,7 +130,7 @@ the Qwen3 deployment identity must earn separate A3 evidence.
 
 - [x] Create the machine-readable AAE Contract Registry pre-version candidate. Evidence: E-0024. Freeze review remains open.
 - [x] Create shared Global Awareness pre-version definitions. Evidence: E-0024. Freeze review remains open.
-- [ ] Create strict input/output schemas and policy registries. Recipe 0 and shared PRE-1 policy foundations pass; remaining learned modes are open. Evidence: E-0026.
+- [x] Create strict input/output schemas and policy registries for all 20 learned modes. Evidence: E-0026, E-0029. PRE-1 joint freeze remains open.
 - [x] Implement canonical machine serializer. Evidence: E-0025.
 - [x] Implement deterministic human audit renderer from the same source object. Evidence: E-0025.
 - [x] Implement final structured-message `CALL_DATA` reparse/revalidation gate. Evidence: E-0025.
@@ -136,8 +138,8 @@ the Qwen3 deployment identity must earn separate A3 evidence.
 - [x] Add instruction-impersonation/adversarial fixtures for Slice 01. Evidence: E-0025. Registry-wide coverage remains open.
 - [ ] Add deterministic context-budget projection with no silent truncation. PRE-1 tuning settings and dynamic-ceiling resolution exist; projection remains open. Evidence: E-0026.
 - [ ] Prove training and runtime consume the same registry source.
-- [x] Prove schema-less AAE preparation/pre-dispatch is impossible for Slice 01. Evidence: E-0025. Registry-wide dispatch remains disabled.
-- [ ] Implement the frozen Recipe 0 one-next-turn `AWAITING_USER_INPUT` continuation correction. Authority: E-0027; active delta: `evidence/phase_a1/A1_R0_OPEN_CONTINUATION_ARCHITECTURE_DELTA.md`.
+- [x] Prove schema-less AAE preparation/pre-dispatch is impossible for Slice 01 and schema catalog resolution is total for all 20 modes. Evidence: E-0025, E-0029. Registry-wide dispatch remains disabled.
+- [x] Implement the frozen Recipe 0 one-next-turn `AWAITING_USER_INPUT` continuation correction. Evidence: E-0028.
 - [ ] Close Gate A1.
 
 ---
