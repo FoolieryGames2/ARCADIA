@@ -23,14 +23,15 @@ Build a truth-preserving agent runtime whose learned specialists are compartment
 - Pinned llama.cpp CUDA build passes 43/43 upstream tests.
 - The historical Qwen2.5 3B Q4_K_M spike offloads 37/37 layers to the RTX 2060 and exits cleanly.
 - `Qwen/Qwen3-4B-Instruct-2507` is the locked starting v0.1 foundation-model family.
+- The exact b10796/Q4_K_M Qwen3 candidate is hash-pinned and passes a direct
+  base-only CUDA smoke with 37/37 layers offloaded on the RTX 2060.
 - The architecture authority's 28 declared payload hashes and exact 29-file tree reproduce.
 - Recipe 0's one-next-turn continuation correction passes all five frozen scenarios.
 - All 20 learned logical modes resolve strict PRE-1 input/output schemas with exact hash identities.
 
 ## Not yet verified
 
-- Exact Qwen3 GGUF quantization, file hash, and local fit
-- Exact Qwen3-compatible llama.cpp build/runtime identity
+- Full exact-runtime qualification through `SpecialistInvoker`
 - `SpecialistInvoker` real-runtime enforcement
 - LoRA load/apply/isolation behavior
 - Safe HOT adapter ceiling and A/B/A lifecycle behavior
@@ -118,6 +119,12 @@ host-only. The full suite now passes 551 tests, Ruff, and strict MyPy over 62 so
 files. The registry remains non-dispatchable/T0; complete measured settings,
 context projection, registry-wide same-source proof, and joint freeze review remain
 open. No runtime or adapter qualification is implied.
+
+The Qwen3 base-only spike is evidenced by
+`evidence/phase_a3/QWEN3_BASE_ONLY_SPIKE_2026-09-04.md`. It pins llama.cpp
+`b10796` / `9a4843c`, the generated Q4_K_M candidate and runtime binary hashes,
+and measures a clean 37/37-layer CUDA smoke. This is a T0 candidate checkpoint,
+not `SpecialistInvoker`, LoRA, residency, or Gate A3 qualification.
 
 ## Next implementation gate
 

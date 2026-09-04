@@ -49,5 +49,26 @@ host/development dependencies. Use `activate.bat` for a development shell and
 Model weights and the libllama/CUDA runtime are intentionally a separate Phase
 A3 setup because their exact identities must be pinned and qualified.
 
+The Qwen3 source-integrity verifier and qualification-only CUDA candidate setup
+are now reproducible with:
+
+```bat
+verify_qwen3_source.bat
+prepare_qwen3_runtime.bat -Smoke
+```
+
+For a fast smoke rerun after the one-time conversion/build:
+
+```bat
+prepare_qwen3_runtime.bat -SkipDependencies -SkipBuild -SkipConversion -SkipQuantization -Smoke
+```
+
+Run the pinned runtime's 43 registered native tests with `-NativeTests`. This
+test set includes an exhaustive CUDA backend operation matrix and can take
+several minutes on the RTX 2060.
+
+This is explicit `BASE_ONLY_TEST_MODE` infrastructure. It does not dispatch an
+AAE, apply a LoRA, or promote runtime authority above T0.
+
 Run `check_architecture_freeze.bat` to execute the normal deterministic gates and
 verify the exact frozen authority payload set.

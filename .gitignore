@@ -27,6 +27,7 @@ traces/
 models/
 *.gguf
 *.safetensors
+/Base 3-4b model/
 *.bin
 
 # Build and editor output
