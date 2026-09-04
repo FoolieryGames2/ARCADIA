@@ -33,13 +33,18 @@ tests/unit/contracts/policies/test_schema_rules.py
 `SCOPE_PROPOSAL` is the first live consumer of the fixed-output-shape rule and the
 history-existence semantic rule. This does not freeze the shared policy yet.
 
-## 2. Finish Recipe 0 — SCOPE_VALIDATION — PRE-1 implemented
+## 2. Finish Recipe 0 — baseline PRE-1 implemented / frozen continuation delta open
 
 - [x] Strict input schema.
 - [x] Strict output schema.
 - [x] Frozen statuses/enums supported by canonical R0.
 - [x] Host semantic validation rules.
 - [x] Review fixed-shape behavior against real R0 branches.
+- [ ] Add host-owned fixed-shape `continuation_state` to current transcript metadata.
+- [ ] Add one-next-turn exact prior-exchange prefetch for `AWAITING_USER_INPUT`.
+- [ ] Add `SUFFICIENT_WITHOUT_HISTORY` without weakening the fixed output shape.
+- [ ] Prove unrelated-turn discard and unconditional one-turn expiry.
+- [ ] Pass the frozen journal-elicitation exact-payload integration case.
 
 **PRE-1 implementation:**
 
@@ -52,7 +57,7 @@ The frozen four-field output shape is preserved exactly. `NEEDS_MORE_RECENT` and
 `NEEDS_TARGETED_HISTORY` do not invent new count/search-term fields; deterministic
 expansion-delta selection remains host policy/runtime work. Frozen transcript text
 is hash-verified before the semantic verdict is accepted. This item remains PRE-version
-until joint review/freeze.
+until the 2026-09-04 continuation delta and joint review/freeze pass.
 
 ## 3. Origin / Trust policy registry — PRE-1 implemented
 

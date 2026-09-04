@@ -1,2 +1,4 @@
 /requirements.lock text eol=lf
 /configs/runtime.toml text eol=lf
+/manifests/architecture_freeze_v0_1_2026-09-04.json text eol=lf
+/architecture/v0.1/freeze-2026-09-04/** -text

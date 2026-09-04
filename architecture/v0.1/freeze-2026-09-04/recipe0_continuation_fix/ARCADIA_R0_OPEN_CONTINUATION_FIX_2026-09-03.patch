@@ -1,0 +1,363 @@
+diff -ruN /mnt/data/arcadia_r0_pristine/ARCADIA-main/ARCADIA_V0_1_OBSIDIAN_BUILD_VAULT_2026-08-29/ARCADIA_V0_1_OBSIDIAN_BUILD_VAULT_2026-08-29/recipes/R0_CONVERSATION_RESOLVER_V0_1.md /mnt/data/arcadia_r0_fix/ARCADIA-main/ARCADIA_V0_1_OBSIDIAN_BUILD_VAULT_2026-08-29/ARCADIA_V0_1_OBSIDIAN_BUILD_VAULT_2026-08-29/recipes/R0_CONVERSATION_RESOLVER_V0_1.md
+--- /mnt/data/arcadia_r0_pristine/ARCADIA-main/ARCADIA_V0_1_OBSIDIAN_BUILD_VAULT_2026-08-29/ARCADIA_V0_1_OBSIDIAN_BUILD_VAULT_2026-08-29/recipes/R0_CONVERSATION_RESOLVER_V0_1.md	2026-09-02 01:44:45.000000000 +0000
++++ /mnt/data/arcadia_r0_fix/ARCADIA-main/ARCADIA_V0_1_OBSIDIAN_BUILD_VAULT_2026-08-29/ARCADIA_V0_1_OBSIDIAN_BUILD_VAULT_2026-08-29/recipes/R0_CONVERSATION_RESOLVER_V0_1.md	2026-09-04 03:43:21.336003337 +0000
+@@ -5,9 +5,9 @@
+ checkpoint_date: "2026-08-29"
+ document_role: "recipe-contract"
+ source_path: "recipes/R0_CONVERSATION_RESOLVER_V0_1.md"
+-source_sha256: "f6361279aa8b3ff458b3e0991e51d238bf7c428ded8566b754e31c58efe83400"
+-source_bytes: 2714
+-source_integrity: "preserved"
++source_sha256: "68dc722f911aba8cad57125ccfbf80c89b8f9ff1a535a02b2232f4d913623bfb"
++source_bytes: 6602
++source_integrity: "updated-2026-09-03-continuation-fix"
+ tags:
+   - "arcadia/v0-1"
+   - "type/recipe"
+@@ -114,3 +114,106 @@
+ # 11. v0.1 performance rule
+ 
+ When `fast_path_enabled=true` and the host proves an exact D0 response before history resolution is semantically necessary, the deterministic path may bypass Recipe 0's learned call while still creating auditable host artifacts. When the toggle is OFF, the normal learned-eligible path is used.
++
++# 12. Open-continuation cue — 2026-09-03 correction
++
++A completed exchange may intentionally leave the conversation waiting for the user's next input.
++A current prompt can therefore look grammatically self-contained while still deriving its role from the
++immediately preceding exchange. Example:
++
++```text
++Turn N user: I want to edit my journal.
++Turn N final: Sure — what would you like to add or change?
++Turn N+1 user: I dreamed of pink elephants again last night. I woke up to a broken toe!
++```
++
++Without an explicit continuation cue, `SCOPE_PROPOSAL` could incorrectly classify Turn N+1 as
++`SUFFICIENT_WITHOUT_HISTORY` and lose the journal-edit frame.
++
++## 12.1 Host-owned continuation metadata
++
++`current_transcript_metadata` gains one fixed-shape host field:
++
++```json
++{
++  "continuation_state": {
++    "status": "AWAITING_USER_INPUT",
++    "source_turn_uuid": "TURN-N",
++    "reason_code": "USER_INFORMATION_NEEDED"
++  }
++}
++```
++
++When no continuation is pending:
++
++```json
++{
++  "continuation_state": {
++    "status": "NONE",
++    "source_turn_uuid": null,
++    "reason_code": null
++  }
++}
++```
++
++This is technical transcript metadata only. It carries no semantic summary, journal payload,
++project-memory fact, or hidden model-written context. The host may set `AWAITING_USER_INPUT` only
++from an authoritative completed-turn state that explicitly requires additional user information.
++The source must identify the immediately preceding completed user/final-response exchange.
++
++## 12.2 Resolver behavior
++
++An active continuation marker forbids a zero-history decision based only on the fact that the current
++utterance can stand alone grammatically. The previous exchange may define what role the utterance is
++playing.
++
++Prototype rule:
++
++1. host validates the continuation marker against the immediately preceding completed exchange;
++2. host prefetches exactly that one exchange for `SCOPE_VALIDATION`;
++3. `SCOPE_VALIDATION` decides whether the exchange is actually required to interpret the current turn;
++4. if required, it is frozen into the Conversation Packet;
++5. if unrelated, the prefetched exchange is discarded and the Conversation Packet remains zero-history.
++
++To preserve minimum-sufficient history, `SCOPE_VALIDATION` therefore gains one legal status value:
++
++```text
++SUFFICIENT_WITHOUT_HISTORY
++```
++
++This status means the host-prefetched continuation exchange is not required for the current turn and
++must not be projected into Intent. The existing `SUFFICIENT` status means the supplied transcript
++evidence is required and sufficient.
++
++## 12.3 Marker lifetime
++
++The continuation marker is a one-next-turn cue. It is consumed when Recipe 0 freezes the next
++Conversation Packet. It does not become durable semantic memory and does not continue across later
++turns unless a later completed turn independently establishes a new `AWAITING_USER_INPUT` state.
++
++## 12.4 Required tests
++
++```text
++test_r0_open_continuation_prefetches_exact_prior_exchange
++test_r0_open_continuation_self_contained_payload_keeps_required_frame
++test_r0_open_continuation_unrelated_turn_drops_prefetched_history
++test_r0_open_continuation_marker_is_one_turn_only
++test_full_journal_edit_elicitation_then_exact_payload
++```
++
++Journal integration expectation:
++
++```text
++Turn N:   "I want to edit my journal."
++          -> no journal tool call; final response solicits edit content
++          -> host marks AWAITING_USER_INPUT
++
++Turn N+1: "I dreamed of pink elephants again last night. I woke up to a broken toe!"
++          -> Recipe 0 supplies exactly Turn N when needed
++          -> Intent interprets current text as journal-edit content
++          -> exact current user text remains available as the eventual journal payload
++```
++
++The word `again` alone does not authorize older transcript or journal retrieval. Additional history is
++requested only under normal Recipe 0/Context authority if a separate requirement genuinely needs it.
++
+diff -ruN /mnt/data/arcadia_r0_pristine/ARCADIA-main/ARCADIA_V0_1_PROTOTYPE_BUILD_DOCS_2026-08-29/ARCADIA_V0_1_PROTOTYPE_BUILD_DOCS_2026-08-29/recipes/R0_CONVERSATION_RESOLVER_V0_1.md /mnt/data/arcadia_r0_fix/ARCADIA-main/ARCADIA_V0_1_PROTOTYPE_BUILD_DOCS_2026-08-29/ARCADIA_V0_1_PROTOTYPE_BUILD_DOCS_2026-08-29/recipes/R0_CONVERSATION_RESOLVER_V0_1.md
+--- /mnt/data/arcadia_r0_pristine/ARCADIA-main/ARCADIA_V0_1_PROTOTYPE_BUILD_DOCS_2026-08-29/ARCADIA_V0_1_PROTOTYPE_BUILD_DOCS_2026-08-29/recipes/R0_CONVERSATION_RESOLVER_V0_1.md	2026-09-02 01:44:45.000000000 +0000
++++ /mnt/data/arcadia_r0_fix/ARCADIA-main/ARCADIA_V0_1_PROTOTYPE_BUILD_DOCS_2026-08-29/ARCADIA_V0_1_PROTOTYPE_BUILD_DOCS_2026-08-29/recipes/R0_CONVERSATION_RESOLVER_V0_1.md	2026-09-04 03:43:21.335400902 +0000
+@@ -87,3 +87,106 @@
+ # 11. v0.1 performance rule
+ 
+ When `fast_path_enabled=true` and the host proves an exact D0 response before history resolution is semantically necessary, the deterministic path may bypass Recipe 0's learned call while still creating auditable host artifacts. When the toggle is OFF, the normal learned-eligible path is used.
++
++# 12. Open-continuation cue — 2026-09-03 correction
++
++A completed exchange may intentionally leave the conversation waiting for the user's next input.
++A current prompt can therefore look grammatically self-contained while still deriving its role from the
++immediately preceding exchange. Example:
++
++```text
++Turn N user: I want to edit my journal.
++Turn N final: Sure — what would you like to add or change?
++Turn N+1 user: I dreamed of pink elephants again last night. I woke up to a broken toe!
++```
++
++Without an explicit continuation cue, `SCOPE_PROPOSAL` could incorrectly classify Turn N+1 as
++`SUFFICIENT_WITHOUT_HISTORY` and lose the journal-edit frame.
++
++## 12.1 Host-owned continuation metadata
++
++`current_transcript_metadata` gains one fixed-shape host field:
++
++```json
++{
++  "continuation_state": {
++    "status": "AWAITING_USER_INPUT",
++    "source_turn_uuid": "TURN-N",
++    "reason_code": "USER_INFORMATION_NEEDED"
++  }
++}
++```
++
++When no continuation is pending:
++
++```json
++{
++  "continuation_state": {
++    "status": "NONE",
++    "source_turn_uuid": null,
++    "reason_code": null
++  }
++}
++```
++
++This is technical transcript metadata only. It carries no semantic summary, journal payload,
++project-memory fact, or hidden model-written context. The host may set `AWAITING_USER_INPUT` only
++from an authoritative completed-turn state that explicitly requires additional user information.
++The source must identify the immediately preceding completed user/final-response exchange.
++
++## 12.2 Resolver behavior
++
++An active continuation marker forbids a zero-history decision based only on the fact that the current
++utterance can stand alone grammatically. The previous exchange may define what role the utterance is
++playing.
++
++Prototype rule:
++
++1. host validates the continuation marker against the immediately preceding completed exchange;
++2. host prefetches exactly that one exchange for `SCOPE_VALIDATION`;
++3. `SCOPE_VALIDATION` decides whether the exchange is actually required to interpret the current turn;
++4. if required, it is frozen into the Conversation Packet;
++5. if unrelated, the prefetched exchange is discarded and the Conversation Packet remains zero-history.
++
++To preserve minimum-sufficient history, `SCOPE_VALIDATION` therefore gains one legal status value:
++
++```text
++SUFFICIENT_WITHOUT_HISTORY
++```
++
++This status means the host-prefetched continuation exchange is not required for the current turn and
++must not be projected into Intent. The existing `SUFFICIENT` status means the supplied transcript
++evidence is required and sufficient.
++
++## 12.3 Marker lifetime
++
++The continuation marker is a one-next-turn cue. It is consumed when Recipe 0 freezes the next
++Conversation Packet. It does not become durable semantic memory and does not continue across later
++turns unless a later completed turn independently establishes a new `AWAITING_USER_INPUT` state.
++
++## 12.4 Required tests
++
++```text
++test_r0_open_continuation_prefetches_exact_prior_exchange
++test_r0_open_continuation_self_contained_payload_keeps_required_frame
++test_r0_open_continuation_unrelated_turn_drops_prefetched_history
++test_r0_open_continuation_marker_is_one_turn_only
++test_full_journal_edit_elicitation_then_exact_payload
++```
++
++Journal integration expectation:
++
++```text
++Turn N:   "I want to edit my journal."
++          -> no journal tool call; final response solicits edit content
++          -> host marks AWAITING_USER_INPUT
++
++Turn N+1: "I dreamed of pink elephants again last night. I woke up to a broken toe!"
++          -> Recipe 0 supplies exactly Turn N when needed
++          -> Intent interprets current text as journal-edit content
++          -> exact current user text remains available as the eventual journal payload
++```
++
++The word `again` alone does not authorize older transcript or journal retrieval. Additional history is
++requested only under normal Recipe 0/Context authority if a separate requirement genuinely needs it.
++
+diff -ruN /mnt/data/arcadia_r0_pristine/ARCADIA-main/evidence/phase_a1/A1_R0_OPEN_CONTINUATION_FIX_2026-09-03.md /mnt/data/arcadia_r0_fix/ARCADIA-main/evidence/phase_a1/A1_R0_OPEN_CONTINUATION_FIX_2026-09-03.md
+--- /mnt/data/arcadia_r0_pristine/ARCADIA-main/evidence/phase_a1/A1_R0_OPEN_CONTINUATION_FIX_2026-09-03.md	1970-01-01 00:00:00.000000000 +0000
++++ /mnt/data/arcadia_r0_fix/ARCADIA-main/evidence/phase_a1/A1_R0_OPEN_CONTINUATION_FIX_2026-09-03.md	2026-09-04 03:43:21.336137795 +0000
+@@ -0,0 +1,64 @@
++# A.R.C.A.D.I.A. — Recipe 0 Open-Continuation Architecture Correction
++
++**Date:** 2026-09-03  
++**Standing:** accepted architecture correction; implementation/test work remains open; Gate A1 remains OPEN
++
++## Problem
++
++A next user turn can be grammatically self-contained while still being the answer to an immediately
++preceding Arcadia solicitation. The prior R0 zero-history rule could therefore drop required dialogue
++frame.
++
++Example:
++
++```text
++User: I want to edit my journal.
++Arcadia: Sure — what would you like to add or change?
++User: I dreamed of pink elephants again last night. I woke up to a broken toe!
++```
++
++The third line is journal-edit payload only because the preceding completed exchange supplies that
++conversational role.
++
++## Accepted correction
++
++1. `current_transcript_metadata` receives host-owned fixed-shape `continuation_state`.
++2. `AWAITING_USER_INPUT` is set only from authoritative completed-turn state requiring user input.
++3. The marker points only to the immediately preceding completed exchange and carries no semantic summary.
++4. An active marker causes exact one-exchange prefetch into `SCOPE_VALIDATION`.
++5. `SCOPE_VALIDATION` adds `SUFFICIENT_WITHOUT_HISTORY` so unrelated next turns can discard the prefetch.
++6. The marker is one-next-turn only and never becomes semantic memory.
++7. Exact user payload remains exact; the continuation cue does not authorize paraphrase or older-history search.
++
++## Required implementation touch points
++
++```text
++src/arcadia/contracts/schemas/r0/scope_proposal.py
++src/arcadia/contracts/schemas/r0/scope_validation.py
++Recipe 0 host initial packet builder / transcript metadata projection
++Recipe 0 retrieval/validation orchestration
++completed-turn continuation-state writer
++Conversation Packet freezer
++R0 unit + integration fixtures
++```
++
++Exact source paths may be adjusted to the current repository layout; authority semantics above are frozen.
++
++## Required tests
++
++```text
++test_r0_open_continuation_prefetches_exact_prior_exchange
++test_r0_open_continuation_self_contained_payload_keeps_required_frame
++test_r0_open_continuation_unrelated_turn_drops_prefetched_history
++test_r0_open_continuation_marker_is_one_turn_only
++test_full_journal_edit_elicitation_then_exact_payload
++```
++
++## Non-goals
++
++- no general automatic history injection;
++- no semantic memory lookup;
++- no journal-specific R0 logic;
++- no model-written hidden summary;
++- no tool execution in the elicitation turn;
++- no change to Intent authority.
+diff -ruN /mnt/data/arcadia_r0_pristine/ARCADIA-main/project/STATUS.md /mnt/data/arcadia_r0_fix/ARCADIA-main/project/STATUS.md
+--- /mnt/data/arcadia_r0_pristine/ARCADIA-main/project/STATUS.md	2026-09-02 01:44:45.000000000 +0000
++++ /mnt/data/arcadia_r0_fix/ARCADIA-main/project/STATUS.md	2026-09-04 03:43:21.336535459 +0000
+@@ -100,6 +100,8 @@
+ non-dispatchable/T0; the remaining 18 learned schemas, complete measured settings,
+ context projection, registry-wide same-source proof, and joint freeze review remain open.
+ 
++Recipe 0 has one accepted architecture correction queued before its schema freeze: completed turns that explicitly require further user input may set a host-owned one-next-turn `AWAITING_USER_INPUT` continuation cue. The cue carries no semantic summary; it binds only the immediately preceding completed exchange. Recipe 0 must be able to prefetch that exchange for validation even when the new prompt looks self-contained, and must also be able to discard the prefetch when the new turn is unrelated. This closes the journal-elicitation continuity hole without general history injection. Implementation/tests remain open; evidence: `evidence/phase_a1/A1_R0_OPEN_CONTINUATION_FIX_2026-09-03.md`.
++
+ ## Next implementation gate
+ 
+ Phase A1: AAE Contract Registry, structured Global Awareness, strict schemas and
+diff -ruN /mnt/data/arcadia_r0_pristine/ARCADIA-main/project/TODO_A1_STRICT_SCHEMAS_POLICIES.md /mnt/data/arcadia_r0_fix/ARCADIA-main/project/TODO_A1_STRICT_SCHEMAS_POLICIES.md
+--- /mnt/data/arcadia_r0_pristine/ARCADIA-main/project/TODO_A1_STRICT_SCHEMAS_POLICIES.md	2026-09-02 01:44:45.000000000 +0000
++++ /mnt/data/arcadia_r0_fix/ARCADIA-main/project/TODO_A1_STRICT_SCHEMAS_POLICIES.md	2026-09-04 03:43:21.336265232 +0000
+@@ -33,6 +33,18 @@
+ `SCOPE_PROPOSAL` is the first live consumer of the fixed-output-shape rule and the
+ history-existence semantic rule. This does not freeze the shared policy yet.
+ 
++## 1A. Recipe 0 open-continuation correction — architecture accepted / implementation open
++
++- [ ] Extend `current_transcript_metadata` with fixed-shape host-owned `continuation_state`.
++- [ ] Add `AWAITING_USER_INPUT` / `NONE` host-state validation and immediate-prior-turn binding.
++- [ ] Add exact one-exchange continuation prefetch into `SCOPE_VALIDATION`.
++- [ ] Add `SUFFICIENT_WITHOUT_HISTORY` to SCOPE_VALIDATION so unrelated turns can discard prefetch.
++- [ ] Enforce one-next-turn marker consumption.
++- [ ] Add journal-elicitation and unrelated-turn regression tests.
++
++Evidence/design authority: `evidence/phase_a1/A1_R0_OPEN_CONTINUATION_FIX_2026-09-03.md`.
++Gate A1 remains OPEN until the PRE-1 schemas/policies and tests are updated.
++
+ ## 2. Finish Recipe 0 — SCOPE_VALIDATION — PRE-1 implemented
+ 
+ - [x] Strict input schema.
+diff -ruN /mnt/data/arcadia_r0_pristine/ARCADIA-main/project/TODO_V0_1.md /mnt/data/arcadia_r0_fix/ARCADIA-main/project/TODO_V0_1.md
+--- /mnt/data/arcadia_r0_pristine/ARCADIA-main/project/TODO_V0_1.md	2026-09-02 01:44:45.000000000 +0000
++++ /mnt/data/arcadia_r0_fix/ARCADIA-main/project/TODO_V0_1.md	2026-09-04 03:43:21.336442983 +0000
+@@ -173,13 +173,13 @@
+ 
+ ## Phase B — Recipe 0 Conversation Resolver + Recipe 1 Intent
+ 
+-- [ ] Build Conversation Resolver.
++- [ ] Build Conversation Resolver, including host-owned one-turn `AWAITING_USER_INPUT` continuation cue and exact prior-exchange prefetch/drop behavior.
+ - [ ] Build Spell specialist.
+ - [ ] Build Term / Meaning specialist.
+ - [ ] Build Prompt Analyst.
+ - [ ] Build Intent Organizer.
+ - [ ] Build Conversational Howard Intent-comment mode.
+-- [ ] Pass zero-history, targeted-history, ambiguity, control-signal, exact-literal, and immutable-Rxxx tests.
++- [ ] Pass zero-history, targeted-history, open-continuation, ambiguity, control-signal, exact-literal, and immutable-Rxxx tests.
+ - [ ] Close Gate B.
+ 
+ ## Phase C — Persistence Host skeleton
+@@ -280,6 +280,8 @@
+ - [ ] Same exact-literal case with fast path OFF.
+ - [ ] Zero-history semantic answer.
+ - [ ] History-dependent reference resolution.
++- [ ] Open-continuation journal elicitation: self-contained-looking next-turn payload inherits exactly the prior solicitation.
++- [ ] Open-continuation unrelated next turn drops prefetched history.
+ - [ ] Durable semantic-memory lookup.
+ - [ ] Search success with semantic failure.
+ - [ ] Latest/current source conflict.

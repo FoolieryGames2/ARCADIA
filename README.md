@@ -5,16 +5,21 @@ Top-tier operating project for the **Adaptive Runtime for Compartmentalized Agen
 ## Current standing
 
 - Version: `0.1-prototype`
-- Design: frozen for implementation
+- Architecture: full Recipe 0–8 freeze accepted on 2026-09-04
+- Deterministic foundation: Gate A passed
+- Active implementation gate: A1 open
 - Documentation/static validation: passed
 - Runtime qualification: not yet earned (`T0`)
-- Active objective: complete Phase 0, then build the deterministic host foundation (Phase A)
+- Foundation model family: `Qwen/Qwen3-4B-Instruct-2507`
+- Exact deployment/runtime identity: unqualified
 
-The canonical v0.1 build authority remains the untouched bundle at:
+The current architecture authority is the immutable bundle at:
 
-`ARCADIA_V0_1_PROTOTYPE_BUILD_DOCS_2026-08-29/ARCADIA_V0_1_PROTOTYPE_BUILD_DOCS_2026-08-29/`
+`architecture/v0.1/freeze-2026-09-04/`
 
-Start with its `00_README_FIRST.md`, then follow `02_ARCADIA_V0_1_EXACT_BUILD_ORDER.md` exactly.
+Start with `README_FIRST.md`, the full freeze checkpoint, and the build handoff.
+The 2026-08-29 prototype bundle remains the implementation-detail baseline where
+it does not conflict with the newer freeze.
 
 ## Operating rule
 
@@ -27,7 +32,9 @@ Models perform bounded semantic judgment. The host owns identity, legality, stat
 - `project/DECISIONS.md` — append-only implementation decision log
 - `src/arcadia/` — implementation root (begins in Phase A)
 - `tests/` — deterministic and qualification tests
-- canonical prototype bundle — frozen implementation authority
+- 2026-08-29 canonical prototype bundle — non-conflicting implementation-detail baseline
+- `architecture/v0.1/freeze-2026-09-04/` — current Recipe 0–8 architecture authority
+- `manifests/architecture_freeze_v0_1_2026-09-04.json` — machine-readable freeze identity
 - Obsidian bundle — navigable reference copy
 - checkpoint ZIPs — recovery snapshots
 
@@ -41,3 +48,6 @@ host/development dependencies. Use `activate.bat` for a development shell and
 
 Model weights and the libllama/CUDA runtime are intentionally a separate Phase
 A3 setup because their exact identities must be pinned and qualified.
+
+Run `check_architecture_freeze.bat` to execute the normal deterministic gates and
+verify the exact frozen authority payload set.

@@ -1,6 +1,6 @@
 # ARCADIA Operating Status
 
-Updated: 2026-08-30
+Updated: 2026-09-04
 
 ## North star
 
@@ -13,18 +13,22 @@ Build a truth-preserving agent runtime whose learned specialists are compartment
 - Local baseline: Python `3.13.7`, SQLite `3.50.4`, and an in-memory FTS5 table creation test passes.
 - Project host environment pinned to CPython `3.12` with resolved dependencies in `requirements.lock`.
 - Re-runnable Windows bootstrap passes environment, unit-test, lint, and strict type-check gates.
-- The v0.1 architecture and implementation order are frozen.
+- The full Recipe 0–8 v0.1 architecture is frozen by the verified 2026-09-04 handoff.
 - Documentation/static consolidation reports `PASS`.
 - The canonical spine contains Recipes 0–8 with no collapsed stage.
 - The core learned roster contains 15 physical adapters; Tool / Execution is host-only.
 - Existing checkpoint ZIPs preserve both the canonical docs and Obsidian vault forms.
-- Phase 0 immutable input manifest reproduces the authority, dependency, model,
+- The historical Phase 0 immutable input manifest reproduces its authority, dependency, model,
   llama.cpp source, CUDA toolchain, and native runtime hashes.
 - Pinned llama.cpp CUDA build passes 43/43 upstream tests.
-- Pinned Qwen2.5 3B Q4_K_M smoke run offloads 37/37 layers to the RTX 2060 and exits cleanly.
+- The historical Qwen2.5 3B Q4_K_M spike offloads 37/37 layers to the RTX 2060 and exits cleanly.
+- `Qwen/Qwen3-4B-Instruct-2507` is the locked starting v0.1 foundation-model family.
+- The architecture authority's 28 declared payload hashes and exact 29-file tree reproduce.
 
 ## Not yet verified
 
+- Exact Qwen3 GGUF quantization, file hash, and local fit
+- Exact Qwen3-compatible llama.cpp build/runtime identity
 - `SpecialistInvoker` real-runtime enforcement
 - LoRA load/apply/isolation behavior
 - Safe HOT adapter ceiling and A/B/A lifecycle behavior
@@ -34,7 +38,9 @@ Build a truth-preserving agent runtime whose learned specialists are compartment
 
 Detailed execution tracking lives in `project/TODO_V0_1.md`. Items are marked complete only with reproducible evidence.
 
-Gate 0 is closed by `evidence/phase0/PHASE0_GATE_REPORT.md`. The next work follows
+The original Qwen2.5 Gate 0 is closed historically by
+`evidence/phase0/PHASE0_GATE_REPORT.md`; that qualification does not transfer to
+Qwen3. The next work follows
 the frozen Phase A module order: configuration, IDs, Canonical JSON V1, hashing,
 artifact envelopes, ledgers, strict validation, budgets, trace index, trust
 registry, and authority-separated SQLite repositories.
@@ -99,6 +105,16 @@ PRE-1 tuning-settings handler. All 538 tests, Ruff, strict MyPy over 43 source f
 and both Windows verification gates pass. The slice and registry remain
 non-dispatchable/T0; the remaining 18 learned schemas, complete measured settings,
 context projection, registry-wide same-source proof, and joint freeze review remain open.
+
+The 2026-09-04 architecture-freeze intake is evidenced by
+`evidence/architecture/ARCHITECTURE_FREEZE_INTAKE_2026-09-04.md`. Its dedicated
+Recipe 2–8 freezes and Recipe 0 continuation correction now govern conflicts with
+older documents. The correction requires a one-next-turn host-owned
+`AWAITING_USER_INPUT` marker and exact preceding-exchange prefetch; implementation
+is still open. This intake freezes architecture only and changes no implementation
+gate, adapter trust tier, or runtime qualification.
+The intake checkpoint raises the deterministic repository suite to 540 passing
+tests; Ruff and strict MyPy continue to pass.
 
 ## Next implementation gate
 

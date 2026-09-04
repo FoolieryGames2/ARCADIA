@@ -1,7 +1,20 @@
 [CmdletBinding()]
-param()
+param(
+    [switch]$HistoricalQwen25Spike
+)
 
 $ErrorActionPreference = 'Stop'
+if (-not $HistoricalQwen25Spike) {
+    throw @'
+The generic model download is intentionally disabled.
+Qwen/Qwen3-4B-Instruct-2507 is the active v0.1 model family, but its exact GGUF
+deployment identity remains an A3 measurement decision. This script reproduces
+only the superseded Qwen2.5 Phase 0 spike. Pass -HistoricalQwen25Spike explicitly
+if that historical artifact is what you intend to restore.
+'@
+}
+
+Write-Warning 'Restoring the historical Qwen2.5 Phase 0 spike; this does not select or qualify the active Qwen3 deployment.'
 $root = Split-Path -Parent $PSScriptRoot
 $manifestPath = Join-Path $root 'manifests\phase0_inputs.json'
 $manifest = Get-Content -LiteralPath $manifestPath -Raw | ConvertFrom-Json
