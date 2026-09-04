@@ -29,6 +29,11 @@ def _call_data(
         "current_transcript_metadata": {
             "transcript_commit_seq": completed_exchange_count,
             "completed_exchange_count": completed_exchange_count,
+            "continuation_state": {
+                "status": "NONE",
+                "source_turn_uuid": None,
+                "reason_code": None,
+            },
         },
         "host_policy_limits": {
             "max_contiguous_lookback_exchanges": max_recent,

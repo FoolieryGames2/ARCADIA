@@ -55,7 +55,11 @@ def _output(
     unresolved: list[str] | None = None,
 ) -> dict[str, object]:
     if unresolved is None:
-        unresolved = [] if status == "SUFFICIENT" else ["that exact line"]
+        unresolved = (
+            []
+            if status in {"SUFFICIENT", "SUFFICIENT_WITHOUT_HISTORY"}
+            else ["that exact line"]
+        )
     return {
         "mode": "SCOPE_VALIDATION",
         "status": status,
@@ -132,13 +136,14 @@ def test_frozen_turns_must_be_prior_unique_and_chronological() -> None:
     "status",
     [
         "SUFFICIENT",
+        "SUFFICIENT_WITHOUT_HISTORY",
         "NEEDS_MORE_RECENT",
         "NEEDS_TARGETED_HISTORY",
         "UNRESOLVABLE_WITH_TRANSCRIPT",
         "BOUND_EXHAUSTED",
     ],
 )
-def test_all_five_frozen_scope_validation_statuses_are_accepted(status: str) -> None:
+def test_all_six_frozen_scope_validation_statuses_are_accepted(status: str) -> None:
     output = _output(status)
     assert require_valid_scope_validation_output(output, call_data=_call_data()) == output
 

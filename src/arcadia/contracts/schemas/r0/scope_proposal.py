@@ -57,10 +57,42 @@ _INPUT_SCHEMA_VALUE: Final[dict[str, object]] = {
         "current_transcript_metadata": {
             "type": "object",
             "additionalProperties": False,
-            "required": ["transcript_commit_seq", "completed_exchange_count"],
+            "required": [
+                "transcript_commit_seq",
+                "completed_exchange_count",
+                "continuation_state",
+            ],
             "properties": {
                 "transcript_commit_seq": {"type": "integer", "minimum": 0},
                 "completed_exchange_count": {"type": "integer", "minimum": 0},
+                "continuation_state": {
+                    "type": "object",
+                    "additionalProperties": False,
+                    "required": ["status", "source_turn_uuid", "reason_code"],
+                    "properties": {
+                        "status": {
+                            "type": "string",
+                            "enum": ["NONE", "AWAITING_USER_INPUT"],
+                        },
+                        "source_turn_uuid": {
+                            "anyOf": [
+                                {
+                                    "type": "string",
+                                    "minLength": 1,
+                                    "maxLength": 128,
+                                    "pattern": _CANONICAL_TOKEN_PATTERN,
+                                },
+                                {"type": "null"},
+                            ]
+                        },
+                        "reason_code": {
+                            "anyOf": [
+                                {"type": "string", "const": "USER_INFORMATION_NEEDED"},
+                                {"type": "null"},
+                            ]
+                        },
+                    },
+                },
             },
         },
         "host_policy_limits": {
@@ -168,7 +200,22 @@ def require_valid_scope_proposal_output(
     metadata = _require_object(
         call_obj["current_transcript_metadata"], "current_transcript_metadata"
     )
+    continuation = _require_object(metadata["continuation_state"], "continuation_state")
     policy = _require_object(call_obj["host_policy_limits"], "host_policy_limits")
+
+    continuation_status = continuation["status"]
+    source_turn_uuid = continuation["source_turn_uuid"]
+    reason_code = continuation["reason_code"]
+    assert type(continuation_status) is str
+    if continuation_status == "NONE":
+        if source_turn_uuid is not None or reason_code is not None:
+            raise ScopeProposalSemanticError(
+                "NONE continuation_state requires null source_turn_uuid and reason_code"
+            )
+    elif source_turn_uuid is None or reason_code != "USER_INFORMATION_NEEDED":
+        raise ScopeProposalSemanticError(
+            "AWAITING_USER_INPUT requires a source turn and USER_INFORMATION_NEEDED"
+        )
 
     status = output_obj["status"]
     recent_count = output_obj["recent_exchange_count"]

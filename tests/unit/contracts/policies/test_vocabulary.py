@@ -32,6 +32,7 @@ def test_scope_statuses_are_closed_and_registry_derived() -> None:
     assert validation.kind is VocabularyKind.CLOSED_ENUM
     assert validation.closed_values == (
         "SUFFICIENT",
+        "SUFFICIENT_WITHOUT_HISTORY",
         "NEEDS_MORE_RECENT",
         "NEEDS_TARGETED_HISTORY",
         "UNRESOLVABLE_WITH_TRANSCRIPT",

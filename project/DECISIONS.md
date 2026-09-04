@@ -190,3 +190,17 @@ Append decisions. Keep prior entries intact; supersede them explicitly.
 - Status: accepted architecture authority; implementation/runtime qualification open
 - Decision: Accept handoff archive SHA-256 `ee24e082df3b24e93b47de371dcc4d87ee2a81c048413dea502dca02fec900a4` as the current v0.1 Recipe 0–8 architecture authority and preserve its exact payload beneath `architecture/v0.1/freeze-2026-09-04/`. Its full checkpoint and dedicated recipe freezes supersede conflicting architecture wording in older sources; older sources remain immutable implementation/audit references. Lock `Qwen/Qwen3-4B-Instruct-2507` as the starting foundation-model family, reclassify the existing Qwen2.5 deployment as historical spike evidence, and leave the exact Qwen3 GGUF/runtime identity open for A3 measurement. Accept the Recipe 0 one-next-turn continuation correction as required but not implemented. Keep Gate A1 open and learned authority at T0.
 - Reason: The handoff closes architecture review without pretending that code, model deployment, adapter behavior, or qualification has passed. Versioned intake and exact hash verification preserve provenance; explicit supersession avoids rewriting historical evidence; and separating the model-family lock from the measured deployment identity prevents an untested quantization/runtime from inheriting the old spike's standing.
+
+## D-0028 — Durable one-next-turn continuation cue
+
+- Date: 2026-09-04
+- Status: accepted PRE-1 implementation; Gate A1 remains open
+- Decision: Extend the transcript migration catalog with a host-owned continuation table. A successfully published completed turn may atomically create only `AWAITING_USER_INPUT` / `USER_INFORMATION_NEEDED`; the immediately following user turn alone may claim it. Recipe 0 projects the fixed-shape marker into SCOPE_PROPOSAL, prefetches exactly the named hash-verified exchange into SCOPE_VALIDATION, and consumes the cue when the Conversation Packet is frozen whether the exchange is retained or discarded. Store no semantic summary in the marker.
+- Reason: Grammatical self-containment does not prove semantic independence after Arcadia explicitly solicits a value. Durable immediate-prior binding preserves that conversational frame across restart without becoming general history injection or semantic memory, and one-time consumption prevents accidental propagation.
+
+## D-0029 — Complete PRE-1 learned-mode schema catalog
+
+- Date: 2026-09-04
+- Status: accepted implementation checkpoint; not frozen or dispatchable
+- Decision: Resolve strict input/output schema pairs for all 20 learned logical modes under recipe-owned packages and one total catalog. Align Context, Decision, Reconciliation, Persistence, Completion, and Result shapes with the 2026-09-04 architecture freeze; retain Recipe 4 as host-only. Require unknown-field rejection, fixed learned-output top-level shapes, bounded collections/text, closed host-behavior enums, and exact compiled schema hashes in `manifests/aae_schema_catalog_pre1.json`. Keep every AAE registry record PRE_VERSION, unfrozen, non-dispatchable, and T0.
+- Reason: A total exact-hash schema catalog makes schema-less learned dispatch mechanically impossible and exposes contract drift before runtime integration. Keeping PRE-1 authority unchanged distinguishes structural implementation evidence from measured limits, same-source training proof, runtime qualification, and joint freeze review.

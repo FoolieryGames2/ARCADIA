@@ -252,10 +252,10 @@ def require_valid_scope_validation_output(
     assert type(unresolved) is list
     assert type(remaining_cycles) is int
 
-    if status == "SUFFICIENT":
+    if status in {"SUFFICIENT", "SUFFICIENT_WITHOUT_HISTORY"}:
         if unresolved:
             raise ScopeValidationSemanticError(
-                "SUFFICIENT requires unresolved_references to be empty"
+                f"{status} requires unresolved_references to be empty"
             )
     else:
         if not unresolved:
