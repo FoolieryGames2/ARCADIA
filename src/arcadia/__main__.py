@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import argparse
-from dataclasses import replace
+from dataclasses import dataclass, replace
 from pathlib import Path
 
 from arcadia.aa_runtime.serializer import ModelMessage
@@ -164,12 +164,35 @@ def _run_recipe_slice(
 
 def _interactive_help() -> None:
     print("Commands:")
+    print("  /mode recipe            use the implemented recipe pipeline")
+    print("  /mode direct            talk directly to the base model")
+    print("  /recipe PROMPT          run one prompt through recipe mode")
+    print("  /direct PROMPT          run one prompt through direct mode")
+    print("  /status                 show active mode, transport, and authority")
     print("  /config                 show current settings")
     print(f"  /set NAME VALUE          persist one setting ({', '.join(SETTING_NAMES)})")
     print("  /reset                  restore checked-in defaults")
+    print("  /restart                restart the runtime with saved settings")
     print("  /verify                 hash-check the complete model and runtime")
     print("  /help                   show these commands")
     print("  /quit                   leave the lab")
+
+
+@dataclass(frozen=True, slots=True)
+class _InteractiveExit:
+    code: int
+    settings: LabSettings
+    restart: bool = False
+
+
+def _switch_mode(workspace: Path, settings: LabSettings, mode: str) -> LabSettings:
+    try:
+        updated = set_lab_setting(workspace, "entry_mode", mode)
+    except LabConfigError as exc:
+        print(f"Mode rejected: {exc}")
+        return settings
+    print(f"Mode changed to {updated.entry_mode}.")
+    return updated
 
 
 def _interactive_loop(
@@ -179,23 +202,46 @@ def _interactive_loop(
     *,
     metrics: bool,
     server: ResidentLlamaServer | None,
-) -> int:
+) -> _InteractiveExit:
     while True:
         try:
             prompt = input("you> ").strip()
         except (EOFError, KeyboardInterrupt):
             print("\nLab closed.")
-            return 0
+            return _InteractiveExit(0, settings)
         if not prompt:
             continue
         if prompt in {"/quit", "/exit"}:
             print("Lab closed.")
-            return 0
+            return _InteractiveExit(0, settings)
         if prompt == "/help":
             _interactive_help()
             continue
         if prompt == "/config":
             _print_settings(settings)
+            continue
+        if prompt == "/status":
+            print(
+                f"Mode: {settings.entry_mode} | Transport: {settings.runtime_transport} | "
+                "Authority: T0 BASE_ONLY"
+            )
+            print("Implemented recipe span: R0; next boundary: R1 NOT_IMPLEMENTED")
+            continue
+        if prompt == "/restart":
+            return _InteractiveExit(0, load_lab_settings(workspace), restart=True)
+        if prompt.startswith("/mode ") or prompt.startswith("--mode "):
+            parts = prompt.split()
+            if len(parts) != 2:
+                print("Usage: /mode recipe or /mode direct")
+                continue
+            settings = _switch_mode(workspace, settings, parts[1].lower())
+            continue
+        if prompt.lower().startswith("run_arcadia.bat --mode "):
+            parts = prompt.split()
+            if len(parts) == 3:
+                settings = _switch_mode(workspace, settings, parts[2].lower())
+            else:
+                print("You are already inside ARCADIA. Use /mode recipe or /mode direct.")
             continue
         if prompt == "/reset":
             settings = reset_lab_settings(workspace)
@@ -217,13 +263,25 @@ def _interactive_loop(
             else:
                 print(f"Saved {parts[1]} = {settings.to_value()[parts[1]]}")
                 if parts[1] in {"context_tokens", "gpu_layers", "server_port"} and server:
-                    print("Restart the lab to apply this resident-runtime setting.")
+                    print("Use /restart to apply this resident-runtime setting.")
             continue
-        if prompt.startswith("/"):
+        forced_mode: str | None = None
+        if prompt == "/recipe":
+            settings = _switch_mode(workspace, settings, "recipe")
+            continue
+        if prompt.startswith("/recipe "):
+            forced_mode, prompt = "recipe", prompt[len("/recipe ") :].strip()
+        elif prompt == "/direct":
+            settings = _switch_mode(workspace, settings, "direct")
+            continue
+        elif prompt.startswith("/direct "):
+            forced_mode, prompt = "direct", prompt[len("/direct ") :].strip()
+        elif prompt.startswith("/"):
             print("Unknown lab command. Type /help.")
             continue
         try:
-            if settings.entry_mode == "recipe":
+            active_mode = settings.entry_mode if forced_mode is None else forced_mode
+            if active_mode == "recipe":
                 if server is None:
                     print("Recipe mode requires runtime_transport=resident.")
                     continue
@@ -244,14 +302,24 @@ def _interactive(workspace: Path, settings: LabSettings, *, metrics: bool) -> in
     identity = load_runtime_identity(workspace)
     print("ARCADIA v0.1 — local Qwen3 test lab")
     print("Standing: T0 BASE_ONLY_TEST_MODE; no adapter or production authority")
-    print(f"Mode: {settings.entry_mode} | Transport: {settings.runtime_transport}")
-    print("Type /help for controls or /quit to exit.\n")
-    if settings.runtime_transport == "process":
-        return _interactive_loop(workspace, identity, settings, metrics=metrics, server=None)
-    print("Loading the pinned model into GPU memory...")
-    with ResidentLlamaServer(workspace=workspace, runtime=identity, settings=settings) as server:
-        print(f"Resident CUDA runtime ready in {server.load_seconds:.2f}s.\n")
-        return _interactive_loop(workspace, identity, settings, metrics=metrics, server=server)
+    while True:
+        print(f"Mode: {settings.entry_mode} | Transport: {settings.runtime_transport}")
+        print("Use /mode recipe or /mode direct. Type /help for all controls.\n")
+        if settings.runtime_transport == "process":
+            result = _interactive_loop(workspace, identity, settings, metrics=metrics, server=None)
+        else:
+            print("Loading the pinned model into GPU memory...")
+            with ResidentLlamaServer(
+                workspace=workspace, runtime=identity, settings=settings
+            ) as server:
+                print(f"Resident CUDA runtime ready in {server.load_seconds:.2f}s.\n")
+                result = _interactive_loop(
+                    workspace, identity, settings, metrics=metrics, server=server
+                )
+        if not result.restart:
+            return result.code
+        settings = result.settings
+        print("Restarting ARCADIA with saved settings...\n")
 
 
 def _run_command(args: argparse.Namespace) -> int:

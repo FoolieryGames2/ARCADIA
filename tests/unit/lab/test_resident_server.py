@@ -7,6 +7,7 @@ import pytest
 from arcadia.aa_runtime.serializer import ModelMessage
 from arcadia.core.canonical_json import JsonValue
 from arcadia.lab.config import LabSettings, RuntimeIdentity
+from arcadia.lab.runner import LabRuntimeError
 from arcadia.lab.server import ResidentLlamaServer
 
 
@@ -73,3 +74,20 @@ def test_resident_token_count_uses_chat_template_endpoint(
         lambda method, endpoint, payload, **kwargs: {"input_tokens": 17},
     )
     assert server.count_tokens((ModelMessage("user", "test"),)) == 17
+
+
+def test_resident_server_rejects_an_already_occupied_port(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    _server_manifest(tmp_path)
+    server = ResidentLlamaServer(
+        workspace=tmp_path, runtime=_runtime(tmp_path), settings=_settings()
+    )
+    monkeypatch.setattr(
+        "arcadia.lab.server.verify_server_files",
+        lambda *_args: (),
+    )
+    monkeypatch.setattr(server, "_port_is_occupied", lambda: True)
+
+    with pytest.raises(LabRuntimeError, match="port 18080 is already in use"):
+        server.__enter__()

@@ -152,6 +152,14 @@ stopped explicitly at `R1 NOT_IMPLEMENTED`. The complete gate now passes 585
 tests plus Ruff and strict MyPy over 69 source files. This is not the full
 Recipe 0–8 pipeline or the complete A2 `SpecialistInvoker`/adapter lifecycle.
 
+The interactive routing correction is evidenced by
+`evidence/phase_a3/INTERACTIVE_RECIPE_MODE_CONTROL_2026-09-04.md`. Recipe mode
+is now the checked-in default; `/mode`, `/recipe`, and `/direct` commands route
+inside an already-running lab rather than becoming model prompt text. The
+resident launcher also refuses an occupied loopback port instead of silently
+adopting a stale process. This changes operator routing only; runtime authority
+remains T0 and Recipe 1–8 remain unimplemented.
+
 The shared A1 context-budget boundary is evidenced by
 `evidence/phase_a1/A1_CONTEXT_BUDGET_PROJECTION_PRE1_REPORT.md`. The mechanism
 and 20 policy identities are deterministic and tested, while checked-in numeric

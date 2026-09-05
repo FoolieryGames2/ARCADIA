@@ -12,7 +12,7 @@ from arcadia.lab.config import (
 
 DEFAULTS = """\
 config_version = 1
-entry_mode = "direct"
+entry_mode = "recipe"
 runtime_transport = "process"
 context_tokens = 2048
 max_output_tokens = 256
@@ -35,6 +35,7 @@ def test_defaults_are_loaded_and_validated(tmp_path: Path) -> None:
     settings = load_lab_settings(_workspace(tmp_path))
 
     assert settings.context_tokens == 2048
+    assert settings.entry_mode == "recipe"
     assert settings.max_output_tokens == 256
     assert settings.temperature == 0.2
     assert settings.system_prompt == "T0 only"

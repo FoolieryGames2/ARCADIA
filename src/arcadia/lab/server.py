@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import os
+import socket
 import subprocess
 import time
 import urllib.error
@@ -156,6 +157,12 @@ class ResidentLlamaServer:
                 f"resident runtime readiness failed: {detail}; run prepare_qwen3_server.bat"
             )
 
+        if self._port_is_occupied():
+            raise LabRuntimeError(
+                f"resident runtime port {self._settings.server_port} is already in use; "
+                "close the existing process or choose another server_port"
+            )
+
         log_path = self._workspace / "runtime-data" / "llama-server.log"
         log_path.parent.mkdir(parents=True, exist_ok=True)
         self._log = log_path.open("w", encoding="utf-8")
@@ -203,6 +210,15 @@ class ResidentLlamaServer:
             raise
         self.load_seconds = time.perf_counter() - started
         return self
+
+    def _port_is_occupied(self) -> bool:
+        try:
+            with socket.create_connection(
+                ("127.0.0.1", self._settings.server_port), timeout=0.25
+            ):
+                return True
+        except OSError:
+            return False
 
     def __exit__(
         self,
