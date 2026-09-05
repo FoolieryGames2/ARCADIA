@@ -1,5 +1,5 @@
 config_version = 1
-entry_mode = "direct"
+entry_mode = "recipe"
 runtime_transport = "resident"
 context_tokens = 2048
 max_output_tokens = 256

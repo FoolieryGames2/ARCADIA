@@ -79,11 +79,11 @@ After the Python environment and Qwen3 runtime are prepared, double-click
 run_arcadia.bat
 ```
 
-That opens a simple interactive prompt and prints replies beneath `ARCADIA>`.
-The lab is intentionally labeled `T0 BASE_ONLY_TEST_MODE`: it is an operator
-experience for inspecting the pinned base model, not the future Recipe 0–8
-application path. Each prompt is an independent experiment; this surface does
-not retain conversational history or create a shadow transcript.
+That opens a simple interactive prompt in `recipe` mode, the checked-in default.
+The current recipe harness executes the real zero-history Recipe 0 boundary and
+stops explicitly at `R1 NOT_IMPLEMENTED`. The lab remains labeled
+`T0 BASE_ONLY_TEST_MODE`; each prompt is an independent experiment and this
+surface does not retain conversational history or create a shadow transcript.
 
 Prepare the pinned resident CUDA server once after the base runtime build:
 
@@ -108,17 +108,27 @@ run_arcadia.bat "Test this turn" --mode recipe
 run_arcadia.bat "Talk directly to the model" --mode direct
 ```
 
-Inside the interactive lab, use `/config`, `/set NAME VALUE`, `/reset`,
-`/verify`, `/help`, and `/quit`. Persistent operator overrides are stored only
-in the Git-ignored `runtime-data/lab_settings.json`; checked-in safe defaults
-remain in `configs/lab.toml`. One-shot flags such as `--temperature 0.7`,
-`--seed 9`, or `--max-output-tokens 512` do not change saved settings.
+Inside the interactive lab, use `/mode recipe` or `/mode direct` to switch the
+persistent default without closing ARCADIA. `/recipe PROMPT` and
+`/direct PROMPT` route one prompt explicitly. `/status`, `/config`,
+`/set NAME VALUE`, `/reset`, `/restart`, `/verify`, `/help`, and `/quit` provide
+the remaining controls. Persistent operator overrides are stored only in the
+Git-ignored `runtime-data/lab_settings.json`; checked-in safe defaults remain in
+`configs/lab.toml`. One-shot flags such as `--temperature 0.7`, `--seed 9`, or
+`--max-output-tokens 512` do not change saved settings.
+If an older local override still opens in direct mode, enter `/mode recipe` or
+run `run_arcadia.bat --reset-settings` once.
 
-`--mode direct` preserves the direct model line. `--mode recipe` currently
+`--mode direct` preserves the direct model line. Recipe mode is the default and
+`--mode recipe` currently
 executes the real zero-history Recipe 0 boundary through the qualification-only
 base invoker, prints its validated trace and activation receipt, and stops
 honestly at `R1 NOT_IMPLEMENTED`. It is the first executable slice toward the
 full Recipe 0–8 base-model harness; it does not claim the later recipes ran.
+
+The resident launcher refuses to start when its configured loopback port is
+already occupied. This prevents a new CLI session from silently adopting a
+stale or unrelated server process.
 
 Run `check_architecture_freeze.bat` to execute the normal deterministic gates and
 verify the exact frozen authority payload set.

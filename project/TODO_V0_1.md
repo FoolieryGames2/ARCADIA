@@ -58,6 +58,7 @@ When this ledger and the canonical documents disagree, the canonical documents w
 | E-0031 | `evidence/phase_a1/A1_CONTEXT_BUDGET_PROJECTION_PRE1_REPORT.md`: whole-candidate exact-token projection, structural limits, explicit incomplete/exhausted standings, and 20 policy identities | PASS — PRE-1 boundary; Gate A1 open / T0 |
 | E-0032 | `evidence/phase_a3/T0_BASE_MODEL_LAB_CLI_2026-09-04.md`: validated local settings, clean one-shot/interactive CLI, exact runtime verification, and live CUDA response | PASS — operator lab only; Gate A3 open / T0 |
 | E-0033 | `evidence/phase_a3/RESIDENT_BASE_ONLY_R0_HARNESS_2026-09-04.md`: reproducible resident CUDA server, warm-request measurements, qualification invoker, and live Recipe 0 call | PASS — R0 slice only; A2/A3 and Recipe 1–8 open / T0 |
+| E-0034 | `evidence/phase_a3/INTERACTIVE_RECIPE_MODE_CONTROL_2026-09-04.md`: recipe-default CLI, in-session route controls, and fail-closed resident-port ownership | PASS — operator routing only; authority unchanged / T0 |
 
 Add evidence here before changing a phase or qualification standing.
 
