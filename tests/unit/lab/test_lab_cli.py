@@ -105,7 +105,7 @@ def test_in_session_mode_command_switches_without_reaching_model(
     assert result.code == 0
     output = capsys.readouterr().out
     assert "Mode changed to recipe." in output
-    assert "Implemented recipe span: R0" in output
+    assert "Implemented recipe span: R0-R1" in output
 
 
 def test_explicit_in_session_routes_do_not_change_the_saved_default(

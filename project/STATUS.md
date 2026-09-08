@@ -27,6 +27,9 @@ Build a truth-preserving agent runtime whose learned specialists are compartment
   base-only CUDA smoke with 37/37 layers offloaded on the RTX 2060.
 - The architecture authority's 28 declared payload hashes and exact 29-file tree reproduce.
 - Recipe 0's one-next-turn continuation correction passes all five frozen scenarios.
+- The bounded-history Recipe 0 controller and host-authoritative Recipe 1 Intent controller are
+  integrated through one resident BASE_ONLY budget chain and stop honestly at
+  `R2 Context NOT_IMPLEMENTED`.
 - All 20 learned logical modes resolve strict PRE-1 input/output schemas with exact hash identities.
 - All 20 learned modes bind unique PRE-1 context-projection policies; the shared
   boundary selects only complete schema-valid candidates using exact token counts
@@ -39,6 +42,7 @@ Build a truth-preserving agent runtime whose learned specialists are compartment
 - LoRA load/apply/isolation behavior
 - Safe HOT adapter ceiling and A/B/A lifecycle behavior
 - Logical specialist qualification beyond T0
+- A complete real-model resident BASE_ONLY R0 -> R1 run accepted by every frozen semantic gate
 - Complete measured tuning profiles and recipe-owned projection candidates
 - Training/runtime same-registry-source proof and joint A1 contract freeze
 
@@ -164,6 +168,16 @@ The shared A1 context-budget boundary is evidenced by
 `evidence/phase_a1/A1_CONTEXT_BUDGET_PROJECTION_PRE1_REPORT.md`. The mechanism
 and 20 policy identities are deterministic and tested, while checked-in numeric
 limits remain intentionally unresolved pending measured InferenceProfiles.
+
+The 2026-09-08 R0 -> R1 integration checkpoint is evidenced by
+`evidence/phase_a1/R1_RESIDENT_BASE_ONLY_INTEGRATION_CHECKPOINT_2026-09-08.md`.
+All three supplied patch hashes match their manifest, the patches apply to their exact
+`5d7a911` base in order, and the pinned workstation gate passes 615 tests plus Ruff and
+strict MyPy over 73 source files. Three bounded real resident attempts were rejected by
+the frozen host gates for, respectively, truncated JSON, an illegal empty-transcript
+history request, and an unauthorized Meaning local-key namespace. These are honest T0
+qualification failures: the implementation checkpoint is integrated, but real-model
+R0 -> R1 semantic qualification is not established and R2 remains unimplemented.
 
 ## Next implementation gate
 

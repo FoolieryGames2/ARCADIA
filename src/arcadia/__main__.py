@@ -27,8 +27,9 @@ from arcadia.lab.base_only_invoker import (
     QualificationInvocationError,
 )
 from arcadia.lab.config import SETTING_NAMES, resolve_workspace
-from arcadia.lab.recipe_harness import run_recipe0_base_only
+from arcadia.lab.recipe_harness import run_recipe01_base_only
 from arcadia.lab.server import ResidentLlamaServer, ServerResponse, verify_server_files
+from arcadia.recipes.r1.controller import Recipe1ControllerError
 
 
 def _build_parser() -> argparse.ArgumentParser:
@@ -148,18 +149,30 @@ def _run_recipe_slice(
     settings: LabSettings,
     prompt: str,
 ) -> None:
-    result = run_recipe0_base_only(
+    result = run_recipe01_base_only(
         prompt,
         invoker=BaseOnlySpecialistInvoker(server, identity, settings),
     )
-    receipt = result.activation_receipt
+    r0_elapsed = sum(receipt.elapsed_seconds for receipt in result.r0_activation_receipts)
+    r1_elapsed = sum(receipt.elapsed_seconds for receipt in result.r1_activation_receipts)
+    artifact = result.r1_result.artifact
     print("\nARCADIA RECIPE TRACE>")
-    print(f"  R0 Conversation Resolver  PASS ({receipt.elapsed_seconds:.2f}s)")
-    print(f"  SCOPE_PROPOSAL             {canonical_json_dumps(result.scope_output)}")
+    print(
+        f"  R0 Conversation Resolver  PASS "
+        f"({len(result.r0_activation_receipts)} calls, {r0_elapsed:.2f}s)"
+    )
     print(f"  Conversation Packet hash  {result.conversation_packet.packet_hash.value}")
-    print(f"  Activation receipt        {receipt.call_id}")
-    print(f"  {result.next_recipe} Intent                 {result.next_standing}")
-    print("\n[T0 BASE_ONLY | recipe harness stopped honestly before unimplemented R1]")
+    print(
+        f"  R1 Intent                 PASS "
+        f"({len(result.r1_activation_receipts)} calls, {r1_elapsed:.2f}s)"
+    )
+    print(f"  Intent Artifact hash      {artifact.artifact_hash.value}")
+    print(f"  Primary intent            {artifact.primary_intent}")
+    print(f"  Requirements              {canonical_json_dumps(list(artifact.requirements))}")
+    if result.r1_result.intent_comment is not None:
+        print(f"  Intent comment            {result.r1_result.intent_comment}")
+    print(f"  {result.next_recipe} Context                {result.next_standing}")
+    print("\n[T0 BASE_ONLY | recipe harness stopped honestly before unimplemented R2]")
 
 
 def _interactive_help() -> None:
@@ -225,7 +238,7 @@ def _interactive_loop(
                 f"Mode: {settings.entry_mode} | Transport: {settings.runtime_transport} | "
                 "Authority: T0 BASE_ONLY"
             )
-            print("Implemented recipe span: R0; next boundary: R1 NOT_IMPLEMENTED")
+            print("Implemented recipe span: R0-R1; next boundary: R2 NOT_IMPLEMENTED")
             continue
         if prompt == "/restart":
             return _InteractiveExit(0, load_lab_settings(workspace), restart=True)
@@ -292,7 +305,7 @@ def _interactive_loop(
                 if server is None
                 else _run_direct_resident(server, identity, settings, prompt)
             )
-        except (LabRuntimeError, QualificationInvocationError) as exc:
+        except (LabRuntimeError, QualificationInvocationError, Recipe1ControllerError) as exc:
             print(f"ARCADIA runtime error: {exc}")
             continue
         _print_response(response, settings, metrics=metrics)
@@ -380,7 +393,7 @@ def main(argv: list[str] | None = None) -> int:
             return print_environment_report()
         if args.command == "run":
             return _run_command(args)
-    except (LabConfigError, LabRuntimeError, QualificationInvocationError) as exc:
+    except (LabConfigError, LabRuntimeError, QualificationInvocationError, Recipe1ControllerError) as exc:
         parser.error(str(exc))
     return 2
 
