@@ -349,6 +349,16 @@ _CONTRACTS: tuple[AAEContractRecord, ...] = (
                 "Identify literal terms, references, aliases, and lookup-worthy terms.",
                 "Propose provisional meanings and preserve source refs.",
                 "Mark unresolved meaning when the bounded packet is insufficient.",
+                (
+                    "Use term_key aliases in encounter order: TERM_1, TERM_2, TERM_3, ... "
+                    "for terms; use REF_1, REF_2, REF_3, ... for unresolved references "
+                    "that require a local key."
+                ),
+                (
+                    "Treat TERM_n and REF_n as temporary call-local aliases; do not encode "
+                    "semantic meaning into a key or invent descriptive IDs."
+                ),
+                "Leave authoritative Txxx identifier allocation to the host after acceptance.",
             ),
             forbidden=(
                 "Do not decide historical truth or query SQLite.",
@@ -365,7 +375,13 @@ _CONTRACTS: tuple[AAEContractRecord, ...] = (
         ),
         refs=("SOURCE_SPAN", "TRANSCRIPT_TURN_UUID"),
         local_prefixes=("TERM_", "REF_"),
-        response="Bounded term/reference meaning records, lookup-needed flags, confidence/uncertainty, and exact source references.",
+        response=(
+            "Return bounded term/reference meaning records, lookup-needed flags, "
+            "confidence/uncertainty, and exact source references. Every term_key must use "
+            "the next call-local TERM_n alias for a term or REF_n alias for an unresolved "
+            "reference, starting at 1. Never use descriptive IDs. The host assigns "
+            "authoritative Txxx identifiers after acceptance."
+        ),
         enums={"meaning_status": ("provisional", "unresolved")},
         empty="No special term records is valid when ordinary surface meaning is sufficient; the contract must still return a valid artifact.",
         uncertainty="Meaning remains provisional; unresolved history/project meaning is routed to later Context rather than guessed.",

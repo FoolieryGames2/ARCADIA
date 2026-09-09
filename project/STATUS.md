@@ -36,6 +36,8 @@ Build a truth-preserving agent runtime whose learned specialists are compartment
 - The local qualification CLI now exposes exact CALL_DATA, serialized model messages, raw
   untrusted output, metrics, budget transitions, and separate invoker/controller acceptance
   standing without changing recipe authority.
+- Recipe 1 Term / Meaning now receives explicit call-local `TERM_n` / `REF_n` alias rules;
+  a real T0 run returned `TERM_1`, which the host accepted and canonicalized to `T001`.
 - All 20 learned logical modes resolve strict PRE-1 input/output schemas with exact hash identities.
 - All 20 learned modes bind unique PRE-1 context-projection policies; the shared
   boundary selects only complete schema-valid candidates using exact token counts
@@ -194,6 +196,14 @@ and strict MyPy over 74 source files. A real resident trace passed R0 Scope Prop
 Spell, then exposed a schema-valid Meaning response that the stronger Recipe 1 controller
 correctly rejected for an unauthorized local-key namespace. Full real-model R0 -> R1 semantic
 qualification therefore remains open.
+
+The Recipe 1 local-key guidance correction is evidenced by
+`evidence/phase_a1/R1_TERM_MEANING_LOCAL_KEY_AWARENESS_2026-09-08.md` and recorded in
+`D-0036`. The exact model-facing Specialist Awareness now requires encounter-ordered
+`TERM_n` / `REF_n` aliases, prohibits descriptive keys, and reserves authoritative `Txxx`
+allocation for the host. A real resident run cleared the previously repeating Meaning-key
+failure and advanced to Prompt Analyst, where an unrelated invented `S00` source reference
+was rejected. Host validation remains fail-closed and full R0 -> R1 qualification remains open.
 
 ## Next implementation gate
 

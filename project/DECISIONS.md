@@ -246,3 +246,10 @@ Append decisions. Keep prior entries intact; supersede them explicitly.
 - Status: accepted PRE-1 compatibility correction; semantic authority unchanged
 - Decision: Rewrite the terminal hyphen in the shared `REF_PATTERN` character class without an escape so the exact JSON Schema can be compiled by the pinned llama.cpp grammar path. Preserve representative Python `re.ASCII` acceptance equivalence and retain Recipe 1's stronger host-owned `TERM_` / `REF_` local-key checks. Refresh every affected exact compiled hash in `manifests/aae_schema_catalog_pre1.json`; keep the catalog PRE-1, non-dispatchable, unfrozen, and T0.
 - Reason: The escaped and terminal-unescaped hyphen forms accept the same reference strings under the authoritative host validator, but their schema documents hash differently and llama.cpp rejects the escaped form. Recording the new hashes prevents silent contract drift while removing the runtime incompatibility without broadening learned authority.
+
+## D-0036 — Explicit Recipe 1 Meaning local-key awareness
+
+- Date: 2026-09-08
+- Status: accepted PRE-1 model-guidance correction; host authority unchanged
+- Decision: Add explicit `TERM_MEANING` Specialist Awareness and response-contract instructions requiring encounter-ordered `TERM_1`, `TERM_2`, `TERM_3`, ... aliases for terms and `REF_1`, `REF_2`, `REF_3`, ... aliases for unresolved references that require local keys. State that these are temporary call-local aliases, prohibit semantic/descriptive IDs, and reserve authoritative `Txxx` allocation for the host after acceptance. Retain the existing deterministic namespace validator as the authority boundary.
+- Reason: The T0 model repeatedly returned schema-valid descriptive keys such as `MILK_001`, which the stronger Recipe 1 controller correctly rejected. Making the already-enforced host contract explicit in the model-facing single-source awareness improves first-pass compliance without weakening validation or transferring identifier authority to the model.
