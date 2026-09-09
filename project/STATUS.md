@@ -1,6 +1,6 @@
 # ARCADIA Operating Status
 
-Updated: 2026-09-08
+Updated: 2026-09-09
 
 ## North star
 
@@ -41,6 +41,8 @@ Build a truth-preserving agent runtime whose learned specialists are compartment
 - A schema-valid R0 history request against zero completed exchanges now produces a typed,
   hash-bound non-fatal host correction, freezes truthful `UNRESOLVABLE_WITH_TRANSCRIPT`, and
   continues into R1 without attempting impossible retrieval.
+- User-facing recipe traces now box each recipe title, identity, and description, report the
+  completed slice, and place exactly two empty lines before the next slice begins.
 - All 20 learned logical modes resolve strict PRE-1 input/output schemas with exact hash identities.
 - All 20 learned modes bind unique PRE-1 context-projection policies; the shared
   boundary selects only complete schema-valid candidates using exact token counts
@@ -215,6 +217,14 @@ exchange count of zero as a logged non-fatal host continuation. It performs no r
 preserves the model output and its hash, freezes `UNRESOLVABLE_WITH_TRANSCRIPT`, and advances
 to R1. The pinned workstation gate passes 625 tests, Ruff, and strict MyPy over 74 source
 files. This does not broaden learned authority or establish real-model R0 -> R1 qualification.
+
+The recipe-slice CLI presentation convention is specified in
+`project/CLI_RECIPE_SLICE_PRESENTATION.md`, evidenced by
+`evidence/phase_a1/CLI_RECIPE_SLICE_PRESENTATION_2026-09-09.md`, and recorded in `D-0038`.
+The active R0 and R1 trace boundaries use one central metadata registry, and an unregistered
+future recipe cannot silently render without a title box. The pinned workstation gate passes
+628 tests, Ruff, and strict MyPy over 74 source files. This is presentation-only and does not
+change recipe execution or learned authority.
 
 ## Next implementation gate
 

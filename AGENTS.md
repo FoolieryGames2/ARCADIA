@@ -37,3 +37,8 @@ Do not silently revise the frozen v0.1 architecture. Record an explicit decision
 - Do not commit model weights, raw traces, secrets, local databases, or generated caches.
 - Update `project/STATUS.md` when a gate changes standing.
 - Append consequential choices to `project/DECISIONS.md`; do not rewrite history casually.
+- When an implemented recipe slice is added to the user-facing qualification CLI, update
+  `project/CLI_RECIPE_SLICE_PRESENTATION.md` and the central
+  `RECIPE_SLICE_PRESENTATIONS` registry in `src/arcadia/lab/recipe_trace.py`. Every slice must
+  open with its title/identity/short-description box, close with its slice status, and leave
+  exactly two empty lines before the next slice box.

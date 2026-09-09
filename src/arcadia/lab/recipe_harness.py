@@ -239,6 +239,8 @@ def run_recipe0_base_only(
     )
     policy = Recipe0Policy()
     recipe_invoker = BudgetedBaseOnlyRecipeInvoker(invoker, _budget(policy), observer)
+    if observer is not None:
+        observer.slice_started(recipe_id="R0")
     r0_result = _run_r0(
         prompt,
         invoker=invoker,
@@ -248,6 +250,8 @@ def run_recipe0_base_only(
         recipe_invoker=recipe_invoker,
         policy=policy,
     )
+    if observer is not None:
+        observer.slice_completed(recipe_id="R0")
     return RecipeHarnessResult(
         conversation_packet=r0_result.packet,
         r0_result=r0_result,
@@ -296,6 +300,8 @@ def run_recipe01_base_only(
         observer,
     )
 
+    if observer is not None:
+        observer.slice_started(recipe_id="R0")
     r0_result = _run_r0(
         prompt,
         invoker=invoker,
@@ -305,13 +311,19 @@ def run_recipe01_base_only(
         recipe_invoker=recipe_invoker,
         policy=policy,
     )
+    if observer is not None:
+        observer.slice_completed(recipe_id="R0")
     r0_receipt_count = len(recipe_invoker.receipts)
 
+    if observer is not None:
+        observer.slice_started(recipe_id="R1")
     r1_result = Recipe1IntentController(invoker=recipe_invoker).run(
         packet=r0_result.packet,
         capability_availability=capability_availability,
         include_intent_comment=include_intent_comment,
     )
+    if observer is not None:
+        observer.slice_completed(recipe_id="R1")
     receipts = recipe_invoker.receipts
     return Recipe01HarnessResult(
         conversation_packet=r0_result.packet,

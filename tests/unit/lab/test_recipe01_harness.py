@@ -3,6 +3,8 @@ from __future__ import annotations
 from datetime import UTC, datetime
 from pathlib import Path
 
+import pytest
+
 from arcadia.contracts.aae.registry import (
     MODE_HOWARD_INTENT_COMMENT,
     MODE_INTENT_ORGANIZER,
@@ -18,6 +20,7 @@ from arcadia.core.ids import CanonicalId
 from arcadia.core.work_budget import WorkBudgetLedger
 from arcadia.lab.base_only_invoker import ActivationReceipt, QualificationInvocation
 from arcadia.lab.recipe_harness import run_recipe01_base_only
+from arcadia.lab.recipe_trace import ConsoleRecipeTrace
 from arcadia.storage.connection import SQLiteConnectionFactory
 from arcadia.storage.migrations import MigrationRunner
 from arcadia.storage.transcript_repository import TranscriptRepository
@@ -241,6 +244,29 @@ def test_r0_r1_harness_carries_one_budget_and_stops_at_r2(tmp_path: Path) -> Non
     assert repository.completed_exchange_count(
         conversation_id=result.conversation_packet.conversation_id
     ) == 0
+
+
+def test_r0_r1_harness_emits_recipe_slice_boundaries(
+    tmp_path: Path,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    repository = _repository(tmp_path)
+
+    run_recipe01_base_only(
+        PROMPT,
+        invoker=QueueBaseInvoker(_outputs()),  # type: ignore[arg-type]
+        transcript=repository,
+        capability_availability=_capabilities(),
+        observer=ConsoleRecipeTrace(),
+    )
+
+    output = capsys.readouterr().out.replace("\r\n", "\n")
+    r0_title = output.index("SLICE TITLE: Conversation Resolver")
+    r0_complete = output.index("SLICE STATUS> R0 Conversation Resolver COMPLETE")
+    r1_title = output.index("SLICE TITLE: Intent")
+    r1_complete = output.index("SLICE STATUS> R1 Intent COMPLETE")
+    assert r0_title < r0_complete < r1_title < r1_complete
+    assert "SLICE STATUS> R0 Conversation Resolver COMPLETE\n\n\n+" in output
 
 
 def test_zero_history_request_logs_correction_and_continues_into_r1(

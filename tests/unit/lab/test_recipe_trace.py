@@ -94,6 +94,33 @@ class FakeRuntime:
         return ServerResponse(canonical_json_dumps(self.output), 0.2, 100, 20)
 
 
+def test_recipe_slices_have_identity_boxes_and_two_empty_lines_between_them(
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    trace = ConsoleRecipeTrace()
+
+    trace.slice_started(recipe_id="R0")
+    print("R0 CONTENT")
+    trace.slice_completed(recipe_id="R0")
+    trace.slice_started(recipe_id="R1")
+
+    output = capsys.readouterr().out
+    assert "SLICE TITLE: Conversation Resolver" in output
+    assert "IDENTITY: Recipe 0 (R0)" in output
+    assert "DESCRIPTION: Selects the minimum sufficient completed-transcript context for" in output
+    assert "the current turn." in output
+    assert "SLICE TITLE: Intent" in output
+    assert "IDENTITY: Recipe 1 (R1)" in output
+    assert "DESCRIPTION: Converts the resolved turn into immutable requirements and" in output
+    assert "Context needs." in output
+    assert "SLICE STATUS> R0 Conversation Resolver COMPLETE\n\n\n+" in output.replace("\r\n", "\n")
+
+
+def test_unregistered_recipe_slice_cannot_lose_its_heading_silently() -> None:
+    with pytest.raises(ValueError, match="missing CLI presentation metadata"):
+        ConsoleRecipeTrace().slice_started(recipe_id="R2")
+
+
 def test_live_trace_logs_nonfatal_zero_history_continuation(
     capsys: pytest.CaptureFixture[str],
 ) -> None:
@@ -107,7 +134,9 @@ def test_live_trace_logs_nonfatal_zero_history_continuation(
         }
     )
     trace = ConsoleRecipeTrace()
-    base = BaseOnlySpecialistInvoker(TracingStructuredRuntime(runtime, trace), _identity(), _settings())
+    base = BaseOnlySpecialistInvoker(
+        TracingStructuredRuntime(runtime, trace), _identity(), _settings()
+    )
     invoker = BudgetedBaseOnlyRecipeInvoker(base, _budget(), trace)
 
     result = invoker.invoke(mode="SCOPE_PROPOSAL", call_data=_call_data())
@@ -137,7 +166,9 @@ def test_live_trace_reports_accepted_call_and_budget(
         }
     )
     trace = ConsoleRecipeTrace()
-    base = BaseOnlySpecialistInvoker(TracingStructuredRuntime(runtime, trace), _identity(), _settings())
+    base = BaseOnlySpecialistInvoker(
+        TracingStructuredRuntime(runtime, trace), _identity(), _settings()
+    )
     invoker = BudgetedBaseOnlyRecipeInvoker(base, _budget(), trace)
 
     result = invoker.invoke(mode="SCOPE_PROPOSAL", call_data=_call_data())
