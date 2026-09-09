@@ -18,6 +18,7 @@ from arcadia.aa_runtime.context_projection import (
     project_aae_context,
 )
 from arcadia.aa_runtime.human_renderer import render_aae_audit
+from arcadia.aa_runtime.invoker import SpecialistInvocation, SpecialistInvoker
 from arcadia.aa_runtime.serializer import (
     AAECall,
     AuthorityPlane,
@@ -43,6 +44,8 @@ __all__ = [
     "ProjectionStanding",
     "SerializedAAECall",
     "StructuralMetrics",
+    "SpecialistInvocation",
+    "SpecialistInvoker",
     "build_aae_call",
     "render_aae_audit",
     "project_aae_context",

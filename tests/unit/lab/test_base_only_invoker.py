@@ -2,14 +2,11 @@ from __future__ import annotations
 
 from collections.abc import Sequence
 
-import pytest
-
 from arcadia.aa_runtime.serializer import ModelMessage
 from arcadia.core.canonical_json import JsonValue, canonical_json_dumps
 from arcadia.core.work_budget import BudgetLimits, WorkBudgetLedger
 from arcadia.lab.base_only_invoker import (
     BaseOnlySpecialistInvoker,
-    QualificationInvocationError,
 )
 from arcadia.lab.config import LabSettings, RuntimeIdentity
 from arcadia.lab.server import ServerResponse
@@ -103,7 +100,7 @@ def test_base_only_invoker_runs_final_gate_budget_schema_and_receipt() -> None:
     assert result.budget.usage.model_input_tokens == 100
 
 
-def test_base_only_invoker_rejects_semantically_illegal_schema_valid_output() -> None:
+def test_base_only_invoker_records_nonfatal_zero_history_continuation() -> None:
     runtime = FakeRuntime(
         {
             "mode": "SCOPE_PROPOSAL",
@@ -113,7 +110,10 @@ def test_base_only_invoker_rejects_semantically_illegal_schema_valid_output() ->
             "reason_codes": ["NEEDS_HISTORY"],
         }
     )
-    with pytest.raises(QualificationInvocationError, match="history cannot be requested"):
-        BaseOnlySpecialistInvoker(runtime, _identity(), _settings()).invoke(
-            specialist_mode_id="SCOPE_PROPOSAL", call_data=_call_data(), budget=_budget()
-        )
+    result = BaseOnlySpecialistInvoker(runtime, _identity(), _settings()).invoke(
+        specialist_mode_id="SCOPE_PROPOSAL", call_data=_call_data(), budget=_budget()
+    )
+
+    assert result.output == runtime.output
+    assert len(result.receipt.host_corrections) == 1
+    assert result.receipt.host_corrections[0].code == "R0_NO_COMPLETED_HISTORY_AVAILABLE"

@@ -239,3 +239,24 @@ Append decisions. Keep prior entries intact; supersede them explicitly.
 - Status: accepted qualification-interface correction; authority unchanged
 - Decision: Make the implemented Recipe 0 slice the checked-in lab entry mode while preserving direct base-model access as an explicit setting. Treat `/mode recipe`, `/mode direct`, `/recipe PROMPT`, and `/direct PROMPT` as host CLI controls inside the interactive session; never forward them as model content. Require the process-owned resident launcher to find its configured loopback port free before launch and fail explicitly when it is occupied.
 - Reason: A direct-mode default and missing in-session route parser made the operator interface bypass the intended recipe test boundary and caused terminal-style mode instructions entered at the prompt to reach the model. Refusing a preoccupied port prevents readiness checks from accidentally adopting a stale or unrelated server, preserving the claimed session-owned process lifetime.
+
+## D-0035 — llama.cpp-compatible REF pattern identity refresh
+
+- Date: 2026-09-08
+- Status: accepted PRE-1 compatibility correction; semantic authority unchanged
+- Decision: Rewrite the terminal hyphen in the shared `REF_PATTERN` character class without an escape so the exact JSON Schema can be compiled by the pinned llama.cpp grammar path. Preserve representative Python `re.ASCII` acceptance equivalence and retain Recipe 1's stronger host-owned `TERM_` / `REF_` local-key checks. Refresh every affected exact compiled hash in `manifests/aae_schema_catalog_pre1.json`; keep the catalog PRE-1, non-dispatchable, unfrozen, and T0.
+- Reason: The escaped and terminal-unescaped hyphen forms accept the same reference strings under the authoritative host validator, but their schema documents hash differently and llama.cpp rejects the escaped form. Recording the new hashes prevents silent contract drift while removing the runtime incompatibility without broadening learned authority.
+
+## D-0036 — Explicit Recipe 1 Meaning local-key awareness
+
+- Date: 2026-09-08
+- Status: accepted PRE-1 model-guidance correction; host authority unchanged
+- Decision: Add explicit `TERM_MEANING` Specialist Awareness and response-contract instructions requiring encounter-ordered `TERM_1`, `TERM_2`, `TERM_3`, ... aliases for terms and `REF_1`, `REF_2`, `REF_3`, ... aliases for unresolved references that require local keys. State that these are temporary call-local aliases, prohibit semantic/descriptive IDs, and reserve authoritative `Txxx` allocation for the host after acceptance. Retain the existing deterministic namespace validator as the authority boundary.
+- Reason: The T0 model repeatedly returned schema-valid descriptive keys such as `MILK_001`, which the stronger Recipe 1 controller correctly rejected. Making the already-enforced host contract explicit in the model-facing single-source awareness improves first-pass compliance without weakening validation or transferring identifier authority to the model.
+
+## D-0037 — Typed zero-history Recipe 0 host continuation
+
+- Date: 2026-09-08
+- Status: accepted PRE-1 host-policy correction; recipe and learned authority unchanged
+- Decision: When a schema-valid `SCOPE_PROPOSAL` output requests recent or targeted history while the host-authoritative `completed_exchange_count` is zero, do not attempt retrieval and do not reject the turn. Preserve the original model output, attach a hash-bound `R0_NO_COMPLETED_HISTORY_AVAILABLE` host correction with action `CONTINUE_TO_INTENT_WITH_UNRESOLVABLE_TRANSCRIPT`, freeze an empty `ConversationPacket` with `scope_status=UNRESOLVABLE_WITH_TRANSCRIPT`, and continue to Recipe 1. This condition takes precedence over request-parameter cross-field checks because no request parameters can select nonexistent history. JSON/schema failures, non-history semantic failures, and all nonzero-history cases remain fail-closed. The generic correction envelope may be reused only by separately named, bounded, and tested host policies.
+- Reason: Empty transcript state is deterministic host knowledge, so a learned request cannot make recovery possible and should not strand the recipe. Recording a correction instead of relabeling the model output as `SUFFICIENT_WITHOUT_HISTORY` preserves truth, makes the continuation visible in the CLI and receipt, and creates an auditable pattern for future narrow host-continuation behavior without weakening the surrounding contract.

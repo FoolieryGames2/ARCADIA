@@ -620,6 +620,19 @@ class TranscriptRepository:
                 raise TranscriptIntegrityError("SQLite returned a malformed exchange count")
             return row["exchange_count"]
 
+    def load_completed_exchange(self, *, turn_id: CanonicalId) -> CompletedExchange:
+        """Load one exact completed exchange by authoritative turn UUID."""
+
+        self._require_id("turn_id", turn_id)
+        with self.factory.connect(ConnectionAccess.READ_ONLY) as connection:
+            self._require_current_schema(connection)
+            turn = self._find_turn_any_project(connection, turn_id)
+            if turn is None or turn.project_id != self.project_id:
+                raise TranscriptNotFoundError("project turn does not exist")
+            if turn.status is not TurnStatus.COMPLETED:
+                raise TranscriptNotFoundError("project turn is not a completed exchange")
+            return self._load_exchange(connection, turn)
+
     def load_recent_exchanges(
         self, *, conversation_id: CanonicalId, limit: int
     ) -> tuple[CompletedExchange, ...]:
@@ -639,6 +652,45 @@ class TranscriptRepository:
                 LIMIT ?
                 """,
                 (str(self.project_id), str(conversation_id), limit),
+            ).fetchall()
+            exchanges = [
+                self._load_exchange(connection, self._decode_turn(row)) for row in rows
+            ]
+        return tuple(reversed(exchanges))
+
+    def load_recent_exchanges_before(
+        self,
+        *,
+        conversation_id: CanonicalId,
+        before_turn_ordinal: int,
+        limit: int,
+    ) -> tuple[CompletedExchange, ...]:
+        """Load only the next older completed-exchange delta before one turn ordinal."""
+
+        self._require_id("conversation_id", conversation_id)
+        if type(before_turn_ordinal) is not int or before_turn_ordinal < 0:
+            raise TranscriptFieldError("before_turn_ordinal must be a nonnegative exact integer")
+        self._require_bound("limit", limit, MAX_RECENT_EXCHANGES)
+        with self.factory.connect(ConnectionAccess.READ_ONLY) as connection:
+            self._require_current_schema(connection)
+            self._require_conversation(connection, conversation_id)
+            rows = connection.execute(
+                """
+                SELECT t.turn_uuid, t.project_uuid, t.conversation_uuid,
+                       t.turn_ordinal, t.created_at, s.status
+                FROM conversation_turns AS t
+                JOIN transcript_turn_states AS s ON s.turn_uuid=t.turn_uuid
+                WHERE t.project_uuid=? AND t.conversation_uuid=? AND s.status='COMPLETED'
+                  AND t.turn_ordinal < ?
+                ORDER BY turn_ordinal DESC
+                LIMIT ?
+                """,
+                (
+                    str(self.project_id),
+                    str(conversation_id),
+                    before_turn_ordinal,
+                    limit,
+                ),
             ).fetchall()
             exchanges = [
                 self._load_exchange(connection, self._decode_turn(row)) for row in rows

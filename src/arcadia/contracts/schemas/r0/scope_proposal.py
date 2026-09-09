@@ -2,12 +2,15 @@
 
 from __future__ import annotations
 
+from dataclasses import dataclass
 from typing import Final
 
+from arcadia.aa_runtime.invoker import HostCorrection
 from arcadia.contracts.aae.registry import MODE_SCOPE_PROPOSAL, get_contract
 from arcadia.contracts.policies.schema_rules import require_fixed_top_level_output_shape
 from arcadia.contracts.policies.vocabulary import MACHINE_LABEL_PATTERN_PRE_V1
 from arcadia.core.canonical_json import JsonValue, strict_json_loads
+from arcadia.core.hashing import sha256_canonical_json
 from arcadia.core.validation import JSON_SCHEMA_DIALECT, StrictJsonSchema, compile_strict_schema
 
 # These are PRE-version safety caps for the first executable A1 slice. They are
@@ -17,6 +20,8 @@ PRE1_MAX_TARGET_TERMS: Final = 8
 PRE1_MAX_TARGET_TERM_CHARS: Final = 256
 PRE1_MAX_REASON_CODES: Final = 16
 PRE1_MAX_REASON_CODE_CHARS: Final = 64
+NO_COMPLETED_HISTORY_CORRECTION: Final = "R0_NO_COMPLETED_HISTORY_AVAILABLE"
+NO_COMPLETED_HISTORY_ACTION: Final = "CONTINUE_TO_INTENT_WITH_UNRESOLVABLE_TRANSCRIPT"
 
 _CANONICAL_TOKEN_PATTERN: Final = r"^[A-Za-z0-9][A-Za-z0-9._:+/\-]{0,127}$"
 _REASON_CODE_PATTERN: Final = MACHINE_LABEL_PATTERN_PRE_V1
@@ -175,18 +180,40 @@ class ScopeProposalSemanticError(ValueError):
     """The output is schema-valid but violates the bounded R0 proposal contract."""
 
 
+@dataclass(frozen=True, slots=True)
+class ScopeProposalValidation:
+    """Validated model output plus any narrow deterministic host continuation evidence."""
+
+    output: dict[str, JsonValue]
+    host_corrections: tuple[HostCorrection, ...] = ()
+
+
+def _no_completed_history_correction(output: dict[str, JsonValue]) -> HostCorrection:
+    return HostCorrection(
+        code=NO_COMPLETED_HISTORY_CORRECTION,
+        source_mode=MODE_SCOPE_PROPOSAL,
+        action=NO_COMPLETED_HISTORY_ACTION,
+        detail=(
+            "Model requested transcript history when completed_exchange_count was 0; "
+            "no retrieval was attempted and the host continued with an "
+            "UNRESOLVABLE_WITH_TRANSCRIPT Conversation Packet."
+        ),
+        source_output_hash=sha256_canonical_json(output),
+    )
+
+
 def _require_object(value: JsonValue, label: str) -> dict[str, JsonValue]:
     if type(value) is not dict:
         raise ScopeProposalSemanticError(f"{label} must be a JSON object")
     return value
 
 
-def require_valid_scope_proposal_output(
+def validate_scope_proposal_output(
     output: JsonValue,
     *,
     call_data: JsonValue,
-) -> JsonValue:
-    """Require schema-valid output plus cross-field and host-policy consistency.
+) -> ScopeProposalValidation:
+    """Validate output and derive the sole allowed non-fatal R0 host continuation.
 
     The three first-pass outcomes are mutually exclusive scope strategies:
     no history, recent contiguous lookback, or targeted transcript search.
@@ -228,14 +255,19 @@ def require_valid_scope_proposal_output(
     max_recent = policy["max_contiguous_lookback_exchanges"]
     assert type(completed_exchange_count) is int
     assert type(max_recent) is int
+
+    # Once the authoritative transcript count is zero, request parameters cannot
+    # select any history. Preserve the model output as evidence, record the host
+    # correction, and let Recipe 0 produce its truthful no-retrieval terminal.
+    if status in {"REQUEST_RECENT", "REQUEST_TARGETED"} and completed_exchange_count == 0:
+        return ScopeProposalValidation(
+            output=output_obj,
+            host_corrections=(_no_completed_history_correction(output_obj),),
+        )
+
     if recent_count > max_recent:
         raise ScopeProposalSemanticError(
             "recent_exchange_count exceeds host max_contiguous_lookback_exchanges"
-        )
-
-    if status in {"REQUEST_RECENT", "REQUEST_TARGETED"} and completed_exchange_count == 0:
-        raise ScopeProposalSemanticError(
-            "history cannot be requested when completed_exchange_count is 0"
         )
 
     if status == "SUFFICIENT_WITHOUT_HISTORY":
@@ -248,13 +280,13 @@ def require_valid_scope_proposal_output(
             raise ScopeProposalSemanticError(
                 "REQUEST_RECENT requires recent_exchange_count >= 1"
             )
-        if recent_count > completed_exchange_count:
-            raise ScopeProposalSemanticError(
-                "recent_exchange_count exceeds completed_exchange_count"
-            )
         if target_terms:
             raise ScopeProposalSemanticError(
                 "REQUEST_RECENT may not also request targeted terms"
+            )
+        if recent_count > completed_exchange_count:
+            raise ScopeProposalSemanticError(
+                "recent_exchange_count exceeds completed_exchange_count"
             )
     elif status == "REQUEST_TARGETED":
         if not target_terms:
@@ -268,7 +300,17 @@ def require_valid_scope_proposal_output(
     else:  # pragma: no cover - schema enum makes this unreachable.
         raise ScopeProposalSemanticError(f"unsupported SCOPE_PROPOSAL status: {status}")
 
-    return output
+    return ScopeProposalValidation(output=output_obj)
+
+
+def require_valid_scope_proposal_output(
+    output: JsonValue,
+    *,
+    call_data: JsonValue,
+) -> JsonValue:
+    """Return validated output after any allowed non-fatal host continuation decision."""
+
+    return validate_scope_proposal_output(output, call_data=call_data).output
 
 
 def require_valid_scope_proposal_output_json(

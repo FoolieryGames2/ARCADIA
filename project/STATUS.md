@@ -1,6 +1,6 @@
 # ARCADIA Operating Status
 
-Updated: 2026-09-04
+Updated: 2026-09-08
 
 ## North star
 
@@ -27,6 +27,20 @@ Build a truth-preserving agent runtime whose learned specialists are compartment
   base-only CUDA smoke with 37/37 layers offloaded on the RTX 2060.
 - The architecture authority's 28 declared payload hashes and exact 29-file tree reproduce.
 - Recipe 0's one-next-turn continuation correction passes all five frozen scenarios.
+- The bounded-history Recipe 0 controller and host-authoritative Recipe 1 Intent controller are
+  integrated through one resident BASE_ONLY budget chain and stop honestly at
+  `R2 Context NOT_IMPLEMENTED`.
+- Interactive recipe prompts now retain one host-owned conversation UUID across resident
+  restarts, expose `/new` for an explicit new conversation, and keep direct-mode prompts out of
+  the recipe transcript.
+- The local qualification CLI now exposes exact CALL_DATA, serialized model messages, raw
+  untrusted output, metrics, budget transitions, and separate invoker/controller acceptance
+  standing without changing recipe authority.
+- Recipe 1 Term / Meaning now receives explicit call-local `TERM_n` / `REF_n` alias rules;
+  a real T0 run returned `TERM_1`, which the host accepted and canonicalized to `T001`.
+- A schema-valid R0 history request against zero completed exchanges now produces a typed,
+  hash-bound non-fatal host correction, freezes truthful `UNRESOLVABLE_WITH_TRANSCRIPT`, and
+  continues into R1 without attempting impossible retrieval.
 - All 20 learned logical modes resolve strict PRE-1 input/output schemas with exact hash identities.
 - All 20 learned modes bind unique PRE-1 context-projection policies; the shared
   boundary selects only complete schema-valid candidates using exact token counts
@@ -39,6 +53,7 @@ Build a truth-preserving agent runtime whose learned specialists are compartment
 - LoRA load/apply/isolation behavior
 - Safe HOT adapter ceiling and A/B/A lifecycle behavior
 - Logical specialist qualification beyond T0
+- A complete real-model resident BASE_ONLY R0 -> R1 run accepted by every frozen semantic gate
 - Complete measured tuning profiles and recipe-owned projection candidates
 - Training/runtime same-registry-source proof and joint A1 contract freeze
 
@@ -164,6 +179,42 @@ The shared A1 context-budget boundary is evidenced by
 `evidence/phase_a1/A1_CONTEXT_BUDGET_PROJECTION_PRE1_REPORT.md`. The mechanism
 and 20 policy identities are deterministic and tested, while checked-in numeric
 limits remain intentionally unresolved pending measured InferenceProfiles.
+
+The 2026-09-08 R0 -> R1 integration checkpoint is evidenced by
+`evidence/phase_a1/R1_RESIDENT_BASE_ONLY_INTEGRATION_CHECKPOINT_2026-09-08.md`.
+All three supplied patch hashes match their manifest, the patches apply to their exact
+`5d7a911` base in order, and the pinned workstation gate passes 615 tests plus Ruff and
+strict MyPy over 73 source files. Three bounded real resident attempts were rejected by
+the frozen host gates for, respectively, truncated JSON, an illegal empty-transcript
+history request, and an unauthorized Meaning local-key namespace. These are honest T0
+qualification failures: the implementation checkpoint is integrated, but real-model
+R0 -> R1 semantic qualification is not established and R2 remains unimplemented.
+
+The follow-up conversation/regex and live-trace corrections are evidenced by
+`evidence/phase_a1/R0_R1_CONVERSATION_SESSION_AND_REF_REGEX_CORRECTION_2026-09-08.md`
+and `evidence/phase_a1/R0_R1_LIVE_QUALIFICATION_TRACE_CORRECTION_2026-09-08.md`.
+The semantically equivalent llama.cpp-compatible REF regex required an explicit PRE-1 schema
+hash-catalog refresh recorded in `D-0035`. The pinned workstation now passes 620 tests, Ruff,
+and strict MyPy over 74 source files. A real resident trace passed R0 Scope Proposal and R1
+Spell, then exposed a schema-valid Meaning response that the stronger Recipe 1 controller
+correctly rejected for an unauthorized local-key namespace. Full real-model R0 -> R1 semantic
+qualification therefore remains open.
+
+The Recipe 1 local-key guidance correction is evidenced by
+`evidence/phase_a1/R1_TERM_MEANING_LOCAL_KEY_AWARENESS_2026-09-08.md` and recorded in
+`D-0036`. The exact model-facing Specialist Awareness now requires encounter-ordered
+`TERM_n` / `REF_n` aliases, prohibits descriptive keys, and reserves authoritative `Txxx`
+allocation for the host. A real resident run cleared the previously repeating Meaning-key
+failure and advanced to Prompt Analyst, where an unrelated invented `S00` source reference
+was rejected. Host validation remains fail-closed and full R0 -> R1 qualification remains open.
+
+The zero-history continuation correction is evidenced by
+`evidence/phase_a1/R0_ZERO_HISTORY_HOST_CONTINUATION_2026-09-08.md` and recorded in
+`D-0037`. R0 now treats only a schema-valid history request with an authoritative completed
+exchange count of zero as a logged non-fatal host continuation. It performs no retrieval,
+preserves the model output and its hash, freezes `UNRESOLVABLE_WITH_TRANSCRIPT`, and advances
+to R1. The pinned workstation gate passes 625 tests, Ruff, and strict MyPy over 74 source
+files. This does not broaden learned authority or establish real-model R0 -> R1 qualification.
 
 ## Next implementation gate
 

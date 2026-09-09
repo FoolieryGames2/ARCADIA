@@ -11,7 +11,7 @@ from arcadia.core.canonical_json import JsonValue
 from arcadia.core.validation import JSON_SCHEMA_DIALECT, StrictJsonSchema, compile_strict_schema
 
 TOKEN_PATTERN: Final = r"^[A-Za-z0-9][A-Za-z0-9._:+/\-]{0,127}$"
-REF_PATTERN: Final = r"^[A-Z][A-Z0-9_]*[0-9][A-Z0-9._:+/\-]*$"
+REF_PATTERN: Final = r"^[A-Z][A-Z0-9_]*[0-9][A-Z0-9._:+/-]*$"
 LOCAL_KEY_PATTERN: Final = r"^[A-Z][A-Z0-9_]*[0-9]+$"
 HASH_PATTERN: Final = r"^sha256:[0-9a-f]{64}$"
 LABEL_PATTERN: Final = r"^[A-Z][A-Z0-9_]{0,63}$"

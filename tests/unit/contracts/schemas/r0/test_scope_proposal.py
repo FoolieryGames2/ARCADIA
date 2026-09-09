@@ -4,12 +4,15 @@ import pytest
 
 from arcadia.contracts.aae.registry import get_contract
 from arcadia.contracts.schemas.r0.scope_proposal import (
+    NO_COMPLETED_HISTORY_ACTION,
+    NO_COMPLETED_HISTORY_CORRECTION,
     PRE1_MAX_RAW_PROMPT_CHARS,
     SCOPE_PROPOSAL_INPUT_SCHEMA,
     SCOPE_PROPOSAL_OUTPUT_SCHEMA,
     ScopeProposalSemanticError,
     require_valid_scope_proposal_output,
     require_valid_scope_proposal_output_json,
+    validate_scope_proposal_output,
 )
 from arcadia.core.canonical_json import DuplicateJsonKeyError, TrailingJsonContentError
 from arcadia.core.validation import InstanceValidationError
@@ -172,38 +175,44 @@ def test_model_output_parser_keeps_strict_json_rejections() -> None:
         )
 
 
-def test_history_request_is_rejected_when_no_completed_exchange_exists() -> None:
+@pytest.mark.parametrize(
+    "output",
+    [
+        {
+            "mode": "SCOPE_PROPOSAL",
+            "status": "REQUEST_RECENT",
+            "recent_exchange_count": 1,
+            "target_terms": [],
+            "reason_codes": ["UNRESOLVED_REFERENCE"],
+        },
+        {
+            "mode": "SCOPE_PROPOSAL",
+            "status": "REQUEST_TARGETED",
+            "recent_exchange_count": 0,
+            "target_terms": ["adapter residency"],
+            "reason_codes": ["TARGETED_PRIOR_TOPIC_REFERENCE"],
+        },
+        {
+            "mode": "SCOPE_PROPOSAL",
+            "status": "REQUEST_RECENT",
+            "recent_exchange_count": 0,
+            "target_terms": ["what did i say before"],
+            "reason_codes": ["RECENT_EXCHANGE_MISSING"],
+        },
+    ],
+)
+def test_history_request_becomes_typed_continuation_when_no_exchange_exists(
+    output: dict[str, object],
+) -> None:
     call_data = _call_data(completed_exchange_count=0)
+    result = validate_scope_proposal_output(output, call_data=call_data)
 
-    with pytest.raises(
-        ScopeProposalSemanticError,
-        match="history cannot be requested when completed_exchange_count is 0",
-    ):
-        require_valid_scope_proposal_output(
-            {
-                "mode": "SCOPE_PROPOSAL",
-                "status": "REQUEST_RECENT",
-                "recent_exchange_count": 1,
-                "target_terms": [],
-                "reason_codes": ["UNRESOLVED_REFERENCE"],
-            },
-            call_data=call_data,
-        )
-
-    with pytest.raises(
-        ScopeProposalSemanticError,
-        match="history cannot be requested when completed_exchange_count is 0",
-    ):
-        require_valid_scope_proposal_output(
-            {
-                "mode": "SCOPE_PROPOSAL",
-                "status": "REQUEST_TARGETED",
-                "recent_exchange_count": 0,
-                "target_terms": ["adapter residency"],
-                "reason_codes": ["TARGETED_PRIOR_TOPIC_REFERENCE"],
-            },
-            call_data=call_data,
-        )
+    assert result.output == output
+    assert len(result.host_corrections) == 1
+    correction = result.host_corrections[0]
+    assert correction.code == NO_COMPLETED_HISTORY_CORRECTION
+    assert correction.action == NO_COMPLETED_HISTORY_ACTION
+    assert require_valid_scope_proposal_output(output, call_data=call_data) == output
 
 
 def test_recent_request_cannot_exceed_history_that_actually_exists() -> None:
