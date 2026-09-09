@@ -1,6 +1,6 @@
 # ARCADIA Operating Status
 
-Updated: 2026-09-04
+Updated: 2026-09-08
 
 ## North star
 
@@ -38,6 +38,9 @@ Build a truth-preserving agent runtime whose learned specialists are compartment
   standing without changing recipe authority.
 - Recipe 1 Term / Meaning now receives explicit call-local `TERM_n` / `REF_n` alias rules;
   a real T0 run returned `TERM_1`, which the host accepted and canonicalized to `T001`.
+- A schema-valid R0 history request against zero completed exchanges now produces a typed,
+  hash-bound non-fatal host correction, freezes truthful `UNRESOLVABLE_WITH_TRANSCRIPT`, and
+  continues into R1 without attempting impossible retrieval.
 - All 20 learned logical modes resolve strict PRE-1 input/output schemas with exact hash identities.
 - All 20 learned modes bind unique PRE-1 context-projection policies; the shared
   boundary selects only complete schema-valid candidates using exact token counts
@@ -204,6 +207,14 @@ The Recipe 1 local-key guidance correction is evidenced by
 allocation for the host. A real resident run cleared the previously repeating Meaning-key
 failure and advanced to Prompt Analyst, where an unrelated invented `S00` source reference
 was rejected. Host validation remains fail-closed and full R0 -> R1 qualification remains open.
+
+The zero-history continuation correction is evidenced by
+`evidence/phase_a1/R0_ZERO_HISTORY_HOST_CONTINUATION_2026-09-08.md` and recorded in
+`D-0037`. R0 now treats only a schema-valid history request with an authoritative completed
+exchange count of zero as a logged non-fatal host continuation. It performs no retrieval,
+preserves the model output and its hash, freezes `UNRESOLVABLE_WITH_TRANSCRIPT`, and advances
+to R1. The pinned workstation gate passes 625 tests, Ruff, and strict MyPy over 74 source
+files. This does not broaden learned authority or establish real-model R0 -> R1 qualification.
 
 ## Next implementation gate
 

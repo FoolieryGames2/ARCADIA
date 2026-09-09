@@ -7,10 +7,11 @@ from dataclasses import dataclass
 from typing import Protocol
 
 from arcadia.aa_runtime.call_data_gate import require_pre_dispatch_call_data
+from arcadia.aa_runtime.invoker import HostCorrection
 from arcadia.aa_runtime.serializer import ModelMessage, serialize_aae_call
 from arcadia.contracts.aae.registry import get_contract
 from arcadia.contracts.schemas.catalog import LEARNED_MODE_SCHEMAS
-from arcadia.contracts.schemas.r0.scope_proposal import require_valid_scope_proposal_output
+from arcadia.contracts.schemas.r0.scope_proposal import validate_scope_proposal_output
 from arcadia.contracts.schemas.r0.scope_validation import require_valid_scope_validation_output
 from arcadia.core.canonical_json import JsonValue, strict_json_loads
 from arcadia.core.hashing import Sha256Digest, sha256_canonical_json
@@ -57,6 +58,7 @@ class ActivationReceipt:
     elapsed_seconds: float
     fresh_context: bool
     fresh_sampler: bool
+    host_corrections: tuple[HostCorrection, ...] = ()
 
 
 @dataclass(frozen=True, slots=True)
@@ -66,12 +68,15 @@ class QualificationInvocation:
     budget: WorkBudgetLedger
 
 
-def _semantic_validate(mode: str, output: JsonValue, call_data: JsonValue) -> JsonValue:
+def _semantic_validate(
+    mode: str, output: JsonValue, call_data: JsonValue
+) -> tuple[JsonValue, tuple[HostCorrection, ...]]:
     if mode == "SCOPE_PROPOSAL":
-        return require_valid_scope_proposal_output(output, call_data=call_data)
+        result = validate_scope_proposal_output(output, call_data=call_data)
+        return result.output, result.host_corrections
     if mode == "SCOPE_VALIDATION":
-        return require_valid_scope_validation_output(output, call_data=call_data)
-    return LEARNED_MODE_SCHEMAS[mode].require_valid_output(output)
+        return require_valid_scope_validation_output(output, call_data=call_data), ()
+    return LEARNED_MODE_SCHEMAS[mode].require_valid_output(output), ()
 
 
 @dataclass(slots=True)
@@ -123,7 +128,9 @@ class BaseOnlySpecialistInvoker:
         )
         try:
             output = strict_json_loads(response.text)
-            validated = _semantic_validate(specialist_mode_id, output, gated.value)
+            validated, host_corrections = _semantic_validate(
+                specialist_mode_id, output, gated.value
+            )
         except ValueError as exc:
             raise QualificationInvocationError(
                 f"{specialist_mode_id} output rejected: {exc}"
@@ -147,5 +154,6 @@ class BaseOnlySpecialistInvoker:
             elapsed_seconds=response.elapsed_seconds,
             fresh_context=True,
             fresh_sampler=True,
+            host_corrections=host_corrections,
         )
         return QualificationInvocation(output=validated, receipt=receipt, budget=authorized)

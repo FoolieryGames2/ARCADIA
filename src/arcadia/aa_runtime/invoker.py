@@ -11,7 +11,19 @@ from dataclasses import dataclass
 from typing import Protocol
 
 from arcadia.core.canonical_json import JsonValue
+from arcadia.core.hashing import Sha256Digest
 from arcadia.core.ids import CanonicalId
+
+
+@dataclass(frozen=True, slots=True)
+class HostCorrection:
+    """Typed, hash-bound evidence that the host continued after a narrow model defect."""
+
+    code: str
+    source_mode: str
+    action: str
+    detail: str
+    source_output_hash: Sha256Digest
 
 
 @dataclass(frozen=True, slots=True)
@@ -22,6 +34,7 @@ class SpecialistInvocation:
     mode: str
     call_data: JsonValue
     output: JsonValue
+    host_corrections: tuple[HostCorrection, ...] = ()
 
 
 class SpecialistInvoker(Protocol):

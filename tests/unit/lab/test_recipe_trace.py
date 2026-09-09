@@ -10,7 +10,6 @@ from arcadia.core.canonical_json import JsonValue, canonical_json_dumps
 from arcadia.core.work_budget import BudgetLimits, WorkBudgetLedger
 from arcadia.lab.base_only_invoker import (
     BaseOnlySpecialistInvoker,
-    QualificationInvocationError,
 )
 from arcadia.lab.config import LabSettings, RuntimeIdentity
 from arcadia.lab.recipe_bridge import BudgetedBaseOnlyRecipeInvoker
@@ -95,7 +94,7 @@ class FakeRuntime:
         return ServerResponse(canonical_json_dumps(self.output), 0.2, 100, 20)
 
 
-def test_live_trace_prints_raw_model_output_before_semantic_rejection(
+def test_live_trace_logs_nonfatal_zero_history_continuation(
     capsys: pytest.CaptureFixture[str],
 ) -> None:
     runtime = FakeRuntime(
@@ -111,16 +110,18 @@ def test_live_trace_prints_raw_model_output_before_semantic_rejection(
     base = BaseOnlySpecialistInvoker(TracingStructuredRuntime(runtime, trace), _identity(), _settings())
     invoker = BudgetedBaseOnlyRecipeInvoker(base, _budget(), trace)
 
-    with pytest.raises(QualificationInvocationError, match="history cannot be requested"):
-        invoker.invoke(mode="SCOPE_PROPOSAL", call_data=_call_data())
+    result = invoker.invoke(mode="SCOPE_PROPOSAL", call_data=_call_data())
 
     output = capsys.readouterr().out
+    assert result.host_corrections[0].code == "R0_NO_COMPLETED_HISTORY_AVAILABLE"
     assert "HOST CALL_DATA>" in output
     assert "MODEL INPUT [SCOPE_PROPOSAL]>" in output
     assert "MODEL RAW OUTPUT [SCOPE_PROPOSAL] [UNTRUSTED]>" in output
     assert '"status":"REQUEST_RECENT"' in output
-    assert "BASE_ONLY INVOKER> REJECTED mode=SCOPE_PROPOSAL" in output
-    assert output.index("MODEL RAW OUTPUT") < output.index("BASE_ONLY INVOKER> REJECTED")
+    assert "HOST CORRECTION [NON-FATAL]>" in output
+    assert "CONTINUE_TO_INTENT_WITH_UNRESOLVABLE_TRANSCRIPT" in output
+    assert "BASE_ONLY INVOKER> PASS_WITH_HOST_CONTINUATION" in output
+    assert output.index("MODEL RAW OUTPUT") < output.index("HOST CORRECTION [NON-FATAL]")
 
 
 def test_live_trace_reports_accepted_call_and_budget(

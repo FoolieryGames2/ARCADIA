@@ -179,6 +179,33 @@ def test_zero_history_freezes_without_validation(tmp_path: Path) -> None:
     assert result.packet.scope_status == "SUFFICIENT_WITHOUT_HISTORY"
     assert result.packet.included_turns == ()
     assert result.validation_invocation is None
+
+
+def test_zero_available_history_request_continues_with_typed_unresolvable_packet(
+    tmp_path: Path,
+) -> None:
+    repository = _repository(tmp_path)
+    conversation_id = _conversation(repository)
+    prompt = "Repeat what I said before."
+    turn_id = _start_current(repository, conversation_id, prompt)
+    invoker = QueueInvoker(
+        [_proposal("REQUEST_TARGETED", targets=["what I said before"])]
+    )
+
+    result = _controller(repository, invoker).run(
+        turn_id=turn_id,
+        conversation_id=conversation_id,
+        raw_user_prompt=prompt,
+    )
+
+    assert result.packet.scope_status == "UNRESOLVABLE_WITH_TRANSCRIPT"
+    assert result.packet.included_turns == ()
+    assert result.packet.unresolved_references == ("what I said before",)
+    assert result.validation_invocations == ()
+    assert result.proposal_invocation is not None
+    assert result.proposal_invocation.host_corrections[0].code == (
+        "R0_NO_COMPLETED_HISTORY_AVAILABLE"
+    )
     assert [mode for mode, _ in invoker.calls] == [MODE_SCOPE_PROPOSAL]
     call = invoker.calls[0][1]
     assert type(call) is dict

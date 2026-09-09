@@ -44,6 +44,7 @@ class BudgetedBaseOnlyRecipeInvoker:
             mode=mode,
             call_data=call_data,
             output=invocation.output,
+            host_corrections=invocation.receipt.host_corrections,
         )
 
     @property

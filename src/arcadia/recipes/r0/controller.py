@@ -3,14 +3,14 @@
 from __future__ import annotations
 
 from collections.abc import Callable
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 
-from arcadia.aa_runtime.invoker import SpecialistInvocation, SpecialistInvoker
+from arcadia.aa_runtime.invoker import HostCorrection, SpecialistInvocation, SpecialistInvoker
 from arcadia.contracts.aae.registry import MODE_SCOPE_PROPOSAL, MODE_SCOPE_VALIDATION
 from arcadia.contracts.schemas.r0.scope_proposal import (
     SCOPE_PROPOSAL_INPUT_SCHEMA,
     ScopeProposalSemanticError,
-    require_valid_scope_proposal_output,
+    validate_scope_proposal_output,
 )
 from arcadia.contracts.schemas.r0.scope_validation import (
     PRE1_MAX_RETRIEVED_TURNS,
@@ -38,6 +38,17 @@ class Recipe0ControllerError(RuntimeError):
 
 class Recipe0HistoryBoundExceeded(Recipe0ControllerError):
     """Exact retrieved transcript evidence exceeds the configured injected-history bound."""
+
+
+def _merge_host_corrections(
+    existing: tuple[HostCorrection, ...],
+    added: tuple[HostCorrection, ...],
+) -> tuple[HostCorrection, ...]:
+    merged = list(existing)
+    for correction in added:
+        if correction not in merged:
+            merged.append(correction)
+    return tuple(merged)
 
 
 def _frozen_exchange(exchange: CompletedExchange) -> dict[str, JsonValue]:
@@ -641,11 +652,36 @@ class Recipe0ConversationController:
         if type(proposal.output) is not dict:
             raise Recipe0ControllerError("SCOPE_PROPOSAL output must be an object")
         try:
-            require_valid_scope_proposal_output(proposal.output, call_data=proposal_call)
+            validation = validate_scope_proposal_output(
+                proposal.output, call_data=proposal_call
+            )
         except ScopeProposalSemanticError as exc:
             raise Recipe0ControllerError(str(exc)) from exc
 
-        status = proposal.output["status"]
+        proposal_output = validation.output
+        proposal = replace(
+            proposal,
+            output=proposal_output,
+            host_corrections=_merge_host_corrections(
+                proposal.host_corrections, validation.host_corrections
+            ),
+        )
+
+        if validation.host_corrections:
+            raw_terms = proposal_output["target_terms"]
+            assert type(raw_terms) is list
+            packet = ConversationPacket.freeze(
+                turn_id=turn_id,
+                conversation_id=conversation_id,
+                raw_user_prompt=raw_user_prompt,
+                transcript_commit_seq=self.transcript.transcript_commit_seq(),
+                included_turns=(),
+                unresolved_references=tuple(str(item) for item in raw_terms),
+                scope_status="UNRESOLVABLE_WITH_TRANSCRIPT",
+            )
+            return Recipe0Result(packet, proposal, ())
+
+        status = proposal_output["status"]
         assert type(status) is str
         if status == "SUFFICIENT_WITHOUT_HISTORY":
             packet = ConversationPacket.freeze(
@@ -666,7 +702,7 @@ class Recipe0ConversationController:
 
         state = _HistoryState.empty()
         if status == "REQUEST_RECENT":
-            count = proposal.output["recent_exchange_count"]
+            count = proposal_output["recent_exchange_count"]
             assert type(count) is int
             exchanges = self.transcript.load_recent_exchanges(
                 conversation_id=conversation_id,
@@ -678,7 +714,7 @@ class Recipe0ConversationController:
                 raise Recipe0HistoryBoundExceeded(
                     "targeted history was requested but its host retrieval bound is zero"
                 )
-            raw_terms = proposal.output["target_terms"]
+            raw_terms = proposal_output["target_terms"]
             assert type(raw_terms) is list
             terms = tuple(str(item) for item in raw_terms)
             exchanges, _ = self._targeted_exchanges(

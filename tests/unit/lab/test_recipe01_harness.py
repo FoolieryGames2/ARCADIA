@@ -243,6 +243,37 @@ def test_r0_r1_harness_carries_one_budget_and_stops_at_r2(tmp_path: Path) -> Non
     ) == 0
 
 
+def test_zero_history_request_logs_correction_and_continues_into_r1(
+    tmp_path: Path,
+) -> None:
+    repository = _repository(tmp_path)
+    outputs = _outputs()
+    outputs[0] = {
+        "mode": MODE_SCOPE_PROPOSAL,
+        "status": "REQUEST_RECENT",
+        "recent_exchange_count": 0,
+        "target_terms": ["what did i say before"],
+        "reason_codes": ["RECENT_EXCHANGE_MISSING"],
+    }
+    invoker = QueueBaseInvoker(outputs)
+
+    result = run_recipe01_base_only(
+        PROMPT,
+        invoker=invoker,  # type: ignore[arg-type]
+        transcript=repository,
+        capability_availability=_capabilities(),
+    )
+
+    assert result.completed_recipes == ("R0", "R1")
+    assert result.conversation_packet.scope_status == "UNRESOLVABLE_WITH_TRANSCRIPT"
+    assert result.conversation_packet.unresolved_references == ("what did i say before",)
+    assert result.r0_result.proposal_invocation is not None
+    assert result.r0_result.proposal_invocation.host_corrections[0].code == (
+        "R0_NO_COMPLETED_HISTORY_AVAILABLE"
+    )
+    assert invoker.modes[1] == MODE_SPELL
+
+
 def test_r0_r1_harness_can_skip_non_authoritative_intent_comment(tmp_path: Path) -> None:
     repository = _repository(tmp_path)
     invoker = QueueBaseInvoker(_outputs(include_comment=False))

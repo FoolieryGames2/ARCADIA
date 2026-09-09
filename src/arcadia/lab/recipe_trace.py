@@ -98,8 +98,16 @@ class ConsoleRecipeTrace:
         receipt: ActivationReceipt,
         budget: WorkBudgetLedger,
     ) -> None:
+        for correction in receipt.host_corrections:
+            self._emit(
+                "HOST CORRECTION [NON-FATAL]> "
+                f"code={correction.code} action={correction.action} "
+                f"source_output_hash={correction.source_output_hash.value}"
+            )
+            self._emit(f"HOST CORRECTION DETAIL> {correction.detail}")
+        standing = "PASS_WITH_HOST_CONTINUATION" if receipt.host_corrections else "PASS"
         self._emit(
-            "BASE_ONLY INVOKER> PASS "
+            f"BASE_ONLY INVOKER> {standing} "
             f"mode={mode} call_uuid={receipt.call_id} output_hash={receipt.output_hash.value}"
         )
         self._emit("HOST BUDGET AFTER>")
