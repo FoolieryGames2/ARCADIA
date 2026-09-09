@@ -30,6 +30,12 @@ Build a truth-preserving agent runtime whose learned specialists are compartment
 - The bounded-history Recipe 0 controller and host-authoritative Recipe 1 Intent controller are
   integrated through one resident BASE_ONLY budget chain and stop honestly at
   `R2 Context NOT_IMPLEMENTED`.
+- Interactive recipe prompts now retain one host-owned conversation UUID across resident
+  restarts, expose `/new` for an explicit new conversation, and keep direct-mode prompts out of
+  the recipe transcript.
+- The local qualification CLI now exposes exact CALL_DATA, serialized model messages, raw
+  untrusted output, metrics, budget transitions, and separate invoker/controller acceptance
+  standing without changing recipe authority.
 - All 20 learned logical modes resolve strict PRE-1 input/output schemas with exact hash identities.
 - All 20 learned modes bind unique PRE-1 context-projection policies; the shared
   boundary selects only complete schema-valid candidates using exact token counts
@@ -178,6 +184,16 @@ the frozen host gates for, respectively, truncated JSON, an illegal empty-transc
 history request, and an unauthorized Meaning local-key namespace. These are honest T0
 qualification failures: the implementation checkpoint is integrated, but real-model
 R0 -> R1 semantic qualification is not established and R2 remains unimplemented.
+
+The follow-up conversation/regex and live-trace corrections are evidenced by
+`evidence/phase_a1/R0_R1_CONVERSATION_SESSION_AND_REF_REGEX_CORRECTION_2026-09-08.md`
+and `evidence/phase_a1/R0_R1_LIVE_QUALIFICATION_TRACE_CORRECTION_2026-09-08.md`.
+The semantically equivalent llama.cpp-compatible REF regex required an explicit PRE-1 schema
+hash-catalog refresh recorded in `D-0035`. The pinned workstation now passes 620 tests, Ruff,
+and strict MyPy over 74 source files. A real resident trace passed R0 Scope Proposal and R1
+Spell, then exposed a schema-valid Meaning response that the stronger Recipe 1 controller
+correctly rejected for an unauthorized local-key namespace. Full real-model R0 -> R1 semantic
+qualification therefore remains open.
 
 ## Next implementation gate
 

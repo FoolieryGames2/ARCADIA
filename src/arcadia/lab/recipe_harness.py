@@ -15,6 +15,7 @@ from arcadia.core.work_budget import BudgetLimits, WorkBudgetLedger
 from arcadia.lab.base_only_invoker import ActivationReceipt, BaseOnlySpecialistInvoker
 from arcadia.lab.config import resolve_workspace
 from arcadia.lab.recipe_bridge import BudgetedBaseOnlyRecipeInvoker
+from arcadia.lab.recipe_trace import RecipeCallObserver
 from arcadia.recipes.r0.controller import (
     ConversationPacket,
     Recipe0ConversationController,
@@ -119,6 +120,35 @@ def _default_transcript(workspace: Path) -> TranscriptRepository:
     return TranscriptRepository(factory, RECIPE0_LAB_PROJECT_ID)
 
 
+@dataclass(frozen=True, slots=True)
+class RecipeLabSession:
+    """Host-owned interactive recipe conversation over the isolated lab transcript."""
+
+    transcript: TranscriptRepository
+    conversation_id: CanonicalId
+
+    @classmethod
+    def create(cls, workspace: Path | None = None) -> RecipeLabSession:
+        transcript = _default_transcript(resolve_workspace(workspace))
+        conversation_id = CanonicalId.new()
+        transcript.create_conversation(
+            conversation_id=conversation_id,
+            created_at=datetime.now(UTC),
+        )
+        return cls(transcript=transcript, conversation_id=conversation_id)
+
+    def new_conversation(self) -> RecipeLabSession:
+        conversation_id = CanonicalId.new()
+        self.transcript.create_conversation(
+            conversation_id=conversation_id,
+            created_at=datetime.now(UTC),
+        )
+        return RecipeLabSession(
+            transcript=self.transcript,
+            conversation_id=conversation_id,
+        )
+
+
 def _history_token_counter(
     invoker: BaseOnlySpecialistInvoker,
     turns: tuple[dict[str, JsonValue], ...],
@@ -192,6 +222,7 @@ def run_recipe0_base_only(
     transcript: TranscriptRepository | None = None,
     conversation_id: CanonicalId | None = None,
     workspace: Path | None = None,
+    observer: RecipeCallObserver | None = None,
 ) -> RecipeHarnessResult:
     """Run the real bounded R0 controller and stop before Recipe 1.
 
@@ -207,7 +238,7 @@ def run_recipe0_base_only(
         workspace=workspace,
     )
     policy = Recipe0Policy()
-    recipe_invoker = BudgetedBaseOnlyRecipeInvoker(invoker, _budget(policy))
+    recipe_invoker = BudgetedBaseOnlyRecipeInvoker(invoker, _budget(policy), observer)
     r0_result = _run_r0(
         prompt,
         invoker=invoker,
@@ -237,6 +268,7 @@ def run_recipe01_base_only(
     workspace: Path | None = None,
     capability_availability: tuple[dict[str, JsonValue], ...] = (),
     include_intent_comment: bool = True,
+    observer: RecipeCallObserver | None = None,
 ) -> Recipe01HarnessResult:
     """Run R0 then R1 through one BASE_ONLY invoker/budget chain and stop at R2.
 
@@ -261,6 +293,7 @@ def run_recipe01_base_only(
     recipe_invoker = BudgetedBaseOnlyRecipeInvoker(
         invoker,
         _budget(policy, extra_model_calls=r1_calls),
+        observer,
     )
 
     r0_result = _run_r0(

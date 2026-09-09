@@ -119,7 +119,7 @@ def test_explicit_in_session_routes_do_not_change_the_saved_default(
     monkeypatch.setattr(
         cli,
         "_run_recipe_slice",
-        lambda _server, _identity, _settings, prompt: routed.append(("recipe", prompt)),
+        lambda _server, _identity, _settings, prompt, **_: routed.append(("recipe", prompt)),
     )
     monkeypatch.setattr(
         cli,
@@ -128,6 +128,11 @@ def test_explicit_in_session_routes_do_not_change_the_saved_default(
             routed.append(("direct", prompt))
             or LabResponse("ok", 0.1, 0, "T0", "a" * 64, "")
         ),
+    )
+    monkeypatch.setattr(
+        cli.RecipeLabSession,
+        "create",
+        classmethod(lambda _cls, _workspace=None: object()),
     )
 
     result = cli._interactive_loop(
@@ -140,3 +145,51 @@ def test_explicit_in_session_routes_do_not_change_the_saved_default(
 
     assert result.settings.entry_mode == "direct"
     assert routed == [("recipe", "inspect this"), ("direct", "explain this")]
+
+
+def test_recipe_prompts_share_session_until_new_command(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    settings = replace(_settings(), runtime_transport="resident")
+    inputs = iter(
+        ("/recipe first", "/recipe second", "/new", "/recipe third", "/status", "/quit")
+    )
+    routed: list[tuple[str, str]] = []
+    server = object()
+
+    class FakeRecipeSession:
+        def __init__(self, conversation_id: str) -> None:
+            self.conversation_id = conversation_id
+            self.transcript = object()
+
+        def new_conversation(self) -> FakeRecipeSession:
+            return FakeRecipeSession("CONV-B")
+
+    monkeypatch.setattr("builtins.input", lambda _: next(inputs))
+    monkeypatch.setattr(
+        cli.RecipeLabSession,
+        "create",
+        classmethod(lambda _cls, _workspace=None: FakeRecipeSession("CONV-A")),
+    )
+    monkeypatch.setattr(
+        cli,
+        "_run_recipe_slice",
+        lambda _server, _identity, _settings, prompt, *, recipe_session=None: routed.append(
+            (prompt, recipe_session.conversation_id)
+        ),
+    )
+
+    result = cli._interactive_loop(
+        tmp_path,
+        _identity(tmp_path),
+        settings,
+        metrics=False,
+        server=server,  # type: ignore[arg-type]
+    )
+
+    assert routed == [("first", "CONV-A"), ("second", "CONV-A"), ("third", "CONV-B")]
+    assert result.recipe_session is not None
+    assert result.recipe_session.conversation_id == "CONV-B"
+    output = capsys.readouterr().out
+    assert "Started recipe conversation CONV-B." in output
+    assert "Recipe conversation: CONV-B" in output

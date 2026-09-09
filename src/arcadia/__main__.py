@@ -27,7 +27,8 @@ from arcadia.lab.base_only_invoker import (
     QualificationInvocationError,
 )
 from arcadia.lab.config import SETTING_NAMES, resolve_workspace
-from arcadia.lab.recipe_harness import run_recipe01_base_only
+from arcadia.lab.recipe_harness import RecipeLabSession, run_recipe01_base_only
+from arcadia.lab.recipe_trace import ConsoleRecipeTrace, TracingStructuredRuntime
 from arcadia.lab.server import ResidentLlamaServer, ServerResponse, verify_server_files
 from arcadia.recipes.r1.controller import Recipe1ControllerError
 
@@ -148,11 +149,24 @@ def _run_recipe_slice(
     identity: RuntimeIdentity,
     settings: LabSettings,
     prompt: str,
+    *,
+    recipe_session: RecipeLabSession | None = None,
 ) -> None:
-    result = run_recipe01_base_only(
-        prompt,
-        invoker=BaseOnlySpecialistInvoker(server, identity, settings),
-    )
+    print("\nARCADIA LIVE QUALIFICATION TRACE>")
+    print("  Raw model output is UNTRUSTED; invoker PASS does not override recipe-host checks.")
+    trace = ConsoleRecipeTrace()
+    traced_runtime = TracingStructuredRuntime(server, trace)
+    base_invoker = BaseOnlySpecialistInvoker(traced_runtime, identity, settings)
+    if recipe_session is None:
+        result = run_recipe01_base_only(prompt, invoker=base_invoker, observer=trace)
+    else:
+        result = run_recipe01_base_only(
+            prompt,
+            invoker=base_invoker,
+            transcript=recipe_session.transcript,
+            conversation_id=recipe_session.conversation_id,
+            observer=trace,
+        )
     r0_elapsed = sum(receipt.elapsed_seconds for receipt in result.r0_activation_receipts)
     r1_elapsed = sum(receipt.elapsed_seconds for receipt in result.r1_activation_receipts)
     artifact = result.r1_result.artifact
@@ -181,7 +195,8 @@ def _interactive_help() -> None:
     print("  /mode direct            talk directly to the base model")
     print("  /recipe PROMPT          run one prompt through recipe mode")
     print("  /direct PROMPT          run one prompt through direct mode")
-    print("  /status                 show active mode, transport, and authority")
+    print("  /status                 show active mode, conversation, transport, and authority")
+    print("  /new                    start a fresh recipe conversation")
     print("  /config                 show current settings")
     print(f"  /set NAME VALUE          persist one setting ({', '.join(SETTING_NAMES)})")
     print("  /reset                  restore checked-in defaults")
@@ -196,6 +211,7 @@ class _InteractiveExit:
     code: int
     settings: LabSettings
     restart: bool = False
+    recipe_session: RecipeLabSession | None = None
 
 
 def _switch_mode(workspace: Path, settings: LabSettings, mode: str) -> LabSettings:
@@ -215,18 +231,20 @@ def _interactive_loop(
     *,
     metrics: bool,
     server: ResidentLlamaServer | None,
+    recipe_session: RecipeLabSession | None = None,
 ) -> _InteractiveExit:
+    active_recipe_session = recipe_session
     while True:
         try:
             prompt = input("you> ").strip()
         except (EOFError, KeyboardInterrupt):
             print("\nLab closed.")
-            return _InteractiveExit(0, settings)
+            return _InteractiveExit(0, settings, recipe_session=active_recipe_session)
         if not prompt:
             continue
         if prompt in {"/quit", "/exit"}:
             print("Lab closed.")
-            return _InteractiveExit(0, settings)
+            return _InteractiveExit(0, settings, recipe_session=active_recipe_session)
         if prompt == "/help":
             _interactive_help()
             continue
@@ -239,9 +257,28 @@ def _interactive_loop(
                 "Authority: T0 BASE_ONLY"
             )
             print("Implemented recipe span: R0-R1; next boundary: R2 NOT_IMPLEMENTED")
+            conversation = (
+                "not started"
+                if active_recipe_session is None
+                else str(active_recipe_session.conversation_id)
+            )
+            print(f"Recipe conversation: {conversation}")
+            continue
+        if prompt == "/new":
+            active_recipe_session = (
+                RecipeLabSession.create(workspace)
+                if active_recipe_session is None
+                else active_recipe_session.new_conversation()
+            )
+            print(f"Started recipe conversation {active_recipe_session.conversation_id}.")
             continue
         if prompt == "/restart":
-            return _InteractiveExit(0, load_lab_settings(workspace), restart=True)
+            return _InteractiveExit(
+                0,
+                load_lab_settings(workspace),
+                restart=True,
+                recipe_session=active_recipe_session,
+            )
         if prompt.startswith("/mode ") or prompt.startswith("--mode "):
             parts = prompt.split()
             if len(parts) != 2:
@@ -298,7 +335,15 @@ def _interactive_loop(
                 if server is None:
                     print("Recipe mode requires runtime_transport=resident.")
                     continue
-                _run_recipe_slice(server, identity, settings, prompt)
+                if active_recipe_session is None:
+                    active_recipe_session = RecipeLabSession.create(workspace)
+                _run_recipe_slice(
+                    server,
+                    identity,
+                    settings,
+                    prompt,
+                    recipe_session=active_recipe_session,
+                )
                 continue
             response = (
                 run_base_prompt(identity, settings, prompt)
@@ -315,11 +360,19 @@ def _interactive(workspace: Path, settings: LabSettings, *, metrics: bool) -> in
     identity = load_runtime_identity(workspace)
     print("ARCADIA v0.1 — local Qwen3 test lab")
     print("Standing: T0 BASE_ONLY_TEST_MODE; no adapter or production authority")
+    recipe_session: RecipeLabSession | None = None
     while True:
         print(f"Mode: {settings.entry_mode} | Transport: {settings.runtime_transport}")
         print("Use /mode recipe or /mode direct. Type /help for all controls.\n")
         if settings.runtime_transport == "process":
-            result = _interactive_loop(workspace, identity, settings, metrics=metrics, server=None)
+            result = _interactive_loop(
+                workspace,
+                identity,
+                settings,
+                metrics=metrics,
+                server=None,
+                recipe_session=recipe_session,
+            )
         else:
             print("Loading the pinned model into GPU memory...")
             with ResidentLlamaServer(
@@ -327,8 +380,14 @@ def _interactive(workspace: Path, settings: LabSettings, *, metrics: bool) -> in
             ) as server:
                 print(f"Resident CUDA runtime ready in {server.load_seconds:.2f}s.\n")
                 result = _interactive_loop(
-                    workspace, identity, settings, metrics=metrics, server=server
+                    workspace,
+                    identity,
+                    settings,
+                    metrics=metrics,
+                    server=server,
+                    recipe_session=recipe_session,
                 )
+        recipe_session = result.recipe_session
         if not result.restart:
             return result.code
         settings = result.settings

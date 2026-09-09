@@ -239,3 +239,10 @@ Append decisions. Keep prior entries intact; supersede them explicitly.
 - Status: accepted qualification-interface correction; authority unchanged
 - Decision: Make the implemented Recipe 0 slice the checked-in lab entry mode while preserving direct base-model access as an explicit setting. Treat `/mode recipe`, `/mode direct`, `/recipe PROMPT`, and `/direct PROMPT` as host CLI controls inside the interactive session; never forward them as model content. Require the process-owned resident launcher to find its configured loopback port free before launch and fail explicitly when it is occupied.
 - Reason: A direct-mode default and missing in-session route parser made the operator interface bypass the intended recipe test boundary and caused terminal-style mode instructions entered at the prompt to reach the model. Refusing a preoccupied port prevents readiness checks from accidentally adopting a stale or unrelated server, preserving the claimed session-owned process lifetime.
+
+## D-0035 — llama.cpp-compatible REF pattern identity refresh
+
+- Date: 2026-09-08
+- Status: accepted PRE-1 compatibility correction; semantic authority unchanged
+- Decision: Rewrite the terminal hyphen in the shared `REF_PATTERN` character class without an escape so the exact JSON Schema can be compiled by the pinned llama.cpp grammar path. Preserve representative Python `re.ASCII` acceptance equivalence and retain Recipe 1's stronger host-owned `TERM_` / `REF_` local-key checks. Refresh every affected exact compiled hash in `manifests/aae_schema_catalog_pre1.json`; keep the catalog PRE-1, non-dispatchable, unfrozen, and T0.
+- Reason: The escaped and terminal-unescaped hyphen forms accept the same reference strings under the authoritative host validator, but their schema documents hash differently and llama.cpp rejects the escaped form. Recording the new hashes prevents silent contract drift while removing the runtime incompatibility without broadening learned authority.
